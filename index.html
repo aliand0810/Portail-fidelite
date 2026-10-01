@@ -76,47 +76,223 @@
 
     /* ── Onglet "Produits" : navigation du tableau de bord + catalogue client ── */
     .pf-nav{display:flex;gap:8px;margin-bottom:14px;}
-    .pf-nav-btn{flex:1;padding:10px 8px;border-radius:11px;border:1.5px solid var(--border);background:var(--card);color:var(--text-muted);font-weight:800;font-size:.8rem;cursor:pointer;}
+    .pf-nav-btn{flex:1;padding:10px 8px;border-radius:11px;border:1.5px solid var(--border);background:var(--card);color:var(--text-muted);font-weight:800;font-size:.8rem;cursor:pointer;transition:background .25s,color .25s,box-shadow .25s,transform .15s;}
+    .pf-nav-btn:active{transform:scale(.97);}
     .pf-nav-btn.active{background:linear-gradient(135deg,var(--purple),var(--purple-dk));border-color:transparent;color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.3);}
-    .pf-mode-btn{flex:1;padding:8px 6px;border-radius:8px;border:none;background:transparent;color:var(--text-muted);font-weight:800;font-size:.76rem;cursor:pointer;}
-    .pf-mode-btn.active{background:var(--card);color:var(--purple-dk);box-shadow:0 1px 4px rgba(0,0,0,.08);}
-    .pf-cat-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
-    .pf-cat-stat{flex:1;min-width:92px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;}
-    .pf-cat-stat .v{font-size:1.1rem;font-weight:900;}
-    .pf-cat-stat .l{font-size:.62rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin-top:2px;}
-    .pf-cat-group-head{cursor:pointer;display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:10px;user-select:none;}
-    .pf-cat-group-head .arrow{transition:transform .15s;display:inline-block;}
-    .pf-size-toggle{display:flex;gap:6px;background:var(--bg);padding:4px;border-radius:9px;margin-bottom:10px;}
-    .pf-size-btn{flex:1;padding:7px 6px;border-radius:7px;border:none;background:transparent;color:var(--text-muted);font-weight:800;font-size:.72rem;cursor:pointer;}
-    .pf-size-btn.active{background:var(--card);color:var(--purple-dk);box-shadow:0 1px 4px rgba(0,0,0,.08);}
-    .pf-cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:8px 0 14px;}
-    .pf-prod-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;display:flex;flex-direction:column;align-items:center;}
-    .pf-prod-card .img{width:100%;aspect-ratio:1;object-fit:contain;border-radius:8px;background:#fff;}
-    .pf-prod-info{width:100%;}
-    .pf-prod-card .nm{font-size:.78rem;font-weight:800;margin-top:6px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25;min-height:2.3em;}
-    .pf-prod-card .px-row{margin-top:4px;}
-    .pf-prod-card .px{font-size:.9rem;font-weight:900;color:var(--purple-dk);}
-    .pf-prod-card .px-old{font-size:.68rem;color:var(--text-muted);text-decoration:line-through;margin-right:5px;}
-    .pf-prod-card .rupture{font-size:.62rem;font-weight:800;color:#dc2626;margin-top:2px;}
-    .pf-prod-card.out{opacity:.55;}
-    .pf-prod-cart-ctrl{margin-top:8px;width:100%;}
-    .pf-add-btn{width:100%;padding:7px;border:none;border-radius:8px;background:var(--purple);color:#fff;font-weight:900;font-size:.8rem;cursor:pointer;}
+
+    /* Barre d'outils : mode Catégories/Prix (sélecteur glissant) + densité Grande/Compacte */
+    .pf-tools{display:flex;gap:8px;align-items:stretch;}
+    .pf-seg{flex:1;display:flex;position:relative;background:var(--card);border:1px solid var(--border);border-radius:13px;padding:3px;}
+    .pf-seg .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:10px;background:linear-gradient(135deg,var(--purple),var(--purple-dk));box-shadow:0 3px 10px rgba(124,58,237,.3);transition:transform .38s cubic-bezier(.2,.8,.2,1);}
+    .pf-seg[data-v="price"] .thumb{transform:translateX(100%);}
+    .pf-mode-btn{flex:1;position:relative;z-index:1;padding:9px 6px;border:none;background:transparent;color:var(--text-muted);font-weight:800;font-size:.78rem;cursor:pointer;font-family:inherit;transition:color .3s;}
+    .pf-mode-btn.active{color:#fff;}
+    .pf-iconseg{display:flex;gap:2px;background:var(--card);border:1px solid var(--border);border-radius:13px;padding:3px;}
+    .pf-size-btn{width:38px;border:none;border-radius:10px;background:transparent;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .25s,color .25s;}
+    .pf-size-btn.active{background:var(--bg);color:var(--purple-dk);}
+    .pf-size-btn svg{width:17px;height:17px;}
+
+    /* Recherche + puces de groupes : restent collées en haut pendant le défilement */
+    .pf-shop-top{position:sticky;top:0;z-index:40;margin:0 -16px;padding:10px 16px 2px;background:var(--bg);background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:saturate(1.5) blur(14px);backdrop-filter:saturate(1.5) blur(14px);}
+    .pf-search{position:relative;}
+    .pf-search .ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:.9rem;opacity:.55;pointer-events:none;}
+    .pf-search input{width:100%;padding:12px 40px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);color:var(--text-main);font-size:.9rem;font-family:inherit;transition:border-color .2s,box-shadow .2s;}
+    .pf-search input:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 4px rgba(124,58,237,.13);}
+    .pf-search .clr{position:absolute;right:8px;top:50%;width:26px;height:26px;margin-top:-13px;border:none;border-radius:50%;background:var(--bg);color:var(--text-muted);font-size:.75rem;cursor:pointer;opacity:0;transform:scale(.6);pointer-events:none;transition:opacity .2s,transform .2s;}
+    .pf-search.has .clr{opacity:1;transform:scale(1);pointer-events:auto;}
+    .pf-chips{position:relative;display:flex;gap:7px;overflow-x:auto;margin:0 -16px;padding:10px 16px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+    .pf-chips::-webkit-scrollbar{display:none;}
+    .pf-chip{--c:#7c3aed;flex-shrink:0;display:flex;align-items:center;gap:6px;padding:6px 12px 6px 6px;border-radius:999px;border:1.5px solid var(--border);background:var(--card);color:var(--text-main);font-family:inherit;font-weight:800;font-size:.76rem;cursor:pointer;white-space:nowrap;transition:background .25s,border-color .25s,color .25s,box-shadow .25s,transform .15s;}
+    .pf-chip .em{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.82rem;background:color-mix(in srgb,var(--c) 15%,transparent);transition:background .25s;}
+    .pf-chip .n{font-size:.64rem;font-weight:900;opacity:.6;}
+    .pf-chip:active{transform:scale(.94);}
+    .pf-chip.active{background:var(--c);border-color:var(--c);color:#fff;box-shadow:0 4px 14px color-mix(in srgb,var(--c) 40%,transparent);}
+    .pf-chip.active .em{background:rgba(255,255,255,.24);}
+    .pf-chip.active .n{opacity:.85;}
+
+    /* Tri + "disponibles uniquement" */
+    .pf-sortrow{display:flex;align-items:center;gap:10px;margin-top:4px;}
+    .pf-sortrow select{flex:1;min-width:0;-webkit-appearance:none;appearance:none;padding:9px 30px 9px 12px;border-radius:11px;border:1px solid var(--border);background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 11px center;color:var(--text-main);font-family:inherit;font-size:.76rem;font-weight:800;cursor:pointer;}
+    .pf-toggle{display:flex;align-items:center;gap:7px;font-size:.74rem;font-weight:800;color:var(--text-muted);cursor:pointer;user-select:none;white-space:nowrap;}
+    .pf-toggle input{position:absolute;opacity:0;pointer-events:none;}
+    .pf-toggle .sw{width:36px;height:21px;border-radius:21px;background:var(--border);position:relative;transition:background .25s;flex-shrink:0;}
+    .pf-toggle .sw::after{content:'';position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .32s cubic-bezier(.3,1.4,.5,1);}
+    .pf-toggle input:checked + .sw{background:#059669;}
+    .pf-toggle input:checked + .sw::after{transform:translateX(15px);}
+    .pf-resline{display:flex;align-items:center;gap:8px;font-size:.72rem;font-weight:800;color:var(--text-muted);margin:14px 2px 0;}
+    .pf-resline .dot{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.5;}
+
+    /* Bandeau promotions défilant */
+    .pf-hero{position:relative;margin:12px 0 4px;border-radius:22px;overflow:hidden;background:linear-gradient(125deg,#7c3aed 0%,#a21caf 55%,#e11d48 100%);box-shadow:0 12px 30px rgba(124,58,237,.28);animation:pfRise .55s cubic-bezier(.2,.8,.2,1) backwards;}
+    .pf-hero::before{content:'';position:absolute;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.28),transparent 70%);top:-90px;right:-60px;animation:pfDrift 9s ease-in-out infinite alternate;pointer-events:none;}
+    .pf-hero-track{position:relative;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;}
+    .pf-hero-track::-webkit-scrollbar{display:none;}
+    .pf-hero-slide{flex:0 0 100%;scroll-snap-align:center;scroll-snap-stop:always;display:flex;align-items:center;gap:14px;padding:18px 18px 28px;color:#fff;cursor:pointer;}
+    .pf-hero-slide .hi{width:104px;height:104px;flex-shrink:0;border-radius:18px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.2);transform:rotate(-4deg);transition:transform .4s;}
+    .pf-hero-slide:active .hi{transform:rotate(0) scale(.96);}
+    .pf-hero-slide .hi img{width:100%;height:100%;object-fit:contain;padding:8px;}
+    .pf-hero-slide .pf-pc-ph{font-size:2.6rem;}
+    .pf-hero-tx{min-width:0;flex:1;}
+    .pf-hero-tag{display:inline-block;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.22);font-size:.64rem;font-weight:900;letter-spacing:.05em;text-transform:uppercase;}
+    .pf-hero-nm{font-weight:900;font-size:1rem;line-height:1.22;margin:7px 0 4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+    .pf-hero-px{font-size:1.4rem;font-weight:900;letter-spacing:-.01em;}
+    .pf-hero-px s{font-size:.78rem;font-weight:700;opacity:.72;margin-left:7px;}
+    .pf-hero-cta{display:inline-block;margin-top:6px;font-size:.7rem;font-weight:800;opacity:.9;}
+    .pf-hero-dots{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:5px;}
+    .pf-hero-dots i{width:6px;height:6px;border-radius:6px;background:rgba(255,255,255,.45);cursor:pointer;transition:width .35s cubic-bezier(.2,.8,.2,1),background .3s;}
+    .pf-hero-dots i.on{width:20px;background:#fff;}
+
+    /* Groupes (catégorie ou tranche de prix) : en-tête + carrousel horizontal */
+    .pf-grp{margin-top:22px;}
+    .pf-grp-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+    .pf-grp-back{width:34px;height:34px;flex-shrink:0;border:1px solid var(--border);border-radius:11px;background:var(--card);color:var(--text-main);font-size:1.2rem;font-weight:900;cursor:pointer;}
+    .pf-grp-ic{width:36px;height:36px;flex-shrink:0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:color-mix(in srgb,var(--c) 16%,var(--card));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 25%,transparent);}
+    .pf-grp-t{flex:1;min-width:0;}
+    .pf-grp-t .t{font-weight:900;font-size:.96rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .pf-grp-t .s{font-size:.68rem;font-weight:700;color:var(--text-muted);margin-top:1px;}
+    .pf-grp-t .s b{color:var(--c);}
+    .pf-grp-all{flex-shrink:0;border:none;background:color-mix(in srgb,var(--c) 12%,transparent);color:var(--c);font-family:inherit;font-weight:900;font-size:.72rem;padding:7px 11px;border-radius:20px;cursor:pointer;transition:transform .15s;}
+    .pf-grp-all:active{transform:scale(.94);}
+    .pf-rail-wrap{position:relative;margin:0 -16px;}
+    .pf-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;padding:6px 16px 12px;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;}
+    .pf-rail::-webkit-scrollbar{display:none;}
+    .pf-rail > *{flex:0 0 42%;max-width:180px;scroll-snap-align:start;}
+    .pf-rail-btn{position:absolute;top:40%;z-index:3;width:36px;height:36px;margin-top:-18px;border:1px solid var(--border);border-radius:50%;background:var(--card);color:var(--text-main);font-size:1.3rem;font-weight:900;line-height:1;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.14);display:none;align-items:center;justify-content:center;transition:opacity .25s,transform .2s;}
+    .pf-rail-btn.l{left:6px;} .pf-rail-btn.r{right:6px;}
+    .pf-rail-btn:disabled{opacity:0;pointer-events:none;transform:scale(.7);}
+    @media (hover:hover) and (pointer:fine){.pf-rail-btn{display:flex;}}
+    .pf-rail-prog{width:70px;height:4px;margin:0 auto;border-radius:4px;background:var(--border);overflow:hidden;}
+    .pf-rail-prog i{display:block;height:100%;width:30%;border-radius:4px;background:var(--c);}
+    .pf-more{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:2px dashed color-mix(in srgb,var(--c) 45%,var(--border));border-radius:18px;background:color-mix(in srgb,var(--c) 6%,var(--card));color:var(--c);font-family:inherit;font-weight:900;font-size:.8rem;line-height:1.3;cursor:pointer;min-height:200px;}
+    .pf-more-ic{width:42px;height:42px;border-radius:50%;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 6px 14px color-mix(in srgb,var(--c) 40%,transparent);}
+    #pf-cat-body{padding-bottom:84px;}
+    .pf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:10px;margin-top:6px;}
+
+    /* Carte produit */
+    .pf-pc{--c:#7c3aed;position:relative;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:0 2px 10px rgba(26,26,46,.05);animation:pfRise .5s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0) * 45ms);transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s;}
+    @media (hover:hover){.pf-pc:hover{transform:translateY(-4px);box-shadow:0 12px 26px rgba(124,58,237,.16);} .pf-pc:hover .pf-pc-media img.ld{transform:scale(1.06);}}
+    .pf-pc-media{position:relative;aspect-ratio:1;overflow:hidden;cursor:pointer;background:radial-gradient(circle at 50% 60%,#fff 35%,color-mix(in srgb,var(--c) 14%,#fff) 100%);}
+    .pf-pc-media img{width:100%;height:100%;object-fit:contain;padding:10px;opacity:0;transform:scale(.94);transition:opacity .45s,transform .45s cubic-bezier(.2,.8,.2,1);}
+    .pf-pc-media img.ld{opacity:1;transform:none;}
+    .pf-pc-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
+    .pf-badge{position:absolute;top:8px;left:8px;padding:3px 8px;border-radius:20px;background:linear-gradient(135deg,#ef4444,#db2777);color:#fff;font-size:.66rem;font-weight:900;box-shadow:0 3px 10px rgba(239,68,68,.35);}
+    .pf-out-tag{position:absolute;left:0;right:0;bottom:0;padding:4px;background:rgba(17,17,17,.72);color:#fff;text-align:center;font-size:.62rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;}
+    .pf-pc.out .pf-pc-media img{filter:grayscale(1);opacity:.5;}
+    .pf-pc.out .pf-pc-ph{filter:grayscale(1);opacity:.5;}
+    .pf-pc-body{flex:1;display:flex;flex-direction:column;padding:9px 11px 11px;}
+    .pf-pc .nm{font-size:.8rem;font-weight:800;line-height:1.25;min-height:2.5em;cursor:pointer;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+    .pf-pc-foot{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:7px;}
+    .pf-pc-px{min-width:0;}
+    .pf-pc .px{font-size:1rem;font-weight:900;color:var(--purple-dk);line-height:1.1;white-space:nowrap;}
+    .pf-pc .px small,.pf-ps-price small{font-size:.62em;font-weight:800;opacity:.7;}
+    .pf-pc .px-old{display:block;font-size:.66rem;font-weight:700;color:var(--text-muted);text-decoration:line-through;}
+    .pf-ctrl{flex-shrink:0;margin-left:auto;}
+    .pf-plus{width:34px;height:34px;border:none;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple-dk));color:#fff;font-size:1.25rem;font-weight:900;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(124,58,237,.35);transition:transform .18s;}
+    .pf-plus:active{transform:scale(.85);}
+    .pf-step{display:flex;align-items:center;gap:2px;padding:3px;border-radius:999px;background:linear-gradient(135deg,var(--purple),var(--purple-dk));box-shadow:0 4px 12px rgba(124,58,237,.3);animation:pfPop .38s cubic-bezier(.3,1.6,.5,1);}
+    .pf-step button{width:28px;height:28px;border:none;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;font-size:1rem;font-weight:900;line-height:1;cursor:pointer;transition:background .15s,transform .15s;}
+    .pf-step button:active{transform:scale(.85);background:rgba(255,255,255,.35);}
+    .pf-step .q{min-width:18px;text-align:center;color:#fff;font-weight:900;font-size:.84rem;}
+    .q.bump{animation:pfBump .32s cubic-bezier(.3,1.6,.5,1);}
+
+    /* Mode compact : liste dense, une ligne par produit, sans carrousel */
+    .pf-compact .pf-rail-wrap{margin:0;}
+    .pf-compact .pf-rail{flex-direction:column;overflow:visible;padding:2px 0 0;gap:7px;scroll-snap-type:none;}
+    .pf-compact .pf-rail > *{flex:none;max-width:none;}
+    .pf-compact .pf-rail-btn,.pf-compact .pf-rail-prog{display:none !important;}
+    .pf-compact .pf-more{min-height:0;flex-direction:row;padding:11px;border-radius:14px;}
+    .pf-compact .pf-more br{display:none;}
+    .pf-compact .pf-more-ic{width:28px;height:28px;font-size:.9rem;}
+    .pf-compact .pf-grid{grid-template-columns:1fr;gap:7px;}
+    .pf-compact .pf-pc{flex-direction:row;align-items:center;border-radius:14px;}
+    .pf-compact .pf-pc-media{width:60px;height:60px;aspect-ratio:auto;flex-shrink:0;margin:6px;border-radius:11px;}
+    .pf-compact .pf-pc-media img{padding:4px;}
+    .pf-compact .pf-pc-ph{font-size:1.5rem;}
+    .pf-compact .pf-badge{top:2px;left:2px;padding:1px 5px;font-size:.55rem;}
+    .pf-compact .pf-out-tag{padding:1px;font-size:.48rem;}
+    .pf-compact .pf-pc-body{flex-direction:row;align-items:center;gap:8px;min-width:0;padding:6px 10px 6px 2px;}
+    .pf-compact .pf-pc .nm{flex:1;min-width:0;min-height:0;}
+    .pf-compact .pf-pc-foot{flex-direction:column;align-items:flex-end;flex-wrap:nowrap;margin:0;padding:0;gap:4px;}
+    .pf-compact .pf-pc-px{text-align:right;}
+    .pf-compact .pf-pc .px{font-size:.9rem;}
+
+    /* Fiche produit (feuille du bas) */
+    #pf-prod-overlay{display:none;position:fixed;inset:0;z-index:998;background:rgba(10,10,20,.55);align-items:flex-end;justify-content:center;animation:pfOverlayIn .25s ease;}
+    #pf-prod-sheet{position:relative;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;overscroll-behavior:contain;background:var(--card);border-radius:24px 24px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.3);animation:pfSheetUp .42s cubic-bezier(.2,.9,.25,1);}
+    #pf-prod-overlay.closing{animation:pfOverlayOut .22s ease forwards;}
+    #pf-prod-overlay.closing #pf-prod-sheet{animation:pfSheetDown .22s ease-in forwards;}
+    .pf-grab{position:sticky;top:0;z-index:3;height:22px;display:flex;justify-content:center;align-items:center;cursor:grab;}
+    .pf-grab::before{content:'';width:40px;height:5px;border-radius:5px;background:rgba(120,120,140,.45);}
+    .pf-ps-x{position:absolute;top:12px;right:12px;z-index:4;width:34px;height:34px;border:none;border-radius:50%;background:rgba(255,255,255,.9);color:#1a1a2e;font-size:.95rem;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+    .pf-ps-media{--c:#7c3aed;position:relative;margin:-22px 0 0;height:min(42vh,300px);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 55%,#fff 30%,color-mix(in srgb,var(--c) 18%,#fff) 100%);}
+    .pf-ps-media img{max-width:100%;max-height:100%;object-fit:contain;padding:26px;opacity:0;transform:scale(.9);transition:opacity .5s,transform .6s cubic-bezier(.2,.8,.2,1);}
+    .pf-ps-media img.ld{opacity:1;transform:none;}
+    .pf-ps-media .pf-pc-ph{font-size:4.5rem;}
+    .pf-ps-media .pf-badge{top:auto;bottom:14px;left:16px;font-size:.8rem;padding:5px 12px;}
+    .pf-ps-body{padding:16px 18px 22px;}
+    .pf-ps-anim > *{animation:pfRise .45s cubic-bezier(.2,.8,.2,1) backwards;}
+    .pf-ps-anim > *:nth-child(2){animation-delay:.04s;} .pf-ps-anim > *:nth-child(3){animation-delay:.08s;} .pf-ps-anim > *:nth-child(4){animation-delay:.12s;} .pf-ps-anim > *:nth-child(5){animation-delay:.16s;} .pf-ps-anim > *:nth-child(6){animation-delay:.2s;} .pf-ps-anim > *:nth-child(n+7){animation-delay:.24s;}
+    .pf-ps-cat{--c:#7c3aed;display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border:none;border-radius:20px;background:color-mix(in srgb,var(--c) 14%,transparent);color:var(--c);font-family:inherit;font-size:.72rem;font-weight:900;cursor:pointer;}
+    .pf-ps-nm{margin:10px 0 6px;font-size:1.25rem;font-weight:900;line-height:1.25;}
+    .pf-ps-price{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;}
+    .pf-ps-price .px{font-size:1.7rem;font-weight:900;color:var(--purple-dk);letter-spacing:-.01em;}
+    .pf-ps-price s{color:var(--text-muted);font-weight:700;font-size:.9rem;}
+    .pf-ps-price .save{padding:3px 9px;border-radius:20px;background:#dcfce7;color:#15803d;font-size:.7rem;font-weight:900;}
+    .pf-ps-desc{margin:12px 0 0;font-size:.84rem;line-height:1.55;color:var(--text-muted);}
+    .pf-ps-stock{display:flex;align-items:center;gap:7px;margin-top:12px;font-size:.76rem;font-weight:800;}
+    .pf-ps-stock i{width:8px;height:8px;border-radius:50%;}
+    .pf-ps-stock.ok{color:#059669;} .pf-ps-stock.ok i{background:#10b981;box-shadow:0 0 0 0 rgba(16,185,129,.6);animation:pfPulse 1.8s infinite;}
+    .pf-ps-stock.ko{color:#dc2626;} .pf-ps-stock.ko i{background:#dc2626;}
+    .pf-ps-ctrl{margin-top:16px;}
+    .pf-big-add{width:100%;padding:15px;border:none;border-radius:15px;background:linear-gradient(135deg,var(--purple),var(--purple-dk));color:#fff;font-family:inherit;font-weight:900;font-size:.95rem;cursor:pointer;box-shadow:0 8px 22px rgba(124,58,237,.35);transition:transform .15s;}
+    .pf-big-add:active{transform:scale(.97);}
+    .pf-big-add:disabled{background:var(--border);color:var(--text-muted);box-shadow:none;cursor:default;}
+    .pf-big-row{display:flex;gap:10px;align-items:stretch;animation:pfPop .38s cubic-bezier(.3,1.6,.5,1);}
+    .pf-step.big{padding:5px;animation:none;}
+    .pf-step.big button{width:40px;height:40px;font-size:1.2rem;}
+    .pf-step.big .q{min-width:30px;font-size:1.05rem;}
+    .pf-big-cart{flex:1;border:none;border-radius:15px;background:#059669;color:#fff;font-family:inherit;font-weight:900;font-size:.86rem;cursor:pointer;box-shadow:0 6px 18px rgba(5,150,105,.3);}
+    .pf-ps-sim{margin-top:22px;}
+    .pf-ps-sim .h{font-size:.8rem;font-weight:900;margin-bottom:8px;}
+    .pf-ps-simrail{display:flex;gap:9px;overflow-x:auto;margin:0 -18px;padding:2px 18px 6px;scroll-padding:0 18px;scroll-snap-type:x proximity;scrollbar-width:none;}
+    .pf-ps-simrail::-webkit-scrollbar{display:none;}
+    .pf-mini{flex:0 0 104px;scroll-snap-align:start;display:flex;flex-direction:column;gap:5px;padding:7px;border:1px solid var(--border);border-radius:14px;background:var(--card);color:var(--text-main);font-family:inherit;text-align:left;cursor:pointer;transition:transform .15s;}
+    .pf-mini:active{transform:scale(.95);}
+    .pf-mini .mi{display:block;width:100%;aspect-ratio:1;border-radius:10px;background:#fff;overflow:hidden;}
+    .pf-mini .mi img{width:100%;height:100%;object-fit:contain;padding:5px;opacity:0;transition:opacity .4s;}
+    .pf-mini .mi img.ld{opacity:1;}
+    .pf-mini .pf-pc-ph{font-size:1.6rem;}
+    .pf-mini .mn{font-size:.68rem;font-weight:800;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+    .pf-mini .mp{font-size:.74rem;font-weight:900;color:var(--purple-dk);}
+
+    /* Chargement (squelettes animés) + vol vers le panier */
+    .pf-skel{border-radius:12px;background:linear-gradient(90deg,var(--border) 25%,color-mix(in srgb,var(--border) 35%,var(--card)) 50%,var(--border) 75%);background-size:200% 100%;animation:pfShimmer 1.25s linear infinite;}
+    .pf-fly{position:fixed;z-index:1200;width:38px;height:38px;border-radius:50%;background:#fff center/cover no-repeat;border:2px solid var(--purple);box-shadow:0 6px 18px rgba(124,58,237,.45);pointer-events:none;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+    #pf-cart-fab{transition:transform .2s;}
+    #pf-cart-fab.bump{animation:pfFabBump .55s cubic-bezier(.3,1.5,.5,1);}
+    #pf-cart-fab.bump #pf-cart-badge{animation:pfBump .4s .1s cubic-bezier(.3,1.6,.5,1);}
+    .pf-link{margin-top:10px;border:none;background:none;color:var(--purple);font-family:inherit;font-weight:900;font-size:.8rem;cursor:pointer;text-decoration:underline;}
+
+    @keyframes pfRise{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
+    @keyframes pfPop{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:none;}}
+    @keyframes pfBump{50%{transform:scale(1.5);}}
+    @keyframes pfFabBump{30%{transform:scale(1.2) rotate(-10deg);}60%{transform:scale(.94) rotate(5deg);}}
+    @keyframes pfShimmer{to{background-position:-200% 0;}}
+    @keyframes pfDrift{to{transform:translate(-70px,60px) scale(1.25);}}
+    @keyframes pfPulse{70%{box-shadow:0 0 0 7px rgba(16,185,129,0);}100%{box-shadow:0 0 0 0 rgba(16,185,129,0);}}
+    @keyframes pfSheetUp{from{transform:translateY(100%);}to{transform:none;}}
+    @keyframes pfSheetDown{to{transform:translateY(100%);}}
+    @keyframes pfOverlayIn{from{opacity:0;}to{opacity:1;}}
+    @keyframes pfOverlayOut{to{opacity:0;}}
+    #pf-cart-overlay{animation:pfOverlayIn .25s ease;}
+    #pf-cart-sheet{animation:pfSheetUp .4s cubic-bezier(.2,.9,.25,1);}
+    @media (prefers-reduced-motion: reduce){
+        *,*::before,*::after{animation-duration:.01ms !important;animation-delay:0s !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
+    }
     .pf-qty-stepper{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--bg);border-radius:8px;padding:4px 6px;}
     .pf-qty-stepper button{width:24px;height:24px;border:none;border-radius:6px;background:var(--purple);color:#fff;font-weight:900;font-size:.9rem;cursor:pointer;line-height:1;}
     .pf-qty-stepper .q{font-weight:900;font-size:.84rem;min-width:18px;text-align:center;}
     .pf-prod-empty{text-align:center;padding:40px 16px;color:var(--text-muted);font-size:.84rem;}
-
-    /* Mode d'affichage compact : liste dense en une colonne, pour voir plus de produits
-       d'un coup d'œil avec moins de défilement (choix du client via le bouton ☰ Compacte). */
-    .pf-compact .pf-cat-grid{grid-template-columns:1fr;gap:6px;}
-    .pf-compact .pf-prod-card{flex-direction:row;align-items:center;text-align:left;padding:7px 9px;gap:10px;}
-    .pf-compact .pf-prod-card .img{width:38px;height:38px;flex-shrink:0;aspect-ratio:unset;}
-    .pf-compact .pf-prod-info{flex:1;min-width:0;}
-    .pf-compact .pf-prod-card .nm{margin-top:0;-webkit-line-clamp:1;min-height:0;font-size:.76rem;}
-    .pf-compact .pf-prod-card .px-row{margin-top:1px;}
-    .pf-compact .pf-prod-cart-ctrl{margin-top:0;width:auto;flex-shrink:0;}
-    .pf-compact .pf-add-btn{width:34px;height:34px;padding:0;border-radius:50%;font-size:1.1rem;}
-    .pf-compact .pf-qty-stepper{padding:3px 5px;gap:6px;}
 
     /* ── Panier / commande WhatsApp ── */
     #pf-cart-fab{position:fixed;right:18px;bottom:18px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple-dk));color:#fff;border:none;box-shadow:0 6px 18px rgba(124,58,237,.4);font-size:1.5rem;cursor:pointer;z-index:500;display:none;align-items:center;justify-content:center;}
@@ -144,8 +320,9 @@
         .pf-field input{background:#171428;color:var(--text-main);}
         .pf-tile,.pf-row,.pf-barcode-box{background:#171428;}
         .pf-barcode-box svg{filter:invert(1) hue-rotate(180deg);}
-        #pf-cat-search{background:#171428 !important;color:var(--text-main);}
-        .pf-prod-card .img{background:#f1f1f1;}
+        .pf-pc .px,.pf-ps-price .px,.pf-mini .mp{color:#c4b5fd;}
+        .pf-size-btn.active{color:#c4b5fd;}
+        .pf-ps-price .save{background:rgba(16,185,129,.18);color:#6ee7b7;}
     }
 </style>
 </head>
@@ -230,19 +407,36 @@
         </div>
 
         <div id="pf-tab-produits" style="display:none;">
-            <div class="pf-card" style="padding:16px 14px;">
-                <div style="display:flex;gap:6px;background:var(--bg);padding:4px;border-radius:11px;margin-bottom:10px;">
-                    <button class="pf-mode-btn active" id="pf-mode-cat" onclick="pfCatSetMode('category')">🏷️ Catégorie</button>
+            <div class="pf-tools">
+                <div class="pf-seg" id="pf-mode-seg" data-v="category">
+                    <span class="thumb"></span>
+                    <button class="pf-mode-btn active" id="pf-mode-cat" onclick="pfCatSetMode('category')">🏷️ Catégories</button>
                     <button class="pf-mode-btn" id="pf-mode-price" onclick="pfCatSetMode('price')">💶 Prix</button>
                 </div>
-                <div class="pf-size-toggle">
-                    <button class="pf-size-btn active" id="pf-size-large" onclick="pfCatSetSize('large')">🔲 Grande</button>
-                    <button class="pf-size-btn" id="pf-size-compact" onclick="pfCatSetSize('compact')">☰ Compacte</button>
+                <div class="pf-iconseg" role="group" aria-label="Taille d'affichage">
+                    <button class="pf-size-btn active" id="pf-size-large" onclick="pfCatSetSize('large')" title="Grande (photos)" aria-label="Affichage grand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.8"/></svg></button>
+                    <button class="pf-size-btn" id="pf-size-compact" onclick="pfCatSetSize('compact')" title="Compacte (liste)" aria-label="Affichage compact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.2" fill="currentColor"/><circle cx="4.5" cy="12" r="1.2" fill="currentColor"/><circle cx="4.5" cy="18" r="1.2" fill="currentColor"/></svg></button>
                 </div>
-                <input id="pf-cat-search" type="text" placeholder="🔎 Rechercher un produit…" oninput="pfCatOnSearch(this.value)"
-                    style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);font-size:.86rem;font-family:inherit;background:#fbfaff;">
             </div>
-            <div id="pf-cat-body" style="margin-top:12px;"></div>
+            <div class="pf-shop-top">
+                <div class="pf-search" id="pf-search-box">
+                    <span class="ic">🔎</span>
+                    <input id="pf-cat-search" type="text" placeholder="Rechercher un produit, une catégorie…" oninput="pfCatOnSearch(this.value)" autocomplete="off" enterkeyhint="search">
+                    <button class="clr" onclick="pfCatClearSearch()" aria-label="Effacer la recherche">✕</button>
+                </div>
+                <div class="pf-chips" id="pf-cat-chips"></div>
+            </div>
+            <div class="pf-sortrow">
+                <select id="pf-cat-sort" onchange="pfCatSetSort(this.value)" aria-label="Trier">
+                    <option value="default">✨ Tri recommandé</option>
+                    <option value="price-asc">💶 Prix croissant</option>
+                    <option value="price-desc">💎 Prix décroissant</option>
+                    <option value="promo">🔥 Promotions d'abord</option>
+                    <option value="name">🔤 Nom (A → Z)</option>
+                </select>
+                <label class="pf-toggle"><input type="checkbox" id="pf-cat-avail" onchange="pfCatSetAvail(this.checked)"><span class="sw"></span>En stock</label>
+            </div>
+            <div id="pf-cat-body"></div>
         </div>
 
         <button class="pf-logout" onclick="pfLogout()">Se déconnecter</button>
@@ -265,6 +459,14 @@
             <button id="pf-cart-wa-btn" onclick="pfCartSendWhatsApp()">📲 Envoyer la commande via WhatsApp</button>
             <button id="pf-cart-clear" onclick="pfCartClear()">🗑️ Vider le panier</button>
         </div>
+    </div>
+</div>
+
+<div id="pf-prod-overlay" onclick="pfProdClose()">
+    <div id="pf-prod-sheet" onclick="event.stopPropagation();" role="dialog" aria-modal="true" aria-label="Fiche produit">
+        <div class="pf-grab"></div>
+        <button class="pf-ps-x" onclick="pfProdClose()" aria-label="Fermer">✕</button>
+        <div id="pf-prod-content"></div>
     </div>
 </div>
 
@@ -470,19 +672,49 @@ function pfHideCard(){
    ═══════════════════════════════════════════════════════════════════ */
 var PF_CAT_PALETTE = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#4a3aa7', '#e34948'];
 var PF_PRICE_BUCKETS = [
-    { key: 'b0', label: '0 – 2 €',   min: 0,  max: 2 },
-    { key: 'b1', label: '2 – 5 €',   min: 2,  max: 5 },
-    { key: 'b2', label: '5 – 10 €',  min: 5,  max: 10 },
-    { key: 'b3', label: '10 – 20 €', min: 10, max: 20 },
-    { key: 'b4', label: '20 € et +', min: 20, max: Infinity }
+    { key: 'b0', label: '0 – 2 €',   min: 0,  max: 2,        emoji: '🪙' },
+    { key: 'b1', label: '2 – 5 €',   min: 2,  max: 5,        emoji: '💶' },
+    { key: 'b2', label: '5 – 10 €',  min: 5,  max: 10,       emoji: '💵' },
+    { key: 'b3', label: '10 – 20 €', min: 10, max: 20,       emoji: '💰' },
+    { key: 'b4', label: '20 € et +', min: 20, max: Infinity, emoji: '💎' }
 ];
-var _pfCatData = null;      // { produits, categories, updatedAt, whatsapp }
+// Pictogramme deviné à partir du nom de catégorie (l'ordre compte : "fruits de mer" avant "fruits").
+var PF_CAT_EMOJI = [
+    [/poisson|fruits? de mer|crevette|thon|saumon/i, '🐟'],
+    [/viande|boucherie|volaille|poulet|charcut/i, '🥩'],
+    [/fruit/i, '🍎'],
+    [/l[ée]gume|primeur/i, '🥕'],
+    [/pain|boulang|viennois|p[aâ]tisser/i, '🥖'],
+    [/fromage|laiti|cr[eè]merie|yaourt|\blait/i, '🧀'],
+    [/surgel|glace/i, '🧊'],
+    [/bonbon|confiserie|chocolat|biscuit|g[aâ]teau|sucr|snack|ap[ée]ritif|chips/i, '🍫'],
+    [/vin|alcool|bi[eè]re|spiritueux|rhum|whisky|liqueur/i, '🍷'],
+    [/boisson|jus|soda|\beaux?\b|sirop|drink/i, '🥤'],
+    [/caf[ée]|th[ée]\b|infusion|petit.?d[ée]j/i, '☕'],
+    [/riz|p[aâ]tes|c[ée]r[ée]ale|farine|semoule|f[ée]culent/i, '🍚'],
+    [/conserve|[ée]picerie|sauce|condiment|huile|[ée]pice|assaisonn/i, '🥫'],
+    [/hygi[eè]ne|beaut[ée]|cosm[ée]t|soin|parfum/i, '🧴'],
+    [/entretien|m[ée]nage|lessive|nettoy|droguerie/i, '🧽'],
+    [/b[ée]b[ée]|pu[ée]ricul/i, '🍼'],
+    [/animal|animaux|chien|chat/i, '🐾'],
+    [/[ée]lectro|t[ée]l[ée]phon|high.?tech|accessoire|c[aâ]ble/i, '🔌'],
+    [/frais|traiteur|plat/i, '🥗'],
+    [/maison|d[ée]co|cuisine/i, '🏠'],
+    [/v[êe]tement|mode|textile/i, '👕']
+];
+var PF_RAIL_MAX = 12;           // au-delà, une tuile "Voir les N produits" termine le carrousel
+var _pfCatData = null;          // { produits, categories, updatedAt, whatsapp }
 var _pfCatLoaded = false;
-var _pfCatMode = 'category';
+var _pfCatMode = 'category';    // 'category' | 'price'
 var _pfCatSearch = '';
-var _pfCatCollapsed = {};
+var _pfCatFilter = 'all';       // 'all' ou clé d'un groupe ('c-<catégorie>' / 'p-b0'…)
+var _pfCatSort = 'default';     // 'default' | 'price-asc' | 'price-desc' | 'promo' | 'name'
+var _pfCatOnlyAvail = false;
+var _pfCatCollapsed = {};       // conservé pour compatibilité (plus utilisé depuis les carrousels)
 var PF_CAT_CACHE_KEY = 'covo_portal_catalogue_cache';
 var PF_SIZE_KEY = 'covo_portal_catalogue_size';
+var PF_PREFS_KEY = 'covo_portal_catalogue_prefs';
+var _pfReduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
 function pfSwitchTab(tab) {
     if (tab === 'produits' && !window._pfCatalogAccess) tab = 'compte'; // accès catalogue non autorisé pour ce client
@@ -493,15 +725,17 @@ function pfSwitchTab(tab) {
     document.getElementById('pf-nav-produits').classList.toggle('active', !isCompte);
     document.getElementById('pf-cart-fab').style.display = isCompte ? 'none' : 'flex';
     if (!isCompte && !_pfCatLoaded) pfLoadCatalogue();
+    if (!isCompte && _pfCatLoaded) _pfCatInitRails(document.getElementById('pf-cat-body')); // barres de progression (mesurées une fois visibles)
 }
 
-/* Densité d'affichage ("taille") — choix du CLIENT, mémorisé sur son appareil, pour voir plus
-   de produits à l'écran avec moins de défilement ("Compacte") ou profiter des photos ("Grande"). */
+/* Densité d'affichage ("taille") — choix du CLIENT, mémorisé sur son appareil : "Grande" =
+   carrousels de photos par groupe, "Compacte" = liste dense avec moins de défilement. */
 function pfCatSetSize(size) {
     document.body.classList.toggle('pf-compact', size === 'compact');
     document.getElementById('pf-size-large').classList.toggle('active', size === 'large');
     document.getElementById('pf-size-compact').classList.toggle('active', size === 'compact');
     try { localStorage.setItem(PF_SIZE_KEY, size); } catch (e) {}
+    if (size === 'large') _pfCatInitRails(document.getElementById('pf-cat-body'));
 }
 (function _pfRestoreSize() {
     var saved = null;
@@ -509,22 +743,58 @@ function pfCatSetSize(size) {
     if (saved === 'compact') pfCatSetSize('compact');
 })();
 
+/* Préférences de tri / filtre / mode, mémorisées sur l'appareil du client. */
+function _pfCatSavePrefs() {
+    try { localStorage.setItem(PF_PREFS_KEY, JSON.stringify({ sort: _pfCatSort, avail: _pfCatOnlyAvail, mode: _pfCatMode })); } catch (e) {}
+}
+function _pfCatSyncControls() {
+    var seg = document.getElementById('pf-mode-seg');
+    if (seg) seg.setAttribute('data-v', _pfCatMode);
+    var bc = document.getElementById('pf-mode-cat'), bp = document.getElementById('pf-mode-price');
+    if (bc) bc.classList.toggle('active', _pfCatMode === 'category');
+    if (bp) bp.classList.toggle('active', _pfCatMode === 'price');
+    var sel = document.getElementById('pf-cat-sort');
+    if (sel) sel.value = _pfCatSort;
+    var av = document.getElementById('pf-cat-avail');
+    if (av) av.checked = _pfCatOnlyAvail;
+}
+(function _pfRestorePrefs() {
+    try {
+        var pr = JSON.parse(localStorage.getItem(PF_PREFS_KEY) || 'null');
+        if (pr) {
+            if (['default', 'price-asc', 'price-desc', 'promo', 'name'].indexOf(pr.sort) !== -1) _pfCatSort = pr.sort;
+            _pfCatOnlyAvail = !!pr.avail;
+            if (pr.mode === 'price') _pfCatMode = 'price';
+        }
+    } catch (e) {}
+    _pfCatSyncControls();
+})();
+
 function _pfCatEsc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
 }
+function _pfNum(v) { v = Number(v); return isFinite(v) ? v : 0; }
 function _pfCatColorFor(cat) {
     var cats = (_pfCatData && _pfCatData.categories) || [];
     var idx = cats.indexOf(cat);
     return idx >= 0 ? PF_CAT_PALETTE[idx % PF_CAT_PALETTE.length] : PF_CAT_PALETTE[PF_CAT_PALETTE.length - 1];
 }
+function _pfCatEmoji(cat) {
+    var s = String(cat || '');
+    for (var i = 0; i < PF_CAT_EMOJI.length; i++) if (PF_CAT_EMOJI[i][0].test(s)) return PF_CAT_EMOJI[i][1];
+    return '🏷️';
+}
 function _pfCatEffPrice(p) {
-    var disc = p.promo || 0;
-    return disc > 0 ? p.price * (1 - disc / 100) : p.price;
+    var disc = _pfNum(p.promo), price = _pfNum(p.price);
+    return disc > 0 ? price * (1 - disc / 100) : price;
 }
 function _pfCatFmtPrice(p, price) {
     return p.unitType === 'kg' ? (price.toFixed(2) + '€/kg') : (price.toFixed(2) + '€');
+}
+function _pfCatPriceHTML(p, price) {
+    return price.toFixed(2) + '€' + (p.unitType === 'kg' ? '<small>/kg</small>' : '');
 }
 function _pfCatBucketFor(price) {
     for (var i = 0; i < PF_PRICE_BUCKETS.length; i++) {
@@ -533,27 +803,57 @@ function _pfCatBucketFor(price) {
     }
     return PF_PRICE_BUCKETS[PF_PRICE_BUCKETS.length - 1];
 }
+function _pfCatProdDesc(p) { return p.desc || p.description || ''; }
 
 function pfCatSetMode(mode) {
+    if (mode !== _pfCatMode) _pfCatFilter = 'all';
     _pfCatMode = mode;
-    document.getElementById('pf-mode-cat').classList.toggle('active', mode === 'category');
-    document.getElementById('pf-mode-price').classList.toggle('active', mode === 'price');
+    _pfCatSyncControls();
+    _pfCatSavePrefs();
     _pfRenderCatalogue();
 }
 function pfCatOnSearch(val) {
     _pfCatSearch = (val || '').trim().toLowerCase();
+    var box = document.getElementById('pf-search-box');
+    if (box) box.classList.toggle('has', !!val);
     clearTimeout(window._pfCatSearchTimer);
     window._pfCatSearchTimer = setTimeout(_pfRenderCatalogue, 180);
 }
-function _pfCatToggleGroup(key) {
-    _pfCatCollapsed[key] = !_pfCatCollapsed[key];
-    _pfRenderCatalogue();
+function pfCatClearSearch() {
+    var inp = document.getElementById('pf-cat-search');
+    if (inp) { inp.value = ''; inp.focus(); }
+    pfCatOnSearch('');
 }
+function pfCatSetSort(v) { _pfCatSort = v || 'default'; _pfCatSavePrefs(); _pfRenderCatalogue(); }
+function pfCatSetAvail(on) { _pfCatOnlyAvail = !!on; _pfCatSavePrefs(); _pfRenderCatalogue(); }
+function pfCatSetFilter(key) {
+    _pfCatFilter = key || 'all';
+    _pfRenderCatalogue();
+    // Ramène le haut de la liste juste sous la barre collante si on avait défilé plus bas.
+    var body = document.getElementById('pf-cat-body');
+    var stick = document.querySelector('.pf-shop-top');
+    if (body && stick) {
+        var y = body.getBoundingClientRect().top + window.pageYOffset - stick.offsetHeight - 6;
+        if (window.pageYOffset > y) window.scrollTo({ top: y, behavior: _pfReduced ? 'auto' : 'smooth' });
+    }
+}
+function _pfCatToggleGroup(key) { pfCatSetFilter(_pfCatFilter === key ? 'all' : key); }
 window._pfCatToggleGroup = _pfCatToggleGroup;
+
+function _pfCatSkeleton() {
+    var h = '<div class="pf-skel" style="height:140px;border-radius:22px;margin:12px 0 4px;"></div>';
+    for (var g = 0; g < 2; g++) {
+        h += '<div style="display:flex;align-items:center;gap:10px;margin:24px 0 12px;"><div class="pf-skel" style="width:36px;height:36px;"></div><div class="pf-skel" style="height:14px;width:42%;"></div></div>' +
+             '<div style="display:flex;gap:10px;overflow:hidden;">';
+        for (var i = 0; i < 3; i++) h += '<div class="pf-skel" style="flex:0 0 42%;height:220px;border-radius:18px;"></div>';
+        h += '</div>';
+    }
+    return h;
+}
 
 function pfLoadCatalogue() {
     var host = document.getElementById('pf-cat-body');
-    host.innerHTML = '<div class="pf-prod-empty"><div class="pf-spin" style="margin:0 auto 10px;"></div>Chargement du catalogue…</div>';
+    host.innerHTML = _pfCatSkeleton();
     // Repli hors-ligne : on affiche tout de suite la dernière version connue (si on en a une),
     // pendant que la version à jour arrive du serveur.
     try {
@@ -578,84 +878,409 @@ function pfLoadCatalogue() {
 }
 
 // Image produit cassée (lien mort, hébergeur qui bloque l'affichage hors de son propre site,
-// lien http:// sur une page https://…) : on remplace par le même pictogramme que "pas d'image",
+// lien http:// sur une page https://…) : on remplace par le pictogramme de la catégorie,
 // au lieu de simplement la cacher (ce qui laissait un vide invisible dans la carte produit).
 window._pfImgFallback = function(imgEl) {
     try {
         var ph = document.createElement('div');
-        ph.className = 'img';
-        ph.style.display = 'flex';
-        ph.style.alignItems = 'center';
-        ph.style.justifyContent = 'center';
-        ph.style.fontSize = '1.6rem';
-        ph.textContent = '🛒';
+        ph.className = 'pf-pc-ph';
+        ph.textContent = (imgEl && imgEl.getAttribute('data-em')) || '🛒';
         if (imgEl && imgEl.parentNode) imgEl.parentNode.replaceChild(ph, imgEl);
     } catch (e) {}
 };
+function _pfCatImgHTML(p, em) {
+    return p.img
+        ? '<img src="' + _pfCatEsc(p.img) + '" loading="lazy" decoding="async" alt="" data-em="' + em + '" onload="this.classList.add(\'ld\')" onerror="window._pfImgFallback(this)">'
+        : '<div class="pf-pc-ph">' + em + '</div>';
+}
 
-function _pfCatCard(p) {
+/* ── Contrôle panier d'un produit : "+" rond → sélecteur − q + ; version "big" dans la fiche ── */
+function _pfCatCtrlInner(p, variant) {
+    var id = _pfCatEsc(p.id), q = _pfCartQtyFor(p.id), price = _pfCatEffPrice(p);
+    if (variant === 'big') {
+        if (!p.available) return '<button class="pf-big-add" disabled>Indisponible pour le moment</button>';
+        if (q <= 0) return '<button class="pf-big-add" data-id="' + id + '" onclick="pfCartInc(this.dataset.id, event)">🛒 Ajouter au panier · ' + price.toFixed(2) + '€</button>';
+        return '<div class="pf-big-row">' +
+            '<div class="pf-step big"><button data-id="' + id + '" onclick="pfCartDec(this.dataset.id)" aria-label="Retirer">−</button><span class="q">' + q + '</span><button data-id="' + id + '" onclick="pfCartInc(this.dataset.id, event)" aria-label="Ajouter">+</button></div>' +
+            '<button class="pf-big-cart" onclick="pfProdClose(); pfCartOpen();">Voir le panier · ' + (price * q).toFixed(2) + '€</button>' +
+            '</div>';
+    }
+    if (!p.available) return '';
+    if (q > 0) return '<div class="pf-step"><button data-id="' + id + '" onclick="pfCartDec(this.dataset.id)" aria-label="Retirer">−</button><span class="q">' + q + '</span><button data-id="' + id + '" onclick="pfCartInc(this.dataset.id, event)" aria-label="Ajouter">+</button></div>';
+    return '<button class="pf-plus" data-id="' + id + '" onclick="pfCartInc(this.dataset.id, event)" aria-label="Ajouter au panier">+</button>';
+}
+function _pfCatUpdateCtrlEl(el, p) {
+    var v = el.getAttribute('data-v'), q = _pfCartQtyFor(p.id);
+    var qEl = el.querySelector('.q');
+    if (v === 'card' && qEl && q > 0) { // simple changement de quantité : on anime juste le chiffre
+        qEl.textContent = q;
+        qEl.classList.remove('bump'); void qEl.offsetWidth; qEl.classList.add('bump');
+        return;
+    }
+    el.innerHTML = _pfCatCtrlInner(p, v);
+}
+function _pfCatRefreshCtrl(id) {
+    var p = _pfCatProductById(id);
+    if (!p) return;
+    var sel = '[data-ctrl="' + String(id).replace(/["\\]/g, '\\$&') + '"]';
+    Array.prototype.forEach.call(document.querySelectorAll(sel), function(el) { _pfCatUpdateCtrlEl(el, p); });
+}
+function _pfCatRefreshAllCtrls() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-ctrl]'), function(el) {
+        var p = _pfCatProductById(el.getAttribute('data-ctrl'));
+        if (p) _pfCatUpdateCtrlEl(el, p);
+    });
+}
+
+/* ── Carte produit ── */
+function _pfCatCard(p, i) {
     var price = _pfCatEffPrice(p);
-    var disc = p.promo || 0;
-    var color = _pfCatColorFor(p.category || 'Général');
-    var qty = _pfCartQtyFor(p.id);
-    var ctrl = !p.available ? '' :
-        (qty > 0
-            ? '<div class="pf-qty-stepper"><button onclick="pfCartDec(' + p.id + ')">−</button><span class="q">' + qty + '</span><button onclick="pfCartInc(' + p.id + ')">+</button></div>'
-            : '<button class="pf-add-btn" onclick="pfCartInc(' + p.id + ')">➕</button>');
-    return '<div class="pf-prod-card' + (p.available ? '' : ' out') + '" style="border-top:3px solid ' + color + ';">' +
-        (p.img ? '<img class="img" src="' + _pfCatEsc(p.img) + '" loading="lazy" alt="" onerror="window._pfImgFallback(this)">' : '<div class="img" style="display:flex;align-items:center;justify-content:center;font-size:1.6rem;">🛒</div>') +
-        '<div class="pf-prod-info">' +
-            '<div class="nm">' + _pfCatEsc(p.name) + '</div>' +
-            '<div class="px-row">' +
-                (disc > 0 ? '<span class="px-old">' + p.price.toFixed(2) + '€</span>' : '') +
-                '<span class="px">' + _pfCatFmtPrice(p, price) + '</span>' +
-            '</div>' +
-            (p.available ? '' : '<div class="rupture">Rupture</div>') +
+    var disc = _pfNum(p.promo);
+    var cat = p.category || 'Général';
+    var em = _pfCatEmoji(cat);
+    var id = _pfCatEsc(p.id);
+    return '<div class="pf-pc' + (p.available ? '' : ' out') + '" style="--c:' + _pfCatColorFor(cat) + ';--i:' + Math.min(i || 0, 10) + ';">' +
+        '<div class="pf-pc-media" data-id="' + id + '" onclick="pfProdOpen(this.dataset.id)">' +
+            _pfCatImgHTML(p, em) +
+            (disc > 0 ? '<span class="pf-badge">-' + Math.round(disc) + '%</span>' : '') +
+            (p.available ? '' : '<span class="pf-out-tag">Rupture</span>') +
         '</div>' +
-        '<div class="pf-prod-cart-ctrl">' + ctrl + '</div>' +
+        '<div class="pf-pc-body">' +
+            '<div class="nm" data-id="' + id + '" onclick="pfProdOpen(this.dataset.id)">' + _pfCatEsc(p.name) + '</div>' +
+            '<div class="pf-pc-foot">' +
+                '<div class="pf-pc-px">' +
+                    (disc > 0 ? '<span class="px-old">' + _pfNum(p.price).toFixed(2) + '€</span>' : '') +
+                    '<span class="px">' + _pfCatPriceHTML(p, price) + '</span>' +
+                '</div>' +
+                '<div class="pf-ctrl" data-ctrl="' + id + '" data-v="card">' + _pfCatCtrlInner(p, 'card') + '</div>' +
+            '</div>' +
+        '</div>' +
         '</div>';
 }
-function _pfCatGroup(key, label, color, items) {
-    var collapsed = !!_pfCatCollapsed[key];
-    return '<div class="pf-cat-group-head" onclick="_pfCatToggleGroup(\'' + key + '\')" style="border-left:4px solid ' + color + ';">' +
-            '<span class="arrow" style="transform:rotate(' + (collapsed ? '-90deg' : '0deg') + ');">▾</span>' +
-            '<span style="flex:1;font-weight:900;font-size:.86rem;">' + _pfCatEsc(label) + '</span>' +
-            '<span style="background:' + color + ';color:#fff;font-size:.68rem;font-weight:800;padding:2px 9px;border-radius:11px;">' + items.length + '</span>' +
+
+/* ── Tri et regroupement ── */
+function _pfCatSortItems(items) {
+    var arr = items.slice();
+    var avail = function(a, b) { return (b.available ? 1 : 0) - (a.available ? 1 : 0); };
+    var byName = function(a, b) { return String(a.name || '').localeCompare(String(b.name || ''), 'fr', { sensitivity: 'base' }); };
+    var s = _pfCatSort;
+    if (s === 'default' && _pfCatMode === 'price') s = 'price-asc';
+    arr.sort(function(a, b) {
+        var r = avail(a, b);
+        if (r) return r;
+        if (s === 'price-asc') return _pfCatEffPrice(a) - _pfCatEffPrice(b);
+        if (s === 'price-desc') return _pfCatEffPrice(b) - _pfCatEffPrice(a);
+        if (s === 'promo') return (_pfNum(b.promo) - _pfNum(a.promo)) || (_pfCatEffPrice(a) - _pfCatEffPrice(b));
+        if (s === 'name') return byName(a, b);
+        return 0; // ordre du commerce
+    });
+    return arr;
+}
+function _pfCatBuildGroups(list) {
+    var groups = [];
+    if (_pfCatMode === 'category') {
+        var by = {}, order = [];
+        list.forEach(function(p) {
+            var c = p.category || 'Général';
+            if (!by[c]) { by[c] = []; order.push(c); }
+            by[c].push(p);
+        });
+        order.sort(function(a, b) { return by[b].length - by[a].length; });
+        order.forEach(function(c) {
+            groups.push({ key: 'c-' + c, label: c, color: _pfCatColorFor(c), emoji: _pfCatEmoji(c), items: _pfCatSortItems(by[c]) });
+        });
+    } else {
+        PF_PRICE_BUCKETS.forEach(function(b, i) {
+            var items = list.filter(function(p) { return _pfCatBucketFor(_pfCatEffPrice(p)).key === b.key; });
+            if (!items.length) return;
+            groups.push({ key: 'p-' + b.key, label: b.label, color: PF_CAT_PALETTE[i % PF_CAT_PALETTE.length], emoji: b.emoji, items: _pfCatSortItems(items) });
+        });
+    }
+    return groups;
+}
+
+/* ── Rendu : puces, bandeau promos, groupes ── */
+function _pfCatRenderChips(groups, total) {
+    var host = document.getElementById('pf-cat-chips');
+    if (!host) return;
+    var chip = function(key, color, em, label, n) {
+        return '<button class="pf-chip' + (_pfCatFilter === key ? ' active' : '') + '" style="--c:' + color + ';" data-k="' + _pfCatEsc(key) + '" onclick="pfCatSetFilter(this.dataset.k)">' +
+            '<span class="em">' + em + '</span>' + _pfCatEsc(label) + '<span class="n">' + n + '</span></button>';
+    };
+    var h = chip('all', '#7c3aed', '✨', 'Tout', total);
+    groups.forEach(function(g) { h += chip(g.key, g.color, g.emoji, g.label, g.items.length); });
+    host.innerHTML = h;
+    var act = host.querySelector('.pf-chip.active');
+    if (act && host.scrollTo) host.scrollTo({ left: Math.max(0, act.offsetLeft - host.clientWidth / 2 + act.offsetWidth / 2), behavior: _pfReduced ? 'auto' : 'smooth' });
+}
+function _pfCatGroupHead(g, single) {
+    var minP = Infinity;
+    g.items.forEach(function(p) { if (p.available) minP = Math.min(minP, _pfCatEffPrice(p)); });
+    var n = g.items.length;
+    return '<div class="pf-grp-head">' +
+        (single ? '<button class="pf-grp-back" onclick="pfCatSetFilter(\'all\')" aria-label="Retour à tous les produits">‹</button>' : '') +
+        '<div class="pf-grp-ic">' + g.emoji + '</div>' +
+        '<div class="pf-grp-t"><div class="t">' + _pfCatEsc(g.label) + '</div>' +
+            '<div class="s">' + n + ' produit' + (n > 1 ? 's' : '') + (minP < Infinity ? ' · dès <b>' + minP.toFixed(2) + '€</b>' : '') + '</div></div>' +
+        (single ? '' : '<button class="pf-grp-all" data-k="' + _pfCatEsc(g.key) + '" onclick="pfCatSetFilter(this.dataset.k)">Tout voir ›</button>') +
+        '</div>';
+}
+function _pfCatGroupRail(g) {
+    var items = g.items, shown = items.slice(0, PF_RAIL_MAX);
+    return '<section class="pf-grp" style="--c:' + g.color + ';">' + _pfCatGroupHead(g, false) +
+        '<div class="pf-rail-wrap">' +
+            '<button class="pf-rail-btn l" aria-label="Précédent" disabled>‹</button>' +
+            '<div class="pf-rail">' +
+                shown.map(function(p, i) { return _pfCatCard(p, i); }).join('') +
+                (items.length > PF_RAIL_MAX
+                    ? '<button class="pf-more" data-k="' + _pfCatEsc(g.key) + '" onclick="pfCatSetFilter(this.dataset.k)"><span class="pf-more-ic">→</span>Voir les ' + items.length + '<br>produits</button>'
+                    : '') +
+            '</div>' +
+            '<button class="pf-rail-btn r" aria-label="Suivant">›</button>' +
         '</div>' +
-        (collapsed ? '' : '<div class="pf-cat-grid">' + items.map(_pfCatCard).join('') + '</div>');
+        '<div class="pf-rail-prog"><i></i></div>' +
+        '</section>';
+}
+function _pfCatGroupGrid(g, single) {
+    return '<section class="pf-grp" style="--c:' + g.color + ';">' + _pfCatGroupHead(g, single) +
+        '<div class="pf-grid">' + g.items.map(function(p, i) { return _pfCatCard(p, i); }).join('') + '</div>' +
+        '</section>';
+}
+function _pfCatHero(list) {
+    var promos = list.filter(function(p) { return p.available && _pfNum(p.promo) > 0; })
+        .sort(function(a, b) { return _pfNum(b.promo) - _pfNum(a.promo); })
+        .slice(0, 8);
+    if (!promos.length) return '';
+    var slides = promos.map(function(p) {
+        var price = _pfCatEffPrice(p);
+        var em = _pfCatEmoji(p.category || '');
+        return '<div class="pf-hero-slide" data-id="' + _pfCatEsc(p.id) + '" onclick="pfProdOpen(this.dataset.id)">' +
+            '<div class="hi">' + _pfCatImgHTML(p, em) + '</div>' +
+            '<div class="pf-hero-tx">' +
+                '<span class="pf-hero-tag">🔥 Promo -' + Math.round(_pfNum(p.promo)) + '%</span>' +
+                '<div class="pf-hero-nm">' + _pfCatEsc(p.name) + '</div>' +
+                '<div class="pf-hero-px">' + _pfCatPriceHTML(p, price) + '<s>' + _pfNum(p.price).toFixed(2) + '€</s></div>' +
+                '<span class="pf-hero-cta">Voir le produit →</span>' +
+            '</div></div>';
+    }).join('');
+    var dots = promos.length > 1
+        ? '<div class="pf-hero-dots">' + promos.map(function(_, i) { return '<i data-i="' + i + '"' + (i ? '' : ' class="on"') + '></i>'; }).join('') + '</div>'
+        : '';
+    return '<div class="pf-hero" id="pf-hero"><div class="pf-hero-track">' + slides + '</div>' + dots + '</div>';
 }
 
 function _pfRenderCatalogue() {
     var host = document.getElementById('pf-cat-body');
     if (!host || !_pfCatData) return;
+    _pfCatStopHero();
     var all = (_pfCatData.produits || []).slice();
-    var list = _pfCatSearch
-        ? all.filter(function(p) { return (p.name || '').toLowerCase().indexOf(_pfCatSearch) !== -1 || (p.category || '').toLowerCase().indexOf(_pfCatSearch) !== -1; })
-        : all;
+    if (!all.length) {
+        host.innerHTML = '<div class="pf-prod-empty">🛍️ Le catalogue produits n\'est pas encore disponible — repassez bientôt !</div>';
+        _pfCatRenderChips([], 0);
+        return;
+    }
+    var q = _pfCatSearch;
+    var list = all.filter(function(p) {
+        if (_pfCatOnlyAvail && !p.available) return false;
+        if (!q) return true;
+        return (p.name || '').toLowerCase().indexOf(q) !== -1 || (p.category || '').toLowerCase().indexOf(q) !== -1;
+    });
+    var groups = _pfCatBuildGroups(list);
+    var current = null;
+    for (var i = 0; i < groups.length; i++) if (groups[i].key === _pfCatFilter) current = groups[i];
+    if (!current) _pfCatFilter = 'all';
+    _pfCatRenderChips(groups, list.length);
 
-    if (!all.length) { host.innerHTML = '<div class="pf-prod-empty">🛍️ Le catalogue produits n\'est pas encore disponible — repassez bientôt !</div>'; return; }
-    if (_pfCatSearch && !list.length) { host.innerHTML = '<div class="pf-prod-empty">🔍 Aucun résultat pour « ' + _pfCatEsc(_pfCatSearch) + ' »</div>'; return; }
+    if (!list.length) {
+        host.innerHTML = '<div class="pf-prod-empty">' +
+            (q ? '🔍 Aucun résultat pour « ' + _pfCatEsc(q) + ' »<br><button class="pf-link" onclick="pfCatClearSearch()">Effacer la recherche</button>'
+               : '📦 Aucun produit en stock pour le moment.<br><button class="pf-link" onclick="pfCatSetAvail(false);_pfCatSyncControls();">Afficher aussi les ruptures</button>') +
+            '</div>';
+        return;
+    }
+    var availN = list.filter(function(p) { return p.available; }).length;
+    var html = '<div class="pf-resline"><span>' + list.length + ' produit' + (list.length > 1 ? 's' : '') + '</span><span class="dot"></span>' +
+        '<span style="color:#059669;">' + availN + ' en stock</span></div>';
 
-    var avail = all.filter(function(p) { return p.available; }).length;
-    var html = '<div class="pf-cat-stats">' +
-        '<div class="pf-cat-stat"><div class="v">' + all.length + '</div><div class="l">Produits</div></div>' +
-        '<div class="pf-cat-stat"><div class="v" style="color:#059669;">' + avail + '</div><div class="l">Disponibles</div></div>' +
-        '</div>';
-
-    if (_pfCatMode === 'category') {
-        var byCat = {};
-        list.forEach(function(p) { var c = p.category || 'Général'; (byCat[c] = byCat[c] || []).push(p); });
-        var keys = Object.keys(byCat).sort(function(a, b) { return byCat[b].length - byCat[a].length; });
-        keys.forEach(function(c) { html += _pfCatGroup('c-' + c, c, _pfCatColorFor(c), byCat[c]); });
+    if (current) {
+        html += _pfCatGroupGrid(current, true);
+    } else if (q) {
+        groups.forEach(function(g) { html += _pfCatGroupGrid(g, false); }); // recherche : tout est visible d'un coup d'œil
     } else {
-        PF_PRICE_BUCKETS.forEach(function(b, i) {
-            var items = list.filter(function(p) { return _pfCatBucketFor(_pfCatEffPrice(p)).key === b.key; });
-            if (!items.length) return;
-            items.sort(function(a, b2) { return _pfCatEffPrice(a) - _pfCatEffPrice(b2); });
-            html += _pfCatGroup('p-' + b.key, b.label, PF_CAT_PALETTE[i % PF_CAT_PALETTE.length], items);
-        });
+        html += _pfCatHero(list);
+        groups.forEach(function(g) { html += _pfCatGroupRail(g); });
     }
     host.innerHTML = html;
+    _pfCatInitRails(host);
+    _pfCatInitHero();
+}
+
+/* ── Carrousels : flèches (ordinateur) + barre de progression ── */
+function _pfCatInitRails(root) {
+    if (!root) return;
+    Array.prototype.forEach.call(root.querySelectorAll('.pf-rail'), function(rail) {
+        var wrap = rail.parentNode, sec = wrap.parentNode;
+        var bl = wrap.querySelector('.pf-rail-btn.l'), br = wrap.querySelector('.pf-rail-btn.r');
+        var prog = sec.querySelector('.pf-rail-prog'), bar = prog && prog.querySelector('i');
+        var upd = function() {
+            var max = rail.scrollWidth - rail.clientWidth, x = rail.scrollLeft;
+            if (bl) bl.disabled = x <= 4;
+            if (br) br.disabled = x >= max - 4;
+            if (!bar) return;
+            if (max <= 4 || !rail.clientWidth) { prog.style.visibility = 'hidden'; return; }
+            prog.style.visibility = '';
+            var frac = rail.clientWidth / rail.scrollWidth;
+            bar.style.width = (frac * 100) + '%';
+            bar.style.transform = 'translateX(' + ((x / max) * (1 / frac - 1) * 100) + '%)';
+        };
+        if (!rail._pfBound) {
+            rail._pfBound = true;
+            rail.addEventListener('scroll', upd, { passive: true });
+            var go = function(dir) { rail.scrollBy({ left: dir * rail.clientWidth * 0.8, behavior: _pfReduced ? 'auto' : 'smooth' }); };
+            if (bl) bl.onclick = function() { go(-1); };
+            if (br) br.onclick = function() { go(1); };
+        }
+        upd();
+    });
+}
+
+/* ── Bandeau promos : défilement automatique, pause dès que le client touche ── */
+var _pfHeroTimer = null, _pfHeroPauseUntil = 0;
+function _pfCatStopHero() { clearInterval(_pfHeroTimer); _pfHeroTimer = null; }
+function _pfCatInitHero() {
+    var hero = document.getElementById('pf-hero');
+    if (!hero) return;
+    var track = hero.querySelector('.pf-hero-track');
+    var dots = hero.querySelectorAll('.pf-hero-dots i');
+    var n = track.children.length;
+    var idx = function() { return Math.round(track.scrollLeft / Math.max(1, track.clientWidth)); };
+    var pause = function() { _pfHeroPauseUntil = Date.now() + 7000; };
+    track.addEventListener('scroll', function() {
+        var k = idx();
+        Array.prototype.forEach.call(dots, function(d, i) { d.classList.toggle('on', i === k); });
+    }, { passive: true });
+    track.addEventListener('pointerdown', pause, { passive: true });
+    track.addEventListener('touchstart', pause, { passive: true });
+    Array.prototype.forEach.call(dots, function(d) {
+        d.onclick = function() { pause(); track.scrollTo({ left: (+d.getAttribute('data-i')) * track.clientWidth, behavior: 'smooth' }); };
+    });
+    if (n > 1 && !_pfReduced) {
+        _pfHeroTimer = setInterval(function() {
+            if (!document.body.contains(track)) { _pfCatStopHero(); return; }
+            if (Date.now() < _pfHeroPauseUntil || document.hidden || !track.offsetParent) return;
+            if (document.getElementById('pf-prod-overlay').style.display === 'flex') return;
+            track.scrollTo({ left: ((idx() + 1) % n) * track.clientWidth, behavior: 'smooth' });
+        }, 4200);
+    }
+}
+
+/* ── Fiche produit : grande photo, prix, stock, ajout au panier + produits similaires ── */
+function pfProdOpen(id) {
+    var p = _pfCatProductById(id);
+    if (!p) return;
+    var cat = p.category || 'Général', c = _pfCatColorFor(cat), em = _pfCatEmoji(cat);
+    var price = _pfCatEffPrice(p), disc = _pfNum(p.promo), desc = _pfCatProdDesc(p);
+    var others = _pfCatSortItems(((_pfCatData && _pfCatData.produits) || []).filter(function(o) {
+        return o.id != p.id && (o.category || 'Général') === cat;
+    })).slice(0, 10);
+    var html =
+        '<div class="pf-ps-media" style="--c:' + c + ';">' + _pfCatImgHTML(p, em) +
+            (disc > 0 ? '<span class="pf-badge">-' + Math.round(disc) + '%</span>' : '') +
+        '</div>' +
+        '<div class="pf-ps-body pf-ps-anim">' +
+            '<div><button class="pf-ps-cat" style="--c:' + c + ';" data-k="' + _pfCatEsc('c-' + cat) + '" onclick="pfProdClose(); pfCatSetMode(\'category\'); pfCatSetFilter(this.dataset.k);">' + em + ' ' + _pfCatEsc(cat) + ' ›</button></div>' +
+            '<h2 class="pf-ps-nm">' + _pfCatEsc(p.name) + '</h2>' +
+            '<div class="pf-ps-price"><span class="px">' + _pfCatPriceHTML(p, price) + '</span>' +
+                (disc > 0 ? '<s>' + _pfNum(p.price).toFixed(2) + '€</s><span class="save">−' + (_pfNum(p.price) - price).toFixed(2) + '€ économisés</span>' : '') +
+            '</div>' +
+            (desc ? '<p class="pf-ps-desc">' + _pfCatEsc(desc) + '</p>' : '') +
+            '<div class="pf-ps-stock ' + (p.available ? 'ok' : 'ko') + '"><i></i>' + (p.available ? 'En stock' : 'Rupture de stock') + '</div>' +
+            '<div class="pf-ps-ctrl" data-ctrl="' + _pfCatEsc(p.id) + '" data-v="big">' + _pfCatCtrlInner(p, 'big') + '</div>' +
+            (others.length
+                ? '<div class="pf-ps-sim"><div class="h">Dans la même catégorie</div><div class="pf-ps-simrail">' +
+                    others.map(function(o) {
+                        return '<button class="pf-mini" data-id="' + _pfCatEsc(o.id) + '" onclick="pfProdOpen(this.dataset.id)">' +
+                            '<span class="mi">' + _pfCatImgHTML(o, _pfCatEmoji(o.category || '')) + '</span>' +
+                            '<span class="mn">' + _pfCatEsc(o.name) + '</span>' +
+                            '<span class="mp">' + (o.available ? _pfCatPriceHTML(o, _pfCatEffPrice(o)) : '<span style="color:#dc2626;font-size:.66rem;">Rupture</span>') + '</span>' +
+                            '</button>';
+                    }).join('') + '</div></div>'
+                : '') +
+        '</div>';
+    var ov = document.getElementById('pf-prod-overlay');
+    var sheet = document.getElementById('pf-prod-sheet');
+    document.getElementById('pf-prod-content').innerHTML = html;
+    sheet.scrollTop = 0;
+    if (ov.style.display !== 'flex') {
+        ov.classList.remove('closing');
+        ov.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+function pfProdClose() {
+    var ov = document.getElementById('pf-prod-overlay');
+    if (!ov || ov.style.display !== 'flex' || ov.classList.contains('closing')) return;
+    var done = function() {
+        ov.style.display = 'none';
+        ov.classList.remove('closing');
+        document.getElementById('pf-prod-sheet').style.transform = '';
+        document.body.style.overflow = '';
+        document.getElementById('pf-prod-content').innerHTML = '';
+    };
+    if (_pfReduced) { done(); return; }
+    ov.classList.add('closing');
+    setTimeout(done, 220);
+}
+// Glisser la fiche vers le bas pour la fermer (comme une feuille native).
+(function _pfProdSwipe() {
+    var sheet = document.getElementById('pf-prod-sheet');
+    if (!sheet) return;
+    var y0 = null, dy = 0;
+    sheet.addEventListener('touchstart', function(e) {
+        y0 = sheet.scrollTop <= 0 ? e.touches[0].clientY : null; dy = 0;
+    }, { passive: true });
+    sheet.addEventListener('touchmove', function(e) {
+        if (y0 === null) return;
+        dy = e.touches[0].clientY - y0;
+        if (dy > 0) { sheet.style.transition = 'none'; sheet.style.transform = 'translateY(' + dy + 'px)'; }
+    }, { passive: true });
+    sheet.addEventListener('touchend', function() {
+        if (y0 === null) return;
+        sheet.style.transition = 'transform .25s ease';
+        if (dy > 110) pfProdClose(); else sheet.style.transform = '';
+        y0 = null;
+    });
+})();
+document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Escape') return;
+    var ov = document.getElementById('pf-prod-overlay');
+    if (ov && ov.style.display === 'flex') pfProdClose();
+    else if (document.getElementById('pf-cart-overlay').style.display === 'flex') pfCartClose();
+});
+
+/* ── Animation "vol vers le panier" + rebond du bouton panier ── */
+function _pfFabBump() {
+    var fab = document.getElementById('pf-cart-fab');
+    if (!fab) return;
+    fab.classList.remove('bump'); void fab.offsetWidth; fab.classList.add('bump');
+}
+function _pfCatFlyFrom(rect, imgSrc) {
+    var fab = document.getElementById('pf-cart-fab');
+    if (!fab || fab.style.display === 'none' || !rect || !rect.width || _pfReduced || !document.body.animate) { _pfFabBump(); return; }
+    var b = fab.getBoundingClientRect();
+    var d = document.createElement('div');
+    d.className = 'pf-fly';
+    if (imgSrc) d.style.backgroundImage = 'url("' + String(imgSrc).replace(/"/g, '%22') + '")'; else d.textContent = '🛒';
+    var sx = rect.left + rect.width / 2 - 19, sy = rect.top + rect.height / 2 - 19;
+    d.style.left = sx + 'px'; d.style.top = sy + 'px';
+    document.body.appendChild(d);
+    var dx = b.left + b.width / 2 - 19 - sx, dy = b.top + b.height / 2 - 19 - sy;
+    var an = d.animate([
+        { transform: 'translate(0,0) scale(.6)', opacity: .4 },
+        { transform: 'translate(' + (dx * 0.35) + 'px,' + (Math.min(dy, 0) * 0.35 - 70) + 'px) scale(1.25)', opacity: 1, offset: 0.4 },
+        { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.35)', opacity: .7 }
+    ], { duration: 680, easing: 'cubic-bezier(.45,0,.55,1)' });
+    an.onfinish = function() { d.remove(); _pfFabBump(); };
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -689,12 +1314,24 @@ function _pfCatProductById(id) {
     for (var i = 0; i < list.length; i++) if (list[i].id == id) return list[i];
     return null;
 }
-function pfCartInc(id) {
+function pfCartInc(id, ev) {
     var p = _pfCatProductById(id);
     if (!p || !p.available) return;
+    // Point de départ de l'animation "vol vers le panier" (mesuré avant que le bouton ne soit remplacé).
+    var srcEl = ev && (ev.currentTarget || ev.target), flyRect = null, flyImg = null, inSheet = false;
+    if (srcEl && srcEl.closest) {
+        inSheet = !!srcEl.closest('#pf-prod-sheet');
+        var card = srcEl.closest('.pf-pc');
+        var media = card ? card.querySelector('.pf-pc-media') : null;
+        flyRect = (media || srcEl).getBoundingClientRect();
+        var im = media && media.querySelector('img.ld');
+        flyImg = im ? im.src : null;
+    }
     _pfCart[id] = (_pfCart[id] || 0) + 1;
     _pfSaveCart();
-    _pfRenderCatalogue();
+    _pfCatRefreshCtrl(id);
+    if (navigator.vibrate) try { navigator.vibrate(12); } catch (e) {}
+    if (flyRect && !inSheet) _pfCatFlyFrom(flyRect, flyImg); else _pfFabBump();
     if (document.getElementById('pf-cart-overlay').style.display === 'flex') pfCartRender();
 }
 function pfCartDec(id) {
@@ -702,13 +1339,13 @@ function pfCartDec(id) {
     _pfCart[id]--;
     if (_pfCart[id] <= 0) delete _pfCart[id];
     _pfSaveCart();
-    _pfRenderCatalogue();
+    _pfCatRefreshCtrl(id);
     if (document.getElementById('pf-cart-overlay').style.display === 'flex') pfCartRender();
 }
 function pfCartClear() {
     _pfCart = {};
     _pfSaveCart();
-    _pfRenderCatalogue();
+    _pfCatRefreshAllCtrls();
     pfCartRender();
 }
 function pfCartOpen() {
