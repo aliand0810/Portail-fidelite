@@ -577,6 +577,22 @@ function pfLoadCatalogue() {
     });
 }
 
+// Image produit cassée (lien mort, hébergeur qui bloque l'affichage hors de son propre site,
+// lien http:// sur une page https://…) : on remplace par le même pictogramme que "pas d'image",
+// au lieu de simplement la cacher (ce qui laissait un vide invisible dans la carte produit).
+window._pfImgFallback = function(imgEl) {
+    try {
+        var ph = document.createElement('div');
+        ph.className = 'img';
+        ph.style.display = 'flex';
+        ph.style.alignItems = 'center';
+        ph.style.justifyContent = 'center';
+        ph.style.fontSize = '1.6rem';
+        ph.textContent = '🛒';
+        if (imgEl && imgEl.parentNode) imgEl.parentNode.replaceChild(ph, imgEl);
+    } catch (e) {}
+};
+
 function _pfCatCard(p) {
     var price = _pfCatEffPrice(p);
     var disc = p.promo || 0;
@@ -587,7 +603,7 @@ function _pfCatCard(p) {
             ? '<div class="pf-qty-stepper"><button onclick="pfCartDec(' + p.id + ')">−</button><span class="q">' + qty + '</span><button onclick="pfCartInc(' + p.id + ')">+</button></div>'
             : '<button class="pf-add-btn" onclick="pfCartInc(' + p.id + ')">➕</button>');
     return '<div class="pf-prod-card' + (p.available ? '' : ' out') + '" style="border-top:3px solid ' + color + ';">' +
-        (p.img ? '<img class="img" src="' + _pfCatEsc(p.img) + '" loading="lazy" alt="" onerror="this.style.display=\'none\'">' : '<div class="img" style="display:flex;align-items:center;justify-content:center;font-size:1.6rem;">🛒</div>') +
+        (p.img ? '<img class="img" src="' + _pfCatEsc(p.img) + '" loading="lazy" alt="" onerror="window._pfImgFallback(this)">' : '<div class="img" style="display:flex;align-items:center;justify-content:center;font-size:1.6rem;">🛒</div>') +
         '<div class="pf-prod-info">' +
             '<div class="nm">' + _pfCatEsc(p.name) + '</div>' +
             '<div class="px-row">' +
