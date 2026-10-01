@@ -74,11 +74,34 @@
         #pf-card-barcode-wrap svg{max-height:38vh;}
     }
 
+    /* ── Onglet "Produits" : navigation du tableau de bord + catalogue client ── */
+    .pf-nav{display:flex;gap:8px;margin-bottom:14px;}
+    .pf-nav-btn{flex:1;padding:10px 8px;border-radius:11px;border:1.5px solid var(--border);background:var(--card);color:var(--text-muted);font-weight:800;font-size:.8rem;cursor:pointer;}
+    .pf-nav-btn.active{background:linear-gradient(135deg,var(--purple),var(--purple-dk));border-color:transparent;color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.3);}
+    .pf-mode-btn{flex:1;padding:8px 6px;border-radius:8px;border:none;background:transparent;color:var(--text-muted);font-weight:800;font-size:.76rem;cursor:pointer;}
+    .pf-mode-btn.active{background:var(--card);color:var(--purple-dk);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+    .pf-cat-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+    .pf-cat-stat{flex:1;min-width:92px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;}
+    .pf-cat-stat .v{font-size:1.1rem;font-weight:900;}
+    .pf-cat-stat .l{font-size:.62rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin-top:2px;}
+    .pf-cat-group-head{cursor:pointer;display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:10px;user-select:none;}
+    .pf-cat-group-head .arrow{transition:transform .15s;display:inline-block;}
+    .pf-cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:8px 0 14px;}
+    .pf-prod-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;}
+    .pf-prod-card .nm{font-size:.78rem;font-weight:800;margin-top:6px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25;min-height:2.3em;}
+    .pf-prod-card .px{font-size:.9rem;font-weight:900;color:var(--purple-dk);margin-top:4px;}
+    .pf-prod-card .px-old{font-size:.68rem;color:var(--text-muted);text-decoration:line-through;}
+    .pf-prod-card .img{width:100%;aspect-ratio:1;object-fit:contain;border-radius:8px;background:#fff;}
+    .pf-prod-card.out{opacity:.5;}
+    .pf-prod-empty{text-align:center;padding:40px 16px;color:var(--text-muted);font-size:.84rem;}
+
     @media (prefers-color-scheme: dark){
         :root{--bg:#161425;--card:#201c33;--text-main:#f0eefa;--text-muted:#a79fc4;--border:#342d50;}
         .pf-field input{background:#171428;color:var(--text-main);}
         .pf-tile,.pf-row,.pf-barcode-box{background:#171428;}
         .pf-barcode-box svg{filter:invert(1) hue-rotate(180deg);}
+        #pf-cat-search{background:#171428 !important;color:var(--text-main);}
+        .pf-prod-card .img{background:#f1f1f1;}
     }
 </style>
 </head>
@@ -123,37 +146,57 @@
     </div>
 
     <div id="pf-dash" style="display:none;">
-        <div class="pf-card">
-            <div style="display:flex;align-items:center;gap:14px;">
-                <div class="pf-avatar" id="pf-ini">—</div>
-                <div>
-                    <div class="pf-name" id="pf-name">—</div>
-                    <div class="pf-tier" id="pf-tier">—</div>
+        <div class="pf-nav">
+            <button class="pf-nav-btn active" id="pf-nav-compte" onclick="pfSwitchTab('compte')">🏠 Mon compte</button>
+            <button class="pf-nav-btn" id="pf-nav-produits" onclick="pfSwitchTab('produits')">🛍️ Produits</button>
+        </div>
+
+        <div id="pf-tab-compte">
+            <div class="pf-card">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <div class="pf-avatar" id="pf-ini">—</div>
+                    <div>
+                        <div class="pf-name" id="pf-name">—</div>
+                        <div class="pf-tier" id="pf-tier">—</div>
+                    </div>
+                </div>
+                <div class="pf-tiles">
+                    <div class="pf-tile"><div class="v" id="pf-points" style="color:#7c3aed;">0</div><div class="l">⭐ Points</div></div>
+                    <div class="pf-tile"><div class="v" id="pf-credit" style="color:#059669;">0€</div><div class="l">📒 Solde dû</div></div>
+                    <div class="pf-tile"><div class="v" id="pf-spent" style="color:#0f766e;">0€</div><div class="l">💰 Dépensé</div></div>
+                    <div class="pf-tile"><div class="v" id="pf-updated" style="font-size:.78rem;">—</div><div class="l">🔄 Mis à jour</div></div>
+                </div>
+
+                <div class="pf-section" id="pf-ech-section">
+                    <h3>📅 Échéances en cours</h3>
+                    <div id="pf-ech-list"></div>
+                </div>
+
+                <div class="pf-section">
+                    <h3>🧾 Dernières opérations</h3>
+                    <div id="pf-hist-list"></div>
+                </div>
+
+                <div class="pf-barcode-box" onclick="pfShowCard()" style="cursor:pointer;" title="Toucher pour afficher la carte">
+                    <svg id="pf-barcode-svg"></svg>
+                    <div class="pf-barcode-code" id="pf-barcode-code">—</div>
+                    <div style="font-size:.66rem;color:var(--text-muted);margin-top:8px;">👆 Toucher pour afficher la carte</div>
                 </div>
             </div>
-            <div class="pf-tiles">
-                <div class="pf-tile"><div class="v" id="pf-points" style="color:#7c3aed;">0</div><div class="l">⭐ Points</div></div>
-                <div class="pf-tile"><div class="v" id="pf-credit" style="color:#059669;">0€</div><div class="l">📒 Solde dû</div></div>
-                <div class="pf-tile"><div class="v" id="pf-spent" style="color:#0f766e;">0€</div><div class="l">💰 Dépensé</div></div>
-                <div class="pf-tile"><div class="v" id="pf-updated" style="font-size:.78rem;">—</div><div class="l">🔄 Mis à jour</div></div>
-            </div>
-
-            <div class="pf-section" id="pf-ech-section">
-                <h3>📅 Échéances en cours</h3>
-                <div id="pf-ech-list"></div>
-            </div>
-
-            <div class="pf-section">
-                <h3>🧾 Dernières opérations</h3>
-                <div id="pf-hist-list"></div>
-            </div>
-
-            <div class="pf-barcode-box" onclick="pfShowCard()" style="cursor:pointer;" title="Toucher pour afficher la carte">
-                <svg id="pf-barcode-svg"></svg>
-                <div class="pf-barcode-code" id="pf-barcode-code">—</div>
-                <div style="font-size:.66rem;color:var(--text-muted);margin-top:8px;">👆 Toucher pour afficher la carte</div>
-            </div>
         </div>
+
+        <div id="pf-tab-produits" style="display:none;">
+            <div class="pf-card" style="padding:16px 14px;">
+                <div style="display:flex;gap:6px;background:var(--bg);padding:4px;border-radius:11px;margin-bottom:10px;">
+                    <button class="pf-mode-btn active" id="pf-mode-cat" onclick="pfCatSetMode('category')">🏷️ Catégorie</button>
+                    <button class="pf-mode-btn" id="pf-mode-price" onclick="pfCatSetMode('price')">💶 Prix</button>
+                </div>
+                <input id="pf-cat-search" type="text" placeholder="🔎 Rechercher un produit…" oninput="pfCatOnSearch(this.value)"
+                    style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);font-size:.86rem;font-family:inherit;background:#fbfaff;">
+            </div>
+            <div id="pf-cat-body" style="margin-top:12px;"></div>
+        </div>
+
         <button class="pf-logout" onclick="pfLogout()">Se déconnecter</button>
     </div>
 </div>
@@ -324,6 +367,7 @@ function _pfRenderDash(data){
     }
 
     _pfShow('pf-dash');
+    pfSwitchTab('compte');
 }
 
 window._pfCurrentBarcode = null;
@@ -345,6 +389,161 @@ function pfShowCard(){
 function pfHideCard(){
     document.getElementById('pf-card-overlay').style.display = 'none';
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   ONGLET "PRODUITS" — catalogue COVO synchronisé par le commerce (voir
+   fbSyncCatalogue() dans fidelite_pro.html). Lecture seule : les clients
+   parcourent les produits disponibles, groupés par catégorie ou par prix,
+   exactement comme dans COVO Pro côté caisse (même palette de couleurs
+   par catégorie, pour une identité visuelle cohérente entre les deux apps).
+   ═══════════════════════════════════════════════════════════════════ */
+var PF_CAT_PALETTE = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#4a3aa7', '#e34948'];
+var PF_PRICE_BUCKETS = [
+    { key: 'b0', label: '0 – 2 €',   min: 0,  max: 2 },
+    { key: 'b1', label: '2 – 5 €',   min: 2,  max: 5 },
+    { key: 'b2', label: '5 – 10 €',  min: 5,  max: 10 },
+    { key: 'b3', label: '10 – 20 €', min: 10, max: 20 },
+    { key: 'b4', label: '20 € et +', min: 20, max: Infinity }
+];
+var _pfCatData = null;      // { produits, categories, updatedAt }
+var _pfCatLoaded = false;
+var _pfCatMode = 'category';
+var _pfCatSearch = '';
+var _pfCatCollapsed = {};
+var PF_CAT_CACHE_KEY = 'covo_portal_catalogue_cache';
+
+function pfSwitchTab(tab) {
+    var isCompte = tab === 'compte';
+    document.getElementById('pf-tab-compte').style.display = isCompte ? '' : 'none';
+    document.getElementById('pf-tab-produits').style.display = isCompte ? 'none' : '';
+    document.getElementById('pf-nav-compte').classList.toggle('active', isCompte);
+    document.getElementById('pf-nav-produits').classList.toggle('active', !isCompte);
+    if (!isCompte && !_pfCatLoaded) pfLoadCatalogue();
+}
+
+function _pfCatEsc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+}
+function _pfCatColorFor(cat) {
+    var cats = (_pfCatData && _pfCatData.categories) || [];
+    var idx = cats.indexOf(cat);
+    return idx >= 0 ? PF_CAT_PALETTE[idx % PF_CAT_PALETTE.length] : PF_CAT_PALETTE[PF_CAT_PALETTE.length - 1];
+}
+function _pfCatEffPrice(p) {
+    var disc = p.promo || 0;
+    return disc > 0 ? p.price * (1 - disc / 100) : p.price;
+}
+function _pfCatFmtPrice(p, price) {
+    return p.unitType === 'kg' ? (price.toFixed(2) + '€/kg') : (price.toFixed(2) + '€');
+}
+function _pfCatBucketFor(price) {
+    for (var i = 0; i < PF_PRICE_BUCKETS.length; i++) {
+        var b = PF_PRICE_BUCKETS[i];
+        if (price >= b.min && price < b.max) return b;
+    }
+    return PF_PRICE_BUCKETS[PF_PRICE_BUCKETS.length - 1];
+}
+
+function pfCatSetMode(mode) {
+    _pfCatMode = mode;
+    document.getElementById('pf-mode-cat').classList.toggle('active', mode === 'category');
+    document.getElementById('pf-mode-price').classList.toggle('active', mode === 'price');
+    _pfRenderCatalogue();
+}
+function pfCatOnSearch(val) {
+    _pfCatSearch = (val || '').trim().toLowerCase();
+    clearTimeout(window._pfCatSearchTimer);
+    window._pfCatSearchTimer = setTimeout(_pfRenderCatalogue, 180);
+}
+function _pfCatToggleGroup(key) {
+    _pfCatCollapsed[key] = !_pfCatCollapsed[key];
+    _pfRenderCatalogue();
+}
+window._pfCatToggleGroup = _pfCatToggleGroup;
+
+function pfLoadCatalogue() {
+    var host = document.getElementById('pf-cat-body');
+    host.innerHTML = '<div class="pf-prod-empty"><div class="pf-spin" style="margin:0 auto 10px;"></div>Chargement du catalogue…</div>';
+    // Repli hors-ligne : on affiche tout de suite la dernière version connue (si on en a une),
+    // pendant que la version à jour arrive du serveur.
+    try {
+        var cached = JSON.parse(localStorage.getItem(PF_CAT_CACHE_KEY) || 'null');
+        if (cached && cached.produits) { _pfCatData = cached; _pfCatLoaded = true; _pfRenderCatalogue(); }
+    } catch (e) {}
+    if (!_pfDb) { if (!_pfCatData) host.innerHTML = '<div class="pf-prod-empty">⚠️ Service indisponible pour le moment.</div>'; return; }
+    _pfDb.collection('public').doc('catalogue').get().then(function(doc) {
+        _pfCatLoaded = true;
+        if (!doc.exists) {
+            if (!_pfCatData) host.innerHTML = '<div class="pf-prod-empty">🛍️ Le catalogue produits n\'est pas encore disponible — repassez bientôt !</div>';
+            return;
+        }
+        _pfCatData = doc.data();
+        try { localStorage.setItem(PF_CAT_CACHE_KEY, JSON.stringify(_pfCatData)); } catch (e) {}
+        _pfRenderCatalogue();
+    }).catch(function(err) {
+        console.error('[Portail] Échec chargement catalogue', err);
+        _pfCatLoaded = true;
+        if (!_pfCatData) host.innerHTML = '<div class="pf-prod-empty">⚠️ Impossible de charger le catalogue — vérifiez votre connexion.</div>';
+    });
+}
+
+function _pfCatCard(p) {
+    var price = _pfCatEffPrice(p);
+    var disc = p.promo || 0;
+    var color = _pfCatColorFor(p.category || 'Général');
+    return '<div class="pf-prod-card' + (p.available ? '' : ' out') + '" style="border-top:3px solid ' + color + ';">' +
+        (p.img ? '<img class="img" src="' + _pfCatEsc(p.img) + '" loading="lazy" alt="" onerror="this.style.display=\'none\'">' : '<div class="img" style="display:flex;align-items:center;justify-content:center;font-size:1.6rem;">🛒</div>') +
+        '<div class="nm">' + _pfCatEsc(p.name) + '</div>' +
+        (disc > 0 ? '<div class="px-old">' + p.price.toFixed(2) + '€</div>' : '') +
+        '<div class="px">' + _pfCatFmtPrice(p, price) + '</div>' +
+        (p.available ? '' : '<div style="font-size:.62rem;font-weight:800;color:#dc2626;margin-top:2px;">Rupture</div>') +
+        '</div>';
+}
+function _pfCatGroup(key, label, color, items) {
+    var collapsed = !!_pfCatCollapsed[key];
+    return '<div class="pf-cat-group-head" onclick="_pfCatToggleGroup(\'' + key + '\')" style="border-left:4px solid ' + color + ';">' +
+            '<span class="arrow" style="transform:rotate(' + (collapsed ? '-90deg' : '0deg') + ');">▾</span>' +
+            '<span style="flex:1;font-weight:900;font-size:.86rem;">' + _pfCatEsc(label) + '</span>' +
+            '<span style="background:' + color + ';color:#fff;font-size:.68rem;font-weight:800;padding:2px 9px;border-radius:11px;">' + items.length + '</span>' +
+        '</div>' +
+        (collapsed ? '' : '<div class="pf-cat-grid">' + items.map(_pfCatCard).join('') + '</div>');
+}
+
+function _pfRenderCatalogue() {
+    var host = document.getElementById('pf-cat-body');
+    if (!host || !_pfCatData) return;
+    var all = (_pfCatData.produits || []).slice();
+    var list = _pfCatSearch
+        ? all.filter(function(p) { return (p.name || '').toLowerCase().indexOf(_pfCatSearch) !== -1 || (p.category || '').toLowerCase().indexOf(_pfCatSearch) !== -1; })
+        : all;
+
+    if (!all.length) { host.innerHTML = '<div class="pf-prod-empty">🛍️ Le catalogue produits n\'est pas encore disponible — repassez bientôt !</div>'; return; }
+    if (_pfCatSearch && !list.length) { host.innerHTML = '<div class="pf-prod-empty">🔍 Aucun résultat pour « ' + _pfCatEsc(_pfCatSearch) + ' »</div>'; return; }
+
+    var avail = all.filter(function(p) { return p.available; }).length;
+    var html = '<div class="pf-cat-stats">' +
+        '<div class="pf-cat-stat"><div class="v">' + all.length + '</div><div class="l">Produits</div></div>' +
+        '<div class="pf-cat-stat"><div class="v" style="color:#059669;">' + avail + '</div><div class="l">Disponibles</div></div>' +
+        '</div>';
+
+    if (_pfCatMode === 'category') {
+        var byCat = {};
+        list.forEach(function(p) { var c = p.category || 'Général'; (byCat[c] = byCat[c] || []).push(p); });
+        var keys = Object.keys(byCat).sort(function(a, b) { return byCat[b].length - byCat[a].length; });
+        keys.forEach(function(c) { html += _pfCatGroup('c-' + c, c, _pfCatColorFor(c), byCat[c]); });
+    } else {
+        PF_PRICE_BUCKETS.forEach(function(b, i) {
+            var items = list.filter(function(p) { return _pfCatBucketFor(_pfCatEffPrice(p)).key === b.key; });
+            if (!items.length) return;
+            items.sort(function(a, b2) { return _pfCatEffPrice(a) - _pfCatEffPrice(b2); });
+            html += _pfCatGroup('p-' + b.key, b.label, PF_CAT_PALETTE[i % PF_CAT_PALETTE.length], items);
+        });
+    }
+    host.innerHTML = html;
+}
+
 
 function _pfLoadClientData(uid){
     _pfDb.collection('clients').doc(uid).get().then(function(doc){
