@@ -86,14 +86,58 @@
     .pf-cat-stat .l{font-size:.62rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin-top:2px;}
     .pf-cat-group-head{cursor:pointer;display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:10px;user-select:none;}
     .pf-cat-group-head .arrow{transition:transform .15s;display:inline-block;}
+    .pf-size-toggle{display:flex;gap:6px;background:var(--bg);padding:4px;border-radius:9px;margin-bottom:10px;}
+    .pf-size-btn{flex:1;padding:7px 6px;border-radius:7px;border:none;background:transparent;color:var(--text-muted);font-weight:800;font-size:.72rem;cursor:pointer;}
+    .pf-size-btn.active{background:var(--card);color:var(--purple-dk);box-shadow:0 1px 4px rgba(0,0,0,.08);}
     .pf-cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:8px 0 14px;}
-    .pf-prod-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;}
-    .pf-prod-card .nm{font-size:.78rem;font-weight:800;margin-top:6px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25;min-height:2.3em;}
-    .pf-prod-card .px{font-size:.9rem;font-weight:900;color:var(--purple-dk);margin-top:4px;}
-    .pf-prod-card .px-old{font-size:.68rem;color:var(--text-muted);text-decoration:line-through;}
+    .pf-prod-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;display:flex;flex-direction:column;align-items:center;}
     .pf-prod-card .img{width:100%;aspect-ratio:1;object-fit:contain;border-radius:8px;background:#fff;}
-    .pf-prod-card.out{opacity:.5;}
+    .pf-prod-info{width:100%;}
+    .pf-prod-card .nm{font-size:.78rem;font-weight:800;margin-top:6px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25;min-height:2.3em;}
+    .pf-prod-card .px-row{margin-top:4px;}
+    .pf-prod-card .px{font-size:.9rem;font-weight:900;color:var(--purple-dk);}
+    .pf-prod-card .px-old{font-size:.68rem;color:var(--text-muted);text-decoration:line-through;margin-right:5px;}
+    .pf-prod-card .rupture{font-size:.62rem;font-weight:800;color:#dc2626;margin-top:2px;}
+    .pf-prod-card.out{opacity:.55;}
+    .pf-prod-cart-ctrl{margin-top:8px;width:100%;}
+    .pf-add-btn{width:100%;padding:7px;border:none;border-radius:8px;background:var(--purple);color:#fff;font-weight:900;font-size:.8rem;cursor:pointer;}
+    .pf-qty-stepper{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--bg);border-radius:8px;padding:4px 6px;}
+    .pf-qty-stepper button{width:24px;height:24px;border:none;border-radius:6px;background:var(--purple);color:#fff;font-weight:900;font-size:.9rem;cursor:pointer;line-height:1;}
+    .pf-qty-stepper .q{font-weight:900;font-size:.84rem;min-width:18px;text-align:center;}
     .pf-prod-empty{text-align:center;padding:40px 16px;color:var(--text-muted);font-size:.84rem;}
+
+    /* Mode d'affichage compact : liste dense en une colonne, pour voir plus de produits
+       d'un coup d'œil avec moins de défilement (choix du client via le bouton ☰ Compacte). */
+    .pf-compact .pf-cat-grid{grid-template-columns:1fr;gap:6px;}
+    .pf-compact .pf-prod-card{flex-direction:row;align-items:center;text-align:left;padding:7px 9px;gap:10px;}
+    .pf-compact .pf-prod-card .img{width:38px;height:38px;flex-shrink:0;aspect-ratio:unset;}
+    .pf-compact .pf-prod-info{flex:1;min-width:0;}
+    .pf-compact .pf-prod-card .nm{margin-top:0;-webkit-line-clamp:1;min-height:0;font-size:.76rem;}
+    .pf-compact .pf-prod-card .px-row{margin-top:1px;}
+    .pf-compact .pf-prod-cart-ctrl{margin-top:0;width:auto;flex-shrink:0;}
+    .pf-compact .pf-add-btn{width:34px;height:34px;padding:0;border-radius:50%;font-size:1.1rem;}
+    .pf-compact .pf-qty-stepper{padding:3px 5px;gap:6px;}
+
+    /* ── Panier / commande WhatsApp ── */
+    #pf-cart-fab{position:fixed;right:18px;bottom:18px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple-dk));color:#fff;border:none;box-shadow:0 6px 18px rgba(124,58,237,.4);font-size:1.5rem;cursor:pointer;z-index:500;display:none;align-items:center;justify-content:center;}
+    #pf-cart-badge{position:absolute;top:-4px;right:-4px;background:#dc2626;color:#fff;font-size:.68rem;font-weight:900;border-radius:10px;min-width:20px;height:20px;display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 0 0 2px var(--bg);}
+    #pf-cart-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,10,.6);z-index:999;align-items:flex-end;justify-content:center;}
+    #pf-cart-sheet{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 -10px 40px rgba(0,0,0,.3);}
+    #pf-cart-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border);flex-shrink:0;}
+    #pf-cart-head .ttl{font-weight:900;font-size:1rem;}
+    #pf-cart-head button{background:var(--bg);border:none;color:var(--text-main);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:1rem;}
+    #pf-cart-list{overflow-y:auto;padding:10px 18px;flex:1;}
+    .pf-cart-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+    .pf-cart-row:last-child{border-bottom:none;}
+    .pf-cart-row .nm{flex:1;font-size:.84rem;font-weight:700;}
+    .pf-cart-row .sub{font-size:.68rem;color:var(--text-muted);margin-top:2px;}
+    .pf-cart-row .lp{font-weight:900;font-size:.84rem;color:var(--purple-dk);white-space:nowrap;}
+    #pf-cart-foot{padding:14px 18px 18px;border-top:1px solid var(--border);flex-shrink:0;}
+    #pf-cart-total{display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:1.05rem;margin-bottom:12px;}
+    #pf-cart-wa-btn{width:100%;padding:13px;border:none;border-radius:11px;background:#25D366;color:#fff;font-weight:800;font-size:.9rem;cursor:pointer;box-shadow:0 4px 14px rgba(37,211,102,.3);}
+    #pf-cart-wa-btn:disabled{opacity:.5;cursor:default;}
+    #pf-cart-clear{width:100%;padding:9px;border:none;background:none;color:var(--text-muted);font-weight:700;font-size:.76rem;cursor:pointer;margin-top:8px;}
+    .pf-cart-empty{text-align:center;padding:50px 16px;color:var(--text-muted);font-size:.84rem;}
 
     @media (prefers-color-scheme: dark){
         :root{--bg:#161425;--card:#201c33;--text-main:#f0eefa;--text-muted:#a79fc4;--border:#342d50;}
@@ -191,6 +235,10 @@
                     <button class="pf-mode-btn active" id="pf-mode-cat" onclick="pfCatSetMode('category')">🏷️ Catégorie</button>
                     <button class="pf-mode-btn" id="pf-mode-price" onclick="pfCatSetMode('price')">💶 Prix</button>
                 </div>
+                <div class="pf-size-toggle">
+                    <button class="pf-size-btn active" id="pf-size-large" onclick="pfCatSetSize('large')">🔲 Grande</button>
+                    <button class="pf-size-btn" id="pf-size-compact" onclick="pfCatSetSize('compact')">☰ Compacte</button>
+                </div>
                 <input id="pf-cat-search" type="text" placeholder="🔎 Rechercher un produit…" oninput="pfCatOnSearch(this.value)"
                     style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);font-size:.86rem;font-family:inherit;background:#fbfaff;">
             </div>
@@ -198,6 +246,25 @@
         </div>
 
         <button class="pf-logout" onclick="pfLogout()">Se déconnecter</button>
+    </div>
+</div>
+
+<button id="pf-cart-fab" onclick="pfCartOpen()" title="Mon panier">
+    🛒<span id="pf-cart-badge" style="display:none;">0</span>
+</button>
+
+<div id="pf-cart-overlay" onclick="pfCartClose()">
+    <div id="pf-cart-sheet" onclick="event.stopPropagation();">
+        <div id="pf-cart-head">
+            <div class="ttl">🛒 Mon panier</div>
+            <button onclick="pfCartClose()">✕</button>
+        </div>
+        <div id="pf-cart-list"></div>
+        <div id="pf-cart-foot">
+            <div id="pf-cart-total"><span>Total</span><span id="pf-cart-total-v">0.00€</span></div>
+            <button id="pf-cart-wa-btn" onclick="pfCartSendWhatsApp()">📲 Envoyer la commande via WhatsApp</button>
+            <button id="pf-cart-clear" onclick="pfCartClear()">🗑️ Vider le panier</button>
+        </div>
     </div>
 </div>
 
@@ -405,12 +472,13 @@ var PF_PRICE_BUCKETS = [
     { key: 'b3', label: '10 – 20 €', min: 10, max: 20 },
     { key: 'b4', label: '20 € et +', min: 20, max: Infinity }
 ];
-var _pfCatData = null;      // { produits, categories, updatedAt }
+var _pfCatData = null;      // { produits, categories, updatedAt, whatsapp }
 var _pfCatLoaded = false;
 var _pfCatMode = 'category';
 var _pfCatSearch = '';
 var _pfCatCollapsed = {};
 var PF_CAT_CACHE_KEY = 'covo_portal_catalogue_cache';
+var PF_SIZE_KEY = 'covo_portal_catalogue_size';
 
 function pfSwitchTab(tab) {
     var isCompte = tab === 'compte';
@@ -418,8 +486,23 @@ function pfSwitchTab(tab) {
     document.getElementById('pf-tab-produits').style.display = isCompte ? 'none' : '';
     document.getElementById('pf-nav-compte').classList.toggle('active', isCompte);
     document.getElementById('pf-nav-produits').classList.toggle('active', !isCompte);
+    document.getElementById('pf-cart-fab').style.display = isCompte ? 'none' : 'flex';
     if (!isCompte && !_pfCatLoaded) pfLoadCatalogue();
 }
+
+/* Densité d'affichage ("taille") — choix du CLIENT, mémorisé sur son appareil, pour voir plus
+   de produits à l'écran avec moins de défilement ("Compacte") ou profiter des photos ("Grande"). */
+function pfCatSetSize(size) {
+    document.body.classList.toggle('pf-compact', size === 'compact');
+    document.getElementById('pf-size-large').classList.toggle('active', size === 'large');
+    document.getElementById('pf-size-compact').classList.toggle('active', size === 'compact');
+    try { localStorage.setItem(PF_SIZE_KEY, size); } catch (e) {}
+}
+(function _pfRestoreSize() {
+    var saved = null;
+    try { saved = localStorage.getItem(PF_SIZE_KEY); } catch (e) {}
+    if (saved === 'compact') pfCatSetSize('compact');
+})();
 
 function _pfCatEsc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
@@ -493,12 +576,22 @@ function _pfCatCard(p) {
     var price = _pfCatEffPrice(p);
     var disc = p.promo || 0;
     var color = _pfCatColorFor(p.category || 'Général');
+    var qty = _pfCartQtyFor(p.id);
+    var ctrl = !p.available ? '' :
+        (qty > 0
+            ? '<div class="pf-qty-stepper"><button onclick="pfCartDec(' + p.id + ')">−</button><span class="q">' + qty + '</span><button onclick="pfCartInc(' + p.id + ')">+</button></div>'
+            : '<button class="pf-add-btn" onclick="pfCartInc(' + p.id + ')">➕</button>');
     return '<div class="pf-prod-card' + (p.available ? '' : ' out') + '" style="border-top:3px solid ' + color + ';">' +
         (p.img ? '<img class="img" src="' + _pfCatEsc(p.img) + '" loading="lazy" alt="" onerror="this.style.display=\'none\'">' : '<div class="img" style="display:flex;align-items:center;justify-content:center;font-size:1.6rem;">🛒</div>') +
-        '<div class="nm">' + _pfCatEsc(p.name) + '</div>' +
-        (disc > 0 ? '<div class="px-old">' + p.price.toFixed(2) + '€</div>' : '') +
-        '<div class="px">' + _pfCatFmtPrice(p, price) + '</div>' +
-        (p.available ? '' : '<div style="font-size:.62rem;font-weight:800;color:#dc2626;margin-top:2px;">Rupture</div>') +
+        '<div class="pf-prod-info">' +
+            '<div class="nm">' + _pfCatEsc(p.name) + '</div>' +
+            '<div class="px-row">' +
+                (disc > 0 ? '<span class="px-old">' + p.price.toFixed(2) + '€</span>' : '') +
+                '<span class="px">' + _pfCatFmtPrice(p, price) + '</span>' +
+            '</div>' +
+            (p.available ? '' : '<div class="rupture">Rupture</div>') +
+        '</div>' +
+        '<div class="pf-prod-cart-ctrl">' + ctrl + '</div>' +
         '</div>';
 }
 function _pfCatGroup(key, label, color, items) {
@@ -543,6 +636,125 @@ function _pfRenderCatalogue() {
     }
     host.innerHTML = html;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   PANIER & COMMANDE WHATSAPP — le client compose sa commande depuis le
+   catalogue, puis l'envoie en un tap dans SON PROPRE WhatsApp (message
+   pré-rempli) vers le numéro du commerce configuré dans Fidélité Pro
+   (⚙️ Points → Numéro WhatsApp pour les commandes). Pas de paiement ni
+   de validation automatique : c'est un message, le commerce répond
+   comme pour une commande reçue par téléphone.
+   ═══════════════════════════════════════════════════════════════════ */
+var PF_CART_KEY = 'covo_portal_cart';
+var _pfCart = {};   // { productId: qty }
+(function _pfLoadCart() {
+    try { _pfCart = JSON.parse(localStorage.getItem(PF_CART_KEY) || '{}') || {}; } catch (e) { _pfCart = {}; }
+})();
+function _pfSaveCart() {
+    try { localStorage.setItem(PF_CART_KEY, JSON.stringify(_pfCart)); } catch (e) {}
+    _pfCartUpdateBadge();
+}
+function _pfCartUpdateBadge() {
+    var badge = document.getElementById('pf-cart-badge');
+    if (!badge) return;
+    var total = Object.keys(_pfCart).reduce(function(s, k) { return s + (_pfCart[k] || 0); }, 0);
+    badge.textContent = total;
+    badge.style.display = total > 0 ? 'flex' : 'none';
+}
+function pfCartQtyFor(id) { return _pfCart[id] || 0; }
+function _pfCartQtyFor(id) { return pfCartQtyFor(id); }
+function _pfCatProductById(id) {
+    var list = (_pfCatData && _pfCatData.produits) || [];
+    for (var i = 0; i < list.length; i++) if (list[i].id == id) return list[i];
+    return null;
+}
+function pfCartInc(id) {
+    var p = _pfCatProductById(id);
+    if (!p || !p.available) return;
+    _pfCart[id] = (_pfCart[id] || 0) + 1;
+    _pfSaveCart();
+    _pfRenderCatalogue();
+    if (document.getElementById('pf-cart-overlay').style.display === 'flex') pfCartRender();
+}
+function pfCartDec(id) {
+    if (!_pfCart[id]) return;
+    _pfCart[id]--;
+    if (_pfCart[id] <= 0) delete _pfCart[id];
+    _pfSaveCart();
+    _pfRenderCatalogue();
+    if (document.getElementById('pf-cart-overlay').style.display === 'flex') pfCartRender();
+}
+function pfCartClear() {
+    _pfCart = {};
+    _pfSaveCart();
+    _pfRenderCatalogue();
+    pfCartRender();
+}
+function pfCartOpen() {
+    document.getElementById('pf-cart-overlay').style.display = 'flex';
+    pfCartRender();
+}
+function pfCartClose() {
+    document.getElementById('pf-cart-overlay').style.display = 'none';
+}
+function _pfCartLines() {
+    var lines = [];
+    Object.keys(_pfCart).forEach(function(id) {
+        var qty = _pfCart[id];
+        if (!qty) return;
+        var p = _pfCatProductById(id);
+        if (!p) return; // produit retiré du catalogue depuis l'ajout au panier
+        var unitPrice = _pfCatEffPrice(p);
+        lines.push({ p: p, qty: qty, unitPrice: unitPrice, lineTotal: unitPrice * qty });
+    });
+    return lines;
+}
+function pfCartRender() {
+    var listEl = document.getElementById('pf-cart-list');
+    var totalEl = document.getElementById('pf-cart-total-v');
+    var waBtn = document.getElementById('pf-cart-wa-btn');
+    var lines = _pfCartLines();
+    if (!lines.length) {
+        listEl.innerHTML = '<div class="pf-cart-empty">🛒 Votre panier est vide.<br>Ajoutez des produits depuis le catalogue.</div>';
+        totalEl.textContent = '0.00€';
+        waBtn.disabled = true;
+        return;
+    }
+    var total = 0;
+    listEl.innerHTML = lines.map(function(l) {
+        total += l.lineTotal;
+        var unitLbl = l.p.unitType === 'kg' ? (l.unitPrice.toFixed(2) + '€/kg') : (l.unitPrice.toFixed(2) + '€/u');
+        return '<div class="pf-cart-row">' +
+            '<div style="flex:1;min-width:0;">' +
+                '<div class="nm">' + _pfCatEsc(l.p.name) + '</div>' +
+                '<div class="sub">' + l.qty + ' × ' + unitLbl + '</div>' +
+            '</div>' +
+            '<div class="pf-qty-stepper"><button onclick="pfCartDec(' + l.p.id + ')">−</button><span class="q">' + l.qty + '</span><button onclick="pfCartInc(' + l.p.id + ')">+</button></div>' +
+            '<div class="lp">' + l.lineTotal.toFixed(2) + '€</div>' +
+        '</div>';
+    }).join('');
+    totalEl.textContent = total.toFixed(2) + '€';
+    waBtn.disabled = false;
+}
+function pfCartSendWhatsApp() {
+    var lines = _pfCartLines();
+    if (!lines.length) return;
+    var waNum = (_pfCatData && _pfCatData.whatsapp) || '';
+    if (!waNum) {
+        alert('⚠️ Le commerce n\'a pas encore configuré de numéro WhatsApp pour les commandes. Contactez-le directement pour passer votre commande.');
+        return;
+    }
+    var total = 0;
+    var body = 'Bonjour, je souhaite commander :\n\n';
+    lines.forEach(function(l) {
+        total += l.lineTotal;
+        body += '• ' + l.qty + 'x ' + l.p.name + ' — ' + l.lineTotal.toFixed(2) + '€\n';
+    });
+    body += '\nTotal : ' + total.toFixed(2) + '€\n\nMerci !';
+    if (window._pfCurrentName) body += '\n— ' + window._pfCurrentName;
+    window.open('https://wa.me/' + waNum + '?text=' + encodeURIComponent(body), '_blank');
+}
+_pfCartUpdateBadge();
 
 
 function _pfLoadClientData(uid){
