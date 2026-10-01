@@ -426,6 +426,9 @@ function _pfRenderDash(data){
 
     window._pfCurrentBarcode = data.barcode || null;
     window._pfCurrentName = data.name || null;
+    window._pfCatalogAccess = !!data.catalogAccess;
+    var navProduits = document.getElementById('pf-nav-produits');
+    if (navProduits) navProduits.style.display = window._pfCatalogAccess ? '' : 'none';
     document.getElementById('pf-barcode-code').textContent = data.barcode || '—';
     if (data.barcode && window.JsBarcode){
         try {
@@ -439,6 +442,7 @@ function _pfRenderDash(data){
 
 window._pfCurrentBarcode = null;
 window._pfCurrentName = null;
+window._pfCatalogAccess = false; // autorisation d'accès au catalogue, lue depuis la fiche client (opt-in, définie par le commerce dans Fidélité Pro)
 function pfShowCard(){
     var code = window._pfCurrentBarcode;
     if (!code || !window.JsBarcode) return;
@@ -481,6 +485,7 @@ var PF_CAT_CACHE_KEY = 'covo_portal_catalogue_cache';
 var PF_SIZE_KEY = 'covo_portal_catalogue_size';
 
 function pfSwitchTab(tab) {
+    if (tab === 'produits' && !window._pfCatalogAccess) tab = 'compte'; // accès catalogue non autorisé pour ce client
     var isCompte = tab === 'compte';
     document.getElementById('pf-tab-compte').style.display = isCompte ? '' : 'none';
     document.getElementById('pf-tab-produits').style.display = isCompte ? 'none' : '';
