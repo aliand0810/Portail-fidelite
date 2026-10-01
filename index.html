@@ -773,6 +773,7 @@ function pfCartSendWhatsApp() {
     });
     body += '\nTotal : ' + total.toFixed(2) + '€\n\nMerci !';
     if (window._pfCurrentName) body += '\n— ' + window._pfCurrentName;
+    if (window._pfCurrentBarcode) body += '\n🎫 N° fidélité : ' + window._pfCurrentBarcode;
     window.open('https://wa.me/' + waNum + '?text=' + encodeURIComponent(body), '_blank');
 }
 _pfCartUpdateBadge();
