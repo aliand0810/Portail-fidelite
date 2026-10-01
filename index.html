@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Mon espace fidélité — COVO</title>
+<meta name="description" content="Consultez vos points, votre solde et vos avantages de carte fidélité COVO.">
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<style>
+    :root{
+        --bg:#f4f1fb; --card:#ffffff; --text-main:#1a1a2e; --text-muted:#6b6b85;
+        --border:#e4e0f5; --purple:#7c3aed; --purple-dk:#5b21b6;
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text-main);min-height:100vh;}
+    .pf-wrap{max-width:480px;margin:0 auto;padding:18px 16px 60px;min-height:100vh;}
+    .pf-header{display:flex;align-items:center;gap:10px;padding:10px 2px 22px;}
+    .pf-header .ico{font-size:1.6rem;}
+    .pf-header .ttl{font-weight:900;font-size:1.05rem;}
+    .pf-header .sub{font-size:.72rem;color:var(--text-muted);}
+    .pf-card{background:var(--card);border-radius:16px;padding:22px 20px;box-shadow:0 4px 20px rgba(124,58,237,.08);border:1px solid var(--border);}
+    .pf-field{margin-bottom:14px;}
+    .pf-field label{display:block;font-size:.76rem;font-weight:800;color:var(--text-muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em;}
+    .pf-field input{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--border);font-size:.95rem;font-family:inherit;background:#fbfaff;}
+    .pf-field input:focus{outline:none;border-color:var(--purple);}
+    .pf-btn{width:100%;padding:13px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--purple),var(--purple-dk));color:#fff;font-weight:800;font-size:.92rem;cursor:pointer;box-shadow:0 4px 14px rgba(124,58,237,.3);}
+    .pf-btn:active{filter:brightness(.95);}
+    .pf-btn:disabled{opacity:.55;cursor:default;}
+    .pf-err{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;border-radius:10px;padding:10px 12px;font-size:.8rem;font-weight:700;margin-bottom:14px;display:none;}
+    .pf-info{font-size:.72rem;color:var(--text-muted);text-align:center;margin-top:16px;line-height:1.5;}
+    .pf-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#6d28d9);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;color:#fff;flex-shrink:0;box-shadow:0 4px 12px rgba(124,58,237,.3);}
+    .pf-name{font-weight:900;font-size:1.15rem;}
+    .pf-tier{display:inline-block;margin-top:4px;padding:3px 11px;border-radius:20px;font-weight:900;font-size:.72rem;}
+    .pf-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;}
+    .pf-tile{background:#fbfaff;border:1px solid var(--border);border-radius:12px;padding:14px 12px;text-align:center;}
+    .pf-tile .v{font-size:1.3rem;font-weight:900;}
+    .pf-tile .l{font-size:.68rem;color:var(--text-muted);font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.02em;}
+    .pf-section{margin-top:22px;}
+    .pf-section h3{font-size:.84rem;font-weight:900;margin:0 0 10px;display:flex;align-items:center;gap:6px;}
+    .pf-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#fbfaff;border:1px solid var(--border);border-radius:10px;margin-bottom:7px;font-size:.82rem;}
+    .pf-row .amt{font-weight:900;}
+    .pf-empty{font-size:.78rem;color:var(--text-muted);text-align:center;padding:14px;}
+    .pf-barcode-box{text-align:center;margin-top:20px;padding:16px;background:#fbfaff;border:1.5px dashed var(--border);border-radius:12px;}
+    .pf-barcode-box svg{width:100%;max-width:280px;height:auto;}
+    .pf-barcode-code{font-family:monospace;font-weight:800;font-size:.8rem;color:var(--purple-dk);margin-top:4px;}
+    .pf-logout{margin-top:22px;width:100%;padding:11px;border:1.5px solid var(--border);background:none;border-radius:10px;color:var(--text-muted);font-weight:800;font-size:.82rem;cursor:pointer;}
+    .pf-loading{text-align:center;padding:60px 10px;color:var(--text-muted);}
+    .pf-spin{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--purple);border-radius:50%;margin:0 auto 14px;animation:pfspin .8s linear infinite;}
+    @keyframes pfspin{to{transform:rotate(360deg);}}
+    @media (prefers-color-scheme: dark){
+        :root{--bg:#161425;--card:#201c33;--text-main:#f0eefa;--text-muted:#a79fc4;--border:#342d50;}
+        .pf-field input{background:#171428;color:var(--text-main);}
+        .pf-tile,.pf-row,.pf-barcode-box{background:#171428;}
+        .pf-barcode-box svg{filter:invert(1) hue-rotate(180deg);}
+    }
+</style>
+</head>
+<body>
+<div class="pf-wrap">
+    <div class="pf-header">
+        <div class="ico">🎁</div>
+        <div><div class="ttl">Mon espace fidélité</div><div class="sub">COVO</div></div>
+    </div>
+
+    <div id="pf-loading" class="pf-card pf-loading">
+        <div class="pf-spin"></div>
+        <div>Chargement…</div>
+    </div>
+
+    <div id="pf-login" class="pf-card" style="display:none;">
+        <div class="pf-err" id="pf-login-err"></div>
+        <div class="pf-field">
+            <label>Code client</label>
+            <input type="text" id="pf-code" placeholder="Ex. LCLT0001234567" autocomplete="username" autocapitalize="characters">
+        </div>
+        <div class="pf-field">
+            <label>Mot de passe</label>
+            <input type="password" id="pf-pass" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button class="pf-btn" id="pf-login-btn" onclick="pfLogin()">Se connecter</button>
+        <div class="pf-info">Le code client et le mot de passe vous ont été envoyés par WhatsApp lors de la création de votre carte fidélité.</div>
+    </div>
+
+    <div id="pf-notconfigured" class="pf-card" style="display:none;">
+        <div style="font-size:.85rem;line-height:1.6;color:var(--text-muted);">
+            ⚠️ Cet espace client n'est pas encore configuré.<br>Merci de contacter le commerce.
+        </div>
+    </div>
+
+    <div id="pf-dash" style="display:none;">
+        <div class="pf-card">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <div class="pf-avatar" id="pf-ini">—</div>
+                <div>
+                    <div class="pf-name" id="pf-name">—</div>
+                    <div class="pf-tier" id="pf-tier">—</div>
+                </div>
+            </div>
+            <div class="pf-tiles">
+                <div class="pf-tile"><div class="v" id="pf-points" style="color:#7c3aed;">0</div><div class="l">⭐ Points</div></div>
+                <div class="pf-tile"><div class="v" id="pf-credit" style="color:#059669;">0€</div><div class="l">📒 Solde dû</div></div>
+                <div class="pf-tile"><div class="v" id="pf-spent" style="color:#0f766e;">0€</div><div class="l">💰 Dépensé</div></div>
+                <div class="pf-tile"><div class="v" id="pf-updated" style="font-size:.78rem;">—</div><div class="l">🔄 Mis à jour</div></div>
+            </div>
+
+            <div class="pf-section" id="pf-ech-section">
+                <h3>📅 Échéances en cours</h3>
+                <div id="pf-ech-list"></div>
+            </div>
+
+            <div class="pf-section">
+                <h3>🧾 Dernières opérations</h3>
+                <div id="pf-hist-list"></div>
+            </div>
+
+            <div class="pf-barcode-box">
+                <svg id="pf-barcode-svg"></svg>
+                <div class="pf-barcode-code" id="pf-barcode-code">—</div>
+            </div>
+        </div>
+        <button class="pf-logout" onclick="pfLogout()">Se déconnecter</button>
+    </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   CONFIGURATION — à renseigner avec le MÊME projet Firebase que celui
+   utilisé dans fidelite_pro.html (voir GUIDE_PORTAIL_FIDELITE.md).
+   ═══════════════════════════════════════════════════════════════════ */
+var FB_CONFIG = {
+ apiKey: "AIza...",
+  authDomain: "covo-pro-fidelite.firebaseapp.com",
+  projectId: "covo-pro-fidelite",
+  storageBucket: "covo-pro-fidelite.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef"
+};
+var FB_PORTAL_EMAIL_DOMAIN = "covopro-portal.local";
+
+var _pfConfigured = !!(FB_CONFIG.apiKey && FB_CONFIG.apiKey.indexOf('REMPLACER') !== 0);
+var _pfApp = null, _pfAuth = null, _pfDb = null;
+
+function _pfShow(id){
+    ['pf-loading','pf-login','pf-dash','pf-notconfigured'].forEach(function(k){
+        document.getElementById(k).style.display = (k===id) ? '' : 'none';
+    });
+}
+
+function _pfIni(name){
+    name = (name||'').trim();
+    if (!name) return '?';
+    var parts = name.split(/\s+/);
+    return ((parts[0]||'')[0]||'') .toUpperCase() + ((parts[1]||'')[0]||'').toUpperCase();
+}
+function _pfEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+function _pfFmtDate(iso){
+    if (!iso) return '—';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'});
+}
+function _pfTierColors(t){
+    var M = {
+        'Platine': {c:'#6d28d9', bg:'rgba(109,40,217,.13)', ico:'💎'},
+        'Or':      {c:'#b8860b', bg:'rgba(217,160,11,.15)', ico:'🥇'},
+        'Argent':  {c:'#64748b', bg:'rgba(100,116,139,.15)', ico:'🥈'},
+        'Bronze':  {c:'#b45309', bg:'rgba(180,83,9,.13)',    ico:'🥉'}
+    };
+    return M[t] || M['Bronze'];
+}
+
+function pfLogin(){
+    var codeRaw = (document.getElementById('pf-code').value||'').trim();
+    var pass = document.getElementById('pf-pass').value||'';
+    var errEl = document.getElementById('pf-login-err');
+    errEl.style.display = 'none';
+    if (!codeRaw || !pass){ errEl.textContent = '⚠️ Merci de renseigner votre code client et votre mot de passe.'; errEl.style.display=''; return; }
+    var email = codeRaw.toLowerCase() + '@' + FB_PORTAL_EMAIL_DOMAIN;
+    var btn = document.getElementById('pf-login-btn');
+    btn.disabled = true; btn.textContent = 'Connexion…';
+    _pfAuth.signInWithEmailAndPassword(email, pass).catch(function(err){
+        btn.disabled = false; btn.textContent = 'Se connecter';
+        var msg = '❌ Code client ou mot de passe incorrect.';
+        if (err && (err.code === 'auth/too-many-requests')) msg = '⚠️ Trop de tentatives — réessayez dans quelques minutes.';
+        if (err && (err.code === 'auth/network-request-failed')) msg = '⚠️ Problème de connexion internet.';
+        errEl.textContent = msg; errEl.style.display = '';
+    });
+}
+
+function pfLogout(){
+    _pfAuth.signOut();
+}
+
+function _pfRenderDash(data){
+    var t = _pfTierColors(data.tier);
+    document.getElementById('pf-ini').textContent = _pfIni(data.name);
+    document.getElementById('pf-name').textContent = data.name || 'Client';
+    var tierEl = document.getElementById('pf-tier');
+    tierEl.textContent = t.ico + ' ' + (data.tier||'Bronze');
+    tierEl.style.background = t.bg; tierEl.style.color = t.c;
+    document.getElementById('pf-points').textContent = data.points||0;
+    document.getElementById('pf-credit').textContent = (data.credit||0).toFixed(2)+'€';
+    document.getElementById('pf-credit').style.color = (data.credit>0) ? '#dc2626' : '#059669';
+    document.getElementById('pf-spent').textContent = (data.totalSpent||0).toFixed(0)+'€';
+    document.getElementById('pf-updated').textContent = data.updatedAt ? _pfFmtDate(data.updatedAt) : '—';
+
+    var echSection = document.getElementById('pf-ech-section');
+    var echList = document.getElementById('pf-ech-list');
+    var ech = data.echeances||[];
+    if (!ech.length){
+        echSection.style.display = 'none';
+    } else {
+        echSection.style.display = '';
+        echList.innerHTML = ech.map(function(e){
+            return '<div class="pf-row"><span>'+_pfFmtDate(e.due)+'</span><span class="amt" style="color:#b45309;">'+(+(e.amount||0)).toFixed(2)+'€</span></div>';
+        }).join('');
+    }
+
+    var histList = document.getElementById('pf-hist-list');
+    var hist = (data.history||[]).slice(0,15);
+    if (!hist.length){
+        histList.innerHTML = '<div class="pf-empty">Aucune opération pour le moment</div>';
+    } else {
+        histList.innerHTML = hist.map(function(h){
+            var amtTxt = h.points ? ('+'+h.points+' pts') : (h.amount ? (+h.amount).toFixed(2)+'€' : '');
+            return '<div class="pf-row"><span>'+_pfEsc(h.label||'Opération')+'<br><span style="font-size:.68rem;color:var(--text-muted);">'+_pfFmtDate(h.date)+'</span></span><span class="amt">'+_pfEsc(amtTxt)+'</span></div>';
+        }).join('');
+    }
+
+    document.getElementById('pf-barcode-code').textContent = data.barcode || '—';
+    if (data.barcode && window.JsBarcode){
+        try {
+            JsBarcode('#pf-barcode-svg', data.barcode, { format:'CODE128', displayValue:false, height:60, margin:4 });
+        } catch(e) { console.warn('Barcode render failed', e); }
+    }
+
+    _pfShow('pf-dash');
+}
+
+function _pfLoadClientData(uid){
+    _pfDb.collection('clients').doc(uid).get().then(function(doc){
+        if (!doc.exists){
+            document.getElementById('pf-login-err').textContent = '⚠️ Aucune donnée trouvée pour ce compte — contactez le commerce.';
+            document.getElementById('pf-login-err').style.display = '';
+            _pfShow('pf-login');
+            return;
+        }
+        _pfRenderDash(doc.data());
+    }).catch(function(err){
+        console.error('[Portail] Échec lecture des données', err);
+        document.getElementById('pf-login-err').textContent = '⚠️ Impossible de charger vos données — réessayez plus tard.';
+        document.getElementById('pf-login-err').style.display = '';
+        _pfShow('pf-login');
+    });
+}
+
+(function pfInit(){
+    if (!_pfConfigured || !window.firebase){
+        _pfShow('pf-notconfigured');
+        return;
+    }
+    try {
+        _pfApp = firebase.initializeApp(FB_CONFIG);
+        _pfAuth = _pfApp.auth();
+        _pfDb = _pfApp.firestore();
+    } catch(e){
+        console.error('[Portail] Firebase init échouée', e);
+        _pfShow('pf-notconfigured');
+        return;
+    }
+    _pfShow('pf-loading');
+    _pfAuth.onAuthStateChanged(function(user){
+        var btn = document.getElementById('pf-login-btn');
+        if (btn){ btn.disabled = false; btn.textContent = 'Se connecter'; }
+        if (user){
+            _pfShow('pf-loading');
+            _pfLoadClientData(user.uid);
+        } else {
+            _pfShow('pf-login');
+        }
+    });
+})();
+</script>
+</body>
+</html>
