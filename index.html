@@ -140,6 +140,51 @@
     .pf-op-items{font-size:.74rem;margin:-4px 0 10px;padding:6px 10px;border:1px dashed var(--border);border-radius:10px;}
     .pf-op-items > div{display:flex;justify-content:space-between;gap:8px;padding:2px 0;}
 
+
+    /* ── Paiement par carte (lien SumUp à montant libre) ── */
+    #pf-cart-card:empty{display:none;}
+    #pf-cart-card{margin-bottom:10px;}
+    .pf-cardpay-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;padding:13px;border:none;border-radius:11px;background:linear-gradient(135deg,#111827,#1f2937);color:#fff;font-family:inherit;font-weight:800;font-size:.9rem;cursor:pointer;box-shadow:0 6px 16px rgba(17,24,39,.3);animation:pfPop .4s cubic-bezier(.3,1.6,.5,1);}
+    .pf-cardpay-btn .cards{display:flex;gap:3px;}
+    .pf-cardpay-btn .cards i{width:22px;height:15px;border-radius:3px;background:linear-gradient(135deg,#fbbf24,#f59e0b);}
+    .pf-cardpay-btn .cards i + i{background:linear-gradient(135deg,#60a5fa,#2563eb);}
+    .pf-cardpay-goal{padding:10px 12px;border-radius:11px;background:var(--bg);font-size:.74rem;font-weight:700;color:var(--text-muted);}
+    .pf-cardpay-goal b{color:var(--text-main);}
+    .pf-cardpay-bar{height:6px;border-radius:6px;background:var(--border);margin-top:7px;overflow:hidden;}
+    .pf-cardpay-bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--purple),#2563eb);transition:width .45s cubic-bezier(.2,.8,.2,1);}
+    #pf-pay-overlay{display:none;position:fixed;inset:0;z-index:1001;background:rgba(10,10,20,.6);align-items:flex-end;justify-content:center;animation:pfOverlayIn .25s ease;}
+    #pf-pay-sheet{width:100%;max-width:480px;max-height:92vh;overflow-y:auto;background:var(--card);border-radius:22px 22px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.3);animation:pfSheetUp .4s cubic-bezier(.2,.9,.25,1);padding-bottom:env(safe-area-inset-bottom);}
+    #pf-pay-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid var(--border);}
+    #pf-pay-head .k{font-weight:900;font-size:1.02rem;}
+    #pf-pay-head .t{font-size:.7rem;color:var(--text-muted);font-weight:700;margin-top:2px;}
+    #pf-pay-head button{width:32px;height:32px;border:none;border-radius:9px;background:var(--bg);color:var(--text-main);cursor:pointer;}
+    #pf-pay-body{padding:14px 18px 20px;}
+    .pf-pay-amount{text-align:center;padding:14px;border-radius:16px;background:linear-gradient(135deg,#111827,#1c55a0);color:#fff;margin-bottom:14px;}
+    .pf-pay-amount .l{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;opacity:.75;}
+    .pf-pay-amount .v{font-size:2rem;font-weight:900;letter-spacing:-.01em;margin-top:2px;}
+    .pf-pay-step{display:flex;gap:11px;padding:11px 0;border-bottom:1px dashed var(--border);}
+    .pf-pay-step:last-of-type{border-bottom:none;}
+    .pf-pay-n{width:26px;height:26px;flex-shrink:0;border-radius:50%;background:var(--purple);color:#fff;font-weight:900;font-size:.78rem;display:flex;align-items:center;justify-content:center;}
+    .pf-pay-step.done .pf-pay-n{background:#059669;}
+    .pf-pay-tx{flex:1;min-width:0;}
+    .pf-pay-tx .h{font-weight:800;font-size:.84rem;}
+    .pf-pay-tx .d{font-size:.72rem;color:var(--text-muted);margin-top:2px;line-height:1.4;}
+    .pf-pay-copy{display:flex;align-items:center;gap:8px;margin-top:7px;padding:8px 8px 8px 11px;border:1.5px solid var(--border);border-radius:11px;background:var(--bg);}
+    .pf-pay-copy code{flex:1;min-width:0;font-family:ui-monospace,Menlo,monospace;font-size:.8rem;font-weight:800;overflow-wrap:anywhere;}
+    .pf-pay-copy button{flex-shrink:0;padding:7px 11px;border:none;border-radius:8px;background:var(--purple);color:#fff;font-family:inherit;font-weight:800;font-size:.72rem;cursor:pointer;transition:background .2s,transform .15s;}
+    .pf-pay-copy button:active{transform:scale(.94);}
+    .pf-pay-copy button.ok{background:#059669;}
+    .pf-pay-go{width:100%;margin-top:14px;padding:14px;border:none;border-radius:13px;background:linear-gradient(135deg,#111827,#1f2937);color:#fff;font-family:inherit;font-weight:900;font-size:.92rem;cursor:pointer;box-shadow:0 8px 20px rgba(17,24,39,.3);}
+    .pf-pay-done{width:100%;margin-top:9px;padding:12px;border:none;border-radius:13px;background:#25D366;color:#fff;font-family:inherit;font-weight:800;font-size:.86rem;cursor:pointer;}
+    .pf-pay-done:disabled{opacity:.45;cursor:default;}
+    .pf-pay-safe{font-size:.66rem;color:var(--text-muted);text-align:center;margin-top:10px;line-height:1.4;}
+    #pf-toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));z-index:1300;max-width:min(92vw,420px);padding:11px 16px;border-radius:14px;background:#111827;color:#fff;font-size:.8rem;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;transform:translate(-50%,-24px) scale(.96);pointer-events:none;transition:opacity .3s,transform .35s cubic-bezier(.3,1.4,.5,1);}
+    #pf-toast.on{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto;cursor:pointer;}
+    @media (orientation:landscape){
+        #pf-pay-overlay{align-items:center;padding:12px;}
+        #pf-pay-sheet{max-width:560px;border-radius:20px;max-height:calc(100dvh - 24px);animation-name:pfZoomIn;}
+    }
+
     /* ── Onglet "Produits" : navigation du tableau de bord + catalogue client ── */
     .pf-nav{display:flex;gap:8px;margin-bottom:14px;}
     .pf-nav-btn{flex:1;padding:10px 8px;border-radius:11px;border:1.5px solid var(--border);background:var(--card);color:var(--text-muted);font-weight:800;font-size:.8rem;cursor:pointer;transition:background .25s,color .25s,box-shadow .25s,transform .15s;}
@@ -609,6 +654,7 @@
         <div id="pf-cart-list"></div>
         <div id="pf-cart-foot">
             <div id="pf-cart-total"><span>Total</span><span id="pf-cart-total-v">0.00€</span></div>
+            <div id="pf-cart-card"></div>
             <button id="pf-cart-wa-btn" onclick="pfCartSendWhatsApp()">📲 Envoyer la commande via WhatsApp</button>
             <button id="pf-cart-clear" onclick="pfCartClear()">🗑️ Vider le panier</button>
         </div>
@@ -622,6 +668,17 @@
         <div id="pf-prod-content"></div>
     </div>
 </div>
+
+<div id="pf-pay-overlay" onclick="pfPayClose()">
+    <div id="pf-pay-sheet" onclick="event.stopPropagation();" role="dialog" aria-modal="true" aria-label="Paiement par carte">
+        <div id="pf-pay-head">
+            <div><div class="k">💳 Paiement par carte</div><div class="t">Sécurisé par SumUp</div></div>
+            <button onclick="pfPayClose()" aria-label="Fermer">✕</button>
+        </div>
+        <div id="pf-pay-body"></div>
+    </div>
+</div>
+<div id="pf-toast" role="status" aria-live="polite"></div>
 
 <div id="pf-card-overlay" onclick="pfHideCard()">
     <div id="pf-card-inner" onclick="event.stopPropagation();">
@@ -1524,6 +1581,8 @@ function pfProdClose() {
 })();
 document.addEventListener('keydown', function(e) {
     if (e.key !== 'Escape') return;
+    var po = document.getElementById('pf-pay-overlay');
+    if (po && po.style.display === 'flex') { pfPayClose(); return; }
     var ov = document.getElementById('pf-prod-overlay');
     if (ov && ov.style.display === 'flex') pfProdClose();
     else if (document.getElementById('pf-cart-overlay').style.display === 'flex') pfCartClose();
@@ -1598,9 +1657,11 @@ function pfCartInc(id, ev) {
         var im = media && media.querySelector('img.ld');
         flyImg = im ? im.src : null;
     }
+    var totalBefore = _pfCartTotal();
     _pfCart[id] = (_pfCart[id] || 0) + 1;
     _pfSaveCart();
     _pfCatRefreshCtrl(id);
+    _pfCardThresholdCheck(totalBefore);
     if (navigator.vibrate) try { navigator.vibrate(12); } catch (e) {}
     if (flyRect && !inSheet) _pfCatFlyFrom(flyRect, flyImg); else _pfFabBump();
     if (document.getElementById('pf-cart-overlay').style.display === 'flex') pfCartRender();
@@ -1647,6 +1708,7 @@ function pfCartRender() {
         listEl.innerHTML = '<div class="pf-cart-empty">🛒 Votre panier est vide.<br>Ajoutez des produits depuis le catalogue.</div>';
         totalEl.textContent = '0.00€';
         waBtn.disabled = true;
+        _pfCardBoxUpdate();
         return;
     }
     var total = 0;
@@ -1664,7 +1726,116 @@ function pfCartRender() {
     }).join('');
     totalEl.textContent = total.toFixed(2) + '€';
     waBtn.disabled = false;
+    _pfCardBoxUpdate();
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   PAIEMENT PAR CARTE — lien SumUp du commerce (montant libre, saisi par le
+   client). SumUp ne permet pas de pré-remplir le montant ni la note par
+   l'adresse du lien : on prépare donc le montant et le commentaire (n° de
+   commande + n° de carte fidélité) à copier-coller, puis on ouvre la page.
+   Seuil et lien réglables : _pfCatData.cardMin / _pfCatData.sumupLink
+   (sinon valeurs ci-dessous).
+   ═══════════════════════════════════════════════════════════════════ */
+var PF_SUMUP_LINK = 'https://pay.sumup.com/b2c/QZ1UKG4L';
+var PF_CARD_MIN = 15;              // € — paiement par carte proposé à partir de ce total
+var _pfPay = { ref: null, sig: null, paid: false };
+function _pfCardMin() { var v = _pfCatData && +_pfCatData.cardMin; return v > 0 ? v : PF_CARD_MIN; }
+function _pfSumupLink() { return (_pfCatData && _pfCatData.sumupLink) || PF_SUMUP_LINK; }
+function _pfCartTotal() { return _pfCartLines().reduce(function(s, l) { return s + l.lineTotal; }, 0); }
+function _pfMoneyFr(v) { return v.toFixed(2).replace('.', ','); }
+function _pfOrderRef() {
+    var sig = JSON.stringify(_pfCart);
+    if (_pfPay.ref && _pfPay.sig === sig) return _pfPay.ref;
+    var d = new Date(), p = function(n) { return (n < 10 ? '0' : '') + n; };
+    var card = String(window._pfCurrentBarcode || '').replace(/\D/g, '').slice(-4) || 'XXXX';
+    _pfPay = { ref: 'CMD-' + p(d.getDate()) + p(d.getMonth() + 1) + '-' + p(d.getHours()) + p(d.getMinutes()) + '-' + card, sig: sig, paid: false };
+    return _pfPay.ref;
+}
+function _pfPayNote() {
+    var n = 'Commande ' + _pfOrderRef();
+    if (window._pfCurrentBarcode) n += ' - Carte fidelite ' + window._pfCurrentBarcode;
+    return n;
+}
+function _pfCopy(text, btn) {
+    var done = function() {
+        if (!btn) return;
+        var old = btn.getAttribute('data-l') || btn.textContent;
+        btn.setAttribute('data-l', old);
+        btn.textContent = '✓ Copié'; btn.classList.add('ok');
+        setTimeout(function() { btn.textContent = old; btn.classList.remove('ok'); }, 1600);
+    };
+    var fallback = function() {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        ta.remove(); done();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+}
+var _pfToastT = null;
+function pfToast(msg, onTap) {
+    var t = document.getElementById('pf-toast');
+    if (!t) return;
+    t.innerHTML = msg;
+    t.onclick = function() { t.classList.remove('on'); if (onTap) onTap(); };
+    t.classList.add('on');
+    clearTimeout(_pfToastT);
+    _pfToastT = setTimeout(function() { t.classList.remove('on'); }, 4500);
+}
+function _pfCardThresholdCheck(before) {
+    var min = _pfCardMin(), after = _pfCartTotal();
+    if (before < min && after >= min) pfToast('💳 Votre panier atteint ' + _pfMoneyFr(after) + '€ : vous pouvez payer par carte ! <u>Payer</u>', function() { pfCartOpen(); });
+}
+function _pfCardBoxUpdate() {
+    var box = document.getElementById('pf-cart-card');
+    if (!box) return;
+    var total = _pfCartTotal(), min = _pfCardMin();
+    if (total <= 0) { box.innerHTML = ''; return; }
+    if (total >= min) {
+        box.innerHTML = '<button class="pf-cardpay-btn" onclick="pfPayOpen()"><span class="cards"><i></i><i></i></span>Payer ' + _pfMoneyFr(total) + '€ par carte</button>';
+    } else {
+        var pct = Math.max(4, Math.min(100, total / min * 100));
+        box.innerHTML = '<div class="pf-cardpay-goal">💳 Paiement par carte dès <b>' + _pfMoneyFr(min) + '€</b> — encore <b>' + _pfMoneyFr(min - total) + '€</b>' +
+            '<div class="pf-cardpay-bar"><i style="width:' + pct + '%;"></i></div></div>';
+    }
+}
+function pfPayOpen() {
+    var total = _pfCartTotal();
+    if (total < _pfCardMin()) return;
+    var amt = _pfMoneyFr(total), note = _pfPayNote(), ref = _pfOrderRef();
+    document.getElementById('pf-pay-body').innerHTML =
+        '<div class="pf-pay-amount"><div class="l">Montant à payer · ' + _pfCatEsc(ref) + '</div><div class="v">' + amt + ' €</div></div>' +
+        '<div class="pf-pay-step" id="pf-pay-s1"><span class="pf-pay-n">1</span><div class="pf-pay-tx"><div class="h">Saisissez ce montant sur SumUp</div>' +
+            '<div class="d">Il est copié automatiquement à l\'ouverture : appuyez longuement dans le champ « Saisir un montant » puis « Coller ».</div>' +
+            '<div class="pf-pay-copy"><code>' + amt + '</code><button onclick="_pfCopy(\'' + amt + '\', this)">Copier</button></div></div></div>' +
+        '<div class="pf-pay-step" id="pf-pay-s2"><span class="pf-pay-n">2</span><div class="pf-pay-tx"><div class="h">Collez ce commentaire dans « Note au commerçant »</div>' +
+            '<div class="d">Il permet au commerce de relier votre paiement à votre commande et à votre carte fidélité.</div>' +
+            '<div class="pf-pay-copy"><code id="pf-pay-note">' + _pfCatEsc(note) + '</code><button onclick="_pfCopy(document.getElementById(\'pf-pay-note\').textContent, this)">Copier</button></div></div></div>' +
+        '<div class="pf-pay-step" id="pf-pay-s3"><span class="pf-pay-n">3</span><div class="pf-pay-tx"><div class="h">Payez, puis revenez ici</div>' +
+            '<div class="d">Une fois le paiement accepté, envoyez votre commande au commerce sur WhatsApp.</div></div></div>' +
+        '<button class="pf-pay-go" onclick="pfPayGo()">💳 Ouvrir la page de paiement SumUp</button>' +
+        '<button class="pf-pay-done" id="pf-pay-done" onclick="pfPayDone()" disabled>✅ J\'ai payé — envoyer ma commande</button>' +
+        '<div class="pf-pay-safe">🔒 Le paiement se fait sur la page sécurisée de SumUp. Vos coordonnées bancaires ne passent jamais par cette application.</div>';
+    document.getElementById('pf-pay-overlay').style.display = 'flex';
+}
+function pfPayClose() { document.getElementById('pf-pay-overlay').style.display = 'none'; }
+function pfPayGo() {
+    var amt = _pfMoneyFr(_pfCartTotal());
+    _pfCopy(amt, null); // le montant est dans le presse-papiers en arrivant sur SumUp
+    window.open(_pfSumupLink(), '_blank', 'noopener');
+    var s1 = document.getElementById('pf-pay-s1'); if (s1) s1.classList.add('done');
+    var b = document.getElementById('pf-pay-done'); if (b) b.disabled = false;
+    pfToast('📋 Montant ' + amt + '€ copié — collez-le sur SumUp, puis copiez le commentaire ici.');
+}
+function pfPayDone() {
+    _pfPay.paid = true;
+    pfPayClose();
+    pfCartSendWhatsApp();
+}
+
 function pfCartSendWhatsApp() {
     var lines = _pfCartLines();
     if (!lines.length) return;
@@ -1675,11 +1846,23 @@ function pfCartSendWhatsApp() {
     }
     var total = 0;
     var body = 'Bonjour, je souhaite commander :\n\n';
+    if (_pfPay.paid) {
+        var pd = new Date();
+        body = '✅ *COMMANDE PAYÉE PAR CARTE BANCAIRE*\n' +
+               '💳 Montant réglé via SumUp : *' + _pfCartTotal().toFixed(2) + '€*\n' +
+               '🕒 Le ' + pd.toLocaleDateString('fr-FR') + ' à ' + pd.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + '\n' +
+               '📝 Note SumUp : ' + _pfPayNote() + '\n' +
+               '━━━━━━━━━━━━━━\n\n' +
+               'Bonjour, voici ma commande :\n\n';
+    }
     lines.forEach(function(l) {
         total += l.lineTotal;
         body += '• ' + l.qty + 'x ' + l.p.name + ' — ' + l.lineTotal.toFixed(2) + '€\n';
     });
-    body += '\nTotal : ' + total.toFixed(2) + '€\n\nMerci !';
+    body += '\nTotal : ' + total.toFixed(2) + '€';
+    body += '\n🧾 N° commande : ' + _pfOrderRef();
+    body += _pfPay.paid ? '\n💳 Statut : PAYÉE PAR CB (SumUp)' : '\n💶 Statut : à régler au retrait';
+    body += '\n\nMerci !';
     if (window._pfCurrentName) body += '\n— ' + window._pfCurrentName;
     if (window._pfCurrentBarcode) body += '\n🎫 N° fidélité : ' + window._pfCurrentBarcode;
     window.open('https://wa.me/' + waNum + '?text=' + encodeURIComponent(body), '_blank');
