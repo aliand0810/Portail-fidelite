@@ -75,6 +75,71 @@
         #pf-card-barcode-wrap svg{max-height:38vh;}
     }
 
+
+    /* ── En-tête : logo COVO ── */
+    .pf-logo{width:46px;height:46px;flex-shrink:0;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(28,85,160,.3));animation:pfLogoIn .7s cubic-bezier(.3,1.5,.5,1) backwards;}
+    .pf-header .sub{font-weight:900;letter-spacing:.14em;color:#e8822e;}
+    @keyframes pfLogoIn{from{opacity:0;transform:scale(.5) rotate(-120deg);}to{opacity:1;transform:none;}}
+
+    /* ── Compte : carte fidélité (identifiant + code-barres) en tête ── */
+    .pf-idcard{position:relative;overflow:hidden;border-radius:18px;padding:14px 14px 12px;cursor:pointer;color:#fff;
+        background:linear-gradient(135deg,#0d1b33 0%,#1c55a0 60%,#2a78d6 100%);box-shadow:0 10px 26px rgba(28,85,160,.3);transition:transform .2s;}
+    .pf-idcard::after{content:'';position:absolute;width:180px;height:180px;border-radius:50%;right:-60px;top:-80px;background:radial-gradient(circle,rgba(232,130,46,.45),transparent 70%);pointer-events:none;}
+    .pf-idcard:active{transform:scale(.98);}
+    .pf-idcard-top{position:relative;z-index:1;display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+    .pf-idcard-logo{width:36px;height:36px;flex-shrink:0;}
+    .pf-idcard-t{flex:1;min-width:0;}
+    .pf-idcard-t .k{font-size:.66rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#fbbf77;}
+    .pf-idcard-t .id{font-size:.8rem;margin-top:2px;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .pf-idcard-t .id b{font-family:ui-monospace,Menlo,monospace;font-size:.9rem;letter-spacing:.04em;}
+    .pf-idcard-zoom{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+    .pf-idcard .pf-barcode-box{position:relative;z-index:1;margin:0;padding:10px 12px;background:#fff;border:none;border-radius:12px;}
+    .pf-idcard .pf-barcode-box svg{display:block;margin:0 auto;max-height:74px;}
+    .pf-idcard-hint{position:relative;z-index:1;font-size:.66rem;text-align:center;margin-top:8px;opacity:.75;}
+    .pf-profile{display:flex;align-items:center;gap:14px;margin-top:18px;}
+
+    /* ── Historique : accordéon par mois + opérations dépliables ── */
+    .pf-h-count{margin-left:auto;background:var(--bg);color:var(--text-muted);font-size:.66rem;padding:2px 8px;border-radius:20px;}
+    .pf-h-count:empty{display:none;}
+    .pf-section h3{width:100%;}
+    .pf-acc{border:1px solid var(--border);border-radius:14px;background:var(--card);margin-bottom:8px;overflow:hidden;transition:box-shadow .3s,border-color .3s;}
+    .pf-acc.open{border-color:color-mix(in srgb,var(--purple) 35%,var(--border));box-shadow:0 6px 18px rgba(124,58,237,.1);}
+    .pf-acc-head{width:100%;display:flex;align-items:center;gap:11px;padding:10px 12px;border:none;background:none;color:var(--text-main);font-family:inherit;text-align:left;cursor:pointer;}
+    .pf-acc-cal{width:42px;height:44px;flex-shrink:0;border-radius:10px;background:linear-gradient(180deg,var(--purple) 0 44%,#fbfaff 44%);color:var(--purple-dk);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;font-size:.62rem;font-weight:900;padding-bottom:4px;box-shadow:inset 0 0 0 1px var(--border);}
+    .pf-acc-cal b{color:#fff;font-size:.6rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:auto;padding-top:3px;}
+    .pf-acc-tx{flex:1;min-width:0;display:flex;flex-direction:column;}
+    .pf-acc-tx .t{font-weight:900;font-size:.88rem;}
+    .pf-acc-tx .s{font-size:.7rem;color:var(--text-muted);font-weight:700;margin-top:1px;}
+    .pf-acc-tx .s b,.pf-op-tx .s b{color:#7c3aed;}
+    .pf-acc-tot{font-weight:900;font-size:.92rem;text-align:right;line-height:1.1;}
+    .pf-acc-tot small{display:block;font-size:.58rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;}
+    .pf-acc-chev{width:26px;height:26px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--text-muted);transition:transform .35s cubic-bezier(.2,.8,.2,1),background .3s,color .3s;}
+    .pf-acc.open .pf-acc-chev{transform:rotate(180deg);background:var(--purple);color:#fff;}
+    .pf-acc-body,.pf-op-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .38s cubic-bezier(.2,.8,.2,1);}
+    .pf-acc.open > .pf-acc-body,.pf-op.open > .pf-op-body{grid-template-rows:1fr;}
+    .pf-acc-in,.pf-op-in{overflow:hidden;min-height:0;}
+    .pf-timeline{position:relative;padding:2px 12px 10px 12px;}
+    .pf-timeline::before{content:'';position:absolute;left:29px;top:6px;bottom:18px;width:2px;background:var(--border);border-radius:2px;}
+    .pf-op{position:relative;}
+    .pf-acc.open .pf-op{animation:pfRise .4s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0) * 40ms + .05s);}
+    .pf-op-head{width:100%;display:flex;align-items:center;gap:10px;padding:8px 2px;border:none;background:none;color:var(--text-main);font-family:inherit;text-align:left;cursor:pointer;}
+    .pf-op-ic{position:relative;z-index:1;width:36px;height:36px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.95rem;background:var(--card);box-shadow:0 0 0 2px color-mix(in srgb,var(--c) 45%,transparent),0 0 0 5px var(--card);}
+    .pf-op-tx{flex:1;min-width:0;display:flex;flex-direction:column;}
+    .pf-op-tx .t{font-size:.82rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .pf-op-tx .s{font-size:.68rem;color:var(--text-muted);font-weight:700;margin-top:1px;}
+    .pf-op-amt{font-weight:900;font-size:.86rem;color:var(--c);white-space:nowrap;}
+    .pf-op-chev{color:var(--text-muted);font-weight:900;transition:transform .3s;}
+    .pf-op.open .pf-op-chev{transform:rotate(90deg);}
+    .pf-op-in{margin-left:46px;}
+    .pf-op-in > :first-child{margin-top:2px;}
+    .pf-op-in .dr{display:flex;justify-content:space-between;gap:10px;font-size:.74rem;padding:5px 10px;background:var(--bg);}
+    .pf-op-in .dr:first-child{border-radius:10px 10px 0 0;}
+    .pf-op-in .dr:last-child{border-radius:0 0 10px 10px;margin-bottom:8px;}
+    .pf-op-in .dr span{color:var(--text-muted);font-weight:700;}
+    .pf-op-in .dr b{text-align:right;}
+    .pf-op-items{font-size:.74rem;margin:-4px 0 10px;padding:6px 10px;border:1px dashed var(--border);border-radius:10px;}
+    .pf-op-items > div{display:flex;justify-content:space-between;gap:8px;padding:2px 0;}
+
     /* ── Onglet "Produits" : navigation du tableau de bord + catalogue client ── */
     .pf-nav{display:flex;gap:8px;margin-bottom:14px;}
     .pf-nav-btn{flex:1;padding:10px 8px;border-radius:11px;border:1.5px solid var(--border);background:var(--card);color:var(--text-muted);font-weight:800;font-size:.8rem;cursor:pointer;transition:background .25s,color .25s,box-shadow .25s,transform .15s;}
@@ -282,11 +347,11 @@
     #pf-cart-fab{right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));}
     @media (orientation:landscape){
         .pf-wrap{max-width:1180px;}
-        #pf-tab-compte .pf-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);column-gap:26px;align-items:start;}
-        #pf-tab-compte .pf-card > :first-child{grid-column:1;grid-row:1;}
-        #pf-tab-compte .pf-tiles{grid-column:1;grid-row:2;margin-bottom:0;}
-        #pf-tab-compte .pf-barcode-box{grid-column:1;grid-row:3;}
-        #pf-tab-compte .pf-dash-side{grid-column:2;grid-row:1 / span 3;}
+        #pf-tab-compte .pf-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);column-gap:26px;align-items:start;grid-template-rows:auto auto auto 1fr;}
+        #pf-tab-compte .pf-idcard{grid-column:1;grid-row:1;}
+        #pf-tab-compte .pf-profile{grid-column:1;grid-row:2;}
+        #pf-tab-compte .pf-tiles{grid-column:1;grid-row:3;margin-bottom:0;}
+        #pf-tab-compte .pf-dash-side{grid-column:2;grid-row:1 / span 4;}
         #pf-tab-compte .pf-dash-side > .pf-section:first-child,
         #pf-tab-compte .pf-dash-side > .pf-section[style*="none"] + .pf-section{margin-top:0;}
 
@@ -339,8 +404,12 @@
         .pf-tile .v{font-size:1.05rem;}
         .pf-tile{min-width:0;}
         #pf-updated{font-size:.66rem !important;}
-        .pf-barcode-box{margin-top:12px;padding:10px;}
-        .pf-barcode-box svg{max-height:70px;}
+        .pf-idcard{padding:10px 12px;}
+        .pf-idcard-top{margin-bottom:8px;}
+        .pf-idcard .pf-barcode-box svg{max-height:56px;}
+        .pf-idcard-hint{display:none;}
+        .pf-profile{margin-top:12px;}
+        .pf-avatar{width:44px;height:44px;}
     }
     @keyframes pfZoomIn{from{opacity:0;transform:scale(.92) translateY(14px);}to{opacity:1;transform:none;}}
     @keyframes pfZoomOut{to{opacity:0;transform:scale(.94) translateY(10px);}}
@@ -390,7 +459,9 @@
         :root{--bg:#161425;--card:#201c33;--text-main:#f0eefa;--text-muted:#a79fc4;--border:#342d50;}
         .pf-field input{background:#171428;color:var(--text-main);}
         .pf-tile,.pf-row,.pf-barcode-box{background:#171428;}
-        .pf-barcode-box svg{filter:invert(1) hue-rotate(180deg);}
+        .pf-barcode-box svg{filter:none;}
+        .pf-idcard .pf-barcode-box{background:#fff;}
+        .pf-acc-cal{background:linear-gradient(180deg,var(--purple) 0 44%,#171428 44%);color:#c4b5fd;}
         .pf-pc .px,.pf-ps-price .px,.pf-mini .mp{color:#c4b5fd;}
         .pf-size-btn.active{color:#c4b5fd;}
         .pf-ps-price .save{background:rgba(16,185,129,.18);color:#6ee7b7;}
@@ -400,7 +471,7 @@
 <body>
 <div class="pf-wrap">
     <div class="pf-header">
-        <div class="ico">🎁</div>
+        <img class="pf-logo" id="pf-head-logo" alt="COVO" width="46" height="46">
         <div style="flex:1;"><div class="ttl">Mon espace fidélité</div><div class="sub">COVO</div></div>
         <button id="pf-install-btn" onclick="pfInstallClick()" style="display:none;background:var(--purple);color:#fff;border:none;border-radius:9px;padding:8px 13px;font-size:.74rem;font-weight:800;cursor:pointer;white-space:nowrap;box-shadow:0 3px 10px rgba(124,58,237,.3);">📲 Installer</button>
     </div>
@@ -439,13 +510,28 @@
 
     <div id="pf-dash" style="display:none;">
         <div class="pf-nav">
-            <button class="pf-nav-btn active" id="pf-nav-compte" onclick="pfSwitchTab('compte')">🏠 Mon compte</button>
+            <button class="pf-nav-btn active" id="pf-nav-compte" onclick="pfSwitchTab('compte')">🎁 Mon compte</button>
             <button class="pf-nav-btn" id="pf-nav-produits" onclick="pfSwitchTab('produits')">🛍️ Produits</button>
         </div>
 
         <div id="pf-tab-compte">
             <div class="pf-card">
-                <div style="display:flex;align-items:center;gap:14px;">
+                <div class="pf-idcard" onclick="pfShowCard()" role="button" tabindex="0" title="Toucher pour afficher la carte en grand">
+                    <div class="pf-idcard-top">
+                        <img class="pf-idcard-logo" alt="">
+                        <div class="pf-idcard-t">
+                            <div class="k">🎁 Carte fidélité COVO</div>
+                            <div class="id">Identifiant : <b id="pf-barcode-code">—</b></div>
+                        </div>
+                        <span class="pf-idcard-zoom" aria-hidden="true">⤢</span>
+                    </div>
+                    <div class="pf-barcode-box">
+                        <svg id="pf-barcode-svg"></svg>
+                    </div>
+                    <div class="pf-idcard-hint">👆 Toucher pour agrandir et présenter en caisse</div>
+                </div>
+
+                <div class="pf-profile">
                     <div class="pf-avatar" id="pf-ini">—</div>
                     <div>
                         <div class="pf-name" id="pf-name">—</div>
@@ -466,15 +552,9 @@
                 </div>
 
                 <div class="pf-section">
-                    <h3>🧾 Dernières opérations</h3>
+                    <h3>🧾 Historique des achats <span class="pf-h-count" id="pf-hist-count"></span></h3>
                     <div id="pf-hist-list"></div>
                 </div>
-                </div>
-
-                <div class="pf-barcode-box" onclick="pfShowCard()" style="cursor:pointer;" title="Toucher pour afficher la carte">
-                    <svg id="pf-barcode-svg"></svg>
-                    <div class="pf-barcode-code" id="pf-barcode-code">—</div>
-                    <div style="font-size:.66rem;color:var(--text-muted);margin-top:8px;">👆 Toucher pour afficher la carte</div>
                 </div>
             </div>
         </div>
@@ -663,6 +743,107 @@ function pfLogout(){
     _pfAuth.signOut();
 }
 
+
+/* ═══ HISTORIQUE DES ACHATS — accordéon par mois ═══
+   Chaque mois se déplie / se replie (le plus récent ouvert), avec son total et ses points ;
+   chaque opération se déplie à son tour pour afficher son détail (heure, points, articles…). */
+var PF_MONTHS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+function _pfHistType(h) {
+    var l = String(h.label || h.type || '').toLowerCase();
+    if (/paiement|r[eè]glement|versement|acompte|encaiss/.test(l)) return { ic: '💳', c: '#059669', t: 'Paiement' };
+    if (/rembours|avoir|retour|annul/.test(l)) return { ic: '↩️', c: '#dc2626', t: 'Remboursement' };
+    if (/[ée]ch[ée]ance|cr[ée]dit|dette/.test(l)) return { ic: '📒', c: '#b45309', t: 'Crédit' };
+    if (/point|bonus|r[ée]compense|cadeau|fid[ée]lit/.test(l) || (h.points && !h.amount)) return { ic: '⭐', c: '#7c3aed', t: 'Points' };
+    return { ic: '🛒', c: '#2a78d6', t: 'Achat' };
+}
+function _pfHistDate(v) {
+    if (v && typeof v.toDate === 'function') v = v.toDate();      // Timestamp Firestore
+    else if (v && typeof v.seconds === 'number') v = v.seconds * 1000;
+    var d = new Date(v);
+    return isNaN(d.getTime()) ? null : d;
+}
+function _pfCap(t) { t = String(t || ''); return t.charAt(0).toUpperCase() + t.slice(1); }
+function _pfHistToggle(el) {
+    var box = el.closest('.pf-acc, .pf-op');
+    if (box) box.classList.toggle('open');
+}
+window._pfHistToggle = _pfHistToggle;
+function _pfRenderHistory(history) {
+    var host = document.getElementById('pf-hist-list');
+    var countEl = document.getElementById('pf-hist-count');
+    var list = (history || []).map(function(h, i) { return { h: h, d: _pfHistDate(h.date), i: i }; });
+    list.sort(function(a, b) { return (b.d ? b.d.getTime() : 0) - (a.d ? a.d.getTime() : 0) || a.i - b.i; });
+    if (countEl) countEl.textContent = list.length ? list.length : '';
+    if (!list.length) { host.innerHTML = '<div class="pf-empty">🧾 Aucun achat pour le moment</div>'; return; }
+
+    var groups = [], byKey = {};
+    list.forEach(function(x) {
+        var key = x.d ? (x.d.getFullYear() + '-' + x.d.getMonth()) : 'nd';
+        if (!byKey[key]) {
+            byKey[key] = { key: key, label: x.d ? PF_MONTHS[x.d.getMonth()] + ' ' + x.d.getFullYear() : 'Date inconnue', ops: [], total: 0, pts: 0 };
+            groups.push(byKey[key]);
+        }
+        var g = byKey[key];
+        g.ops.push(x);
+        if (_pfHistType(x.h).t === 'Achat') g.total += +(x.h.amount || 0) || 0;
+        g.pts += +(x.h.points || 0) || 0;
+    });
+
+    host.innerHTML = groups.map(function(g, gi) {
+        var n = g.ops.length;
+        var ops = g.ops.map(function(x, oi) {
+            var h = x.h, ty = _pfHistType(h);
+            var amt = +(h.amount || 0) || 0, pts = +(h.points || 0) || 0;
+            var main = amt ? amt.toFixed(2) + '€' : (pts ? '+' + pts + ' pts' : '');
+            var time = x.d ? x.d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '';
+            var day = x.d ? _pfCap(x.d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })) : '—';
+            var det = '';
+            det += '<div class="dr"><span>Date</span><b>' + (x.d ? _pfCap(x.d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })) : '—') + (time ? ' · ' + time : '') + '</b></div>';
+            det += '<div class="dr"><span>Type</span><b>' + ty.ic + ' ' + ty.t + '</b></div>';
+            if (amt) det += '<div class="dr"><span>Montant</span><b>' + amt.toFixed(2) + '€</b></div>';
+            if (pts) det += '<div class="dr"><span>Points gagnés</span><b style="color:#7c3aed;">+' + pts + ' pts</b></div>';
+            if (h.payment || h.mode) det += '<div class="dr"><span>Paiement</span><b>' + _pfEsc(h.payment || h.mode) + '</b></div>';
+            if (h.ticket || h.ref) det += '<div class="dr"><span>Ticket</span><b>' + _pfEsc(h.ticket || h.ref) + '</b></div>';
+            if (Array.isArray(h.items) && h.items.length) {
+                det += '<div class="pf-op-items">' + h.items.map(function(it) {
+                    if (typeof it === 'string') return '<div><span>' + _pfEsc(it) + '</span></div>';
+                    var q = it.qty || it.quantity || 1, nm = it.name || it.label || 'Article', pr = +(it.total || (it.price || 0) * q) || 0;
+                    return '<div><span>' + q + '× ' + _pfEsc(nm) + '</span>' + (pr ? '<b>' + pr.toFixed(2) + '€</b>' : '') + '</div>';
+                }).join('') + '</div>';
+            }
+            return '<div class="pf-op" style="--c:' + ty.c + ';--i:' + Math.min(oi, 8) + ';">' +
+                '<button class="pf-op-head" onclick="_pfHistToggle(this)">' +
+                    '<span class="pf-op-ic">' + ty.ic + '</span>' +
+                    '<span class="pf-op-tx"><span class="t">' + _pfEsc(h.label || ty.t) + '</span><span class="s">' + day + (time ? ' · ' + time : '') + (amt && pts ? ' · <b>+' + pts + ' pts</b>' : '') + '</span></span>' +
+                    '<span class="pf-op-amt">' + _pfEsc(main) + '</span>' +
+                    '<span class="pf-op-chev">›</span>' +
+                '</button>' +
+                '<div class="pf-op-body"><div class="pf-op-in">' + det + '</div></div>' +
+                '</div>';
+        }).join('');
+        return '<div class="pf-acc' + (gi === 0 ? ' open' : '') + '">' +
+            '<button class="pf-acc-head" onclick="_pfHistToggle(this)">' +
+                '<span class="pf-acc-cal"><b>' + (g.label.split(' ')[0] || '').slice(0, 3) + '</b>' + (g.label.split(' ')[1] || '') + '</span>' +
+                '<span class="pf-acc-tx"><span class="t">' + g.label + '</span><span class="s">' + n + ' opération' + (n > 1 ? 's' : '') + (g.pts ? ' · <b>+' + g.pts + ' pts</b>' : '') + '</span></span>' +
+                (g.total ? '<span class="pf-acc-tot"><small>dépensé</small>' + g.total.toFixed(2) + '€</span>' : '') +
+                '<span class="pf-acc-chev">▾</span>' +
+            '</button>' +
+            '<div class="pf-acc-body"><div class="pf-acc-in"><div class="pf-timeline">' + ops + '</div></div></div>' +
+            '</div>';
+    }).join('');
+}
+
+/* Logo COVO de l'en-tête et de la carte : même image que la carte plein écran. */
+(function _pfLogos() {
+    var src = document.querySelector('#pf-card-head img');
+    if (!src) return;
+    ['pf-head-logo'].forEach(function(id) { var el = document.getElementById(id); if (el) el.src = src.src; });
+    Array.prototype.forEach.call(document.querySelectorAll('.pf-idcard-logo'), function(el) { el.src = src.src; });
+})();
+document.addEventListener('keydown', function(e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target && e.target.classList && e.target.classList.contains('pf-idcard')) { e.preventDefault(); pfShowCard(); }
+});
+
 function _pfRenderDash(data){
     var t = _pfTierColors(data.tier);
     document.getElementById('pf-ini').textContent = _pfIni(data.name);
@@ -688,16 +869,7 @@ function _pfRenderDash(data){
         }).join('');
     }
 
-    var histList = document.getElementById('pf-hist-list');
-    var hist = (data.history||[]).slice(0,15);
-    if (!hist.length){
-        histList.innerHTML = '<div class="pf-empty">Aucune opération pour le moment</div>';
-    } else {
-        histList.innerHTML = hist.map(function(h){
-            var amtTxt = h.points ? ('+'+h.points+' pts') : (h.amount ? (+h.amount).toFixed(2)+'€' : '');
-            return '<div class="pf-row"><span>'+_pfEsc(h.label||'Opération')+'<br><span style="font-size:.68rem;color:var(--text-muted);">'+_pfFmtDate(h.date)+'</span></span><span class="amt">'+_pfEsc(amtTxt)+'</span></div>';
-        }).join('');
-    }
+    _pfRenderHistory(data.history || []);
 
     window._pfCurrentBarcode = data.barcode || null;
     window._pfCurrentName = data.name || null;
