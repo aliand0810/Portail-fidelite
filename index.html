@@ -477,6 +477,21 @@
     }
     @keyframes pfZoomIn{from{opacity:0;transform:scale(.92) translateY(14px);}to{opacity:1;transform:none;}}
     @keyframes pfZoomOut{to{opacity:0;transform:scale(.94) translateY(10px);}}
+
+    /* ── Nouvel arrivage : même bandeau que les promos, dégradé orange → bleu COVO ── */
+    .pf-hero-head{display:flex;align-items:center;justify-content:space-between;margin:18px 2px -4px;font-weight:900;font-size:.96rem;}
+    .pf-hero-head button{border:none;background:rgba(232,130,46,.14);color:#c2620f;font-family:inherit;font-weight:900;font-size:.72rem;padding:7px 11px;border-radius:20px;cursor:pointer;}
+    .pf-hero-new{background:linear-gradient(125deg,#e8822e 0%,#d9622b 30%,#1c55a0 78%,#0f3a75 100%);box-shadow:0 12px 30px rgba(232,130,46,.28);}
+    .pf-hero-new::before{left:-60px;right:auto;top:auto;bottom:-110px;background:radial-gradient(circle,rgba(255,255,255,.3),transparent 70%);}
+    .pf-hero-new .pf-hero-tag{background:#fff;color:#c2620f;animation:pfNewGlow 2.4s ease-in-out infinite;}
+    .pf-hero-new .hi{transform:rotate(4deg);}
+    .pf-hero-slide .hi{position:relative;}
+    .pf-hero-mini{position:absolute;top:6px;left:6px;padding:2px 6px;border-radius:12px;background:linear-gradient(135deg,#ef4444,#db2777);color:#fff;font-size:.6rem;font-weight:900;}
+    .pf-new-badge{position:absolute;top:8px;right:8px;padding:3px 8px;border-radius:20px;background:linear-gradient(135deg,#f59e0b,#e8822e);color:#fff;font-size:.6rem;font-weight:900;letter-spacing:.05em;text-transform:uppercase;box-shadow:0 3px 10px rgba(232,130,46,.4);animation:pfPop .5s cubic-bezier(.3,1.6,.5,1) backwards;}
+    .pf-ps-media .pf-new-badge{top:auto;bottom:14px;right:16px;font-size:.72rem;padding:5px 11px;text-transform:none;letter-spacing:0;}
+    .pf-compact .pf-new-badge{top:auto;bottom:2px;right:2px;padding:1px 4px;font-size:.45rem;}
+    @keyframes pfNewGlow{50%{box-shadow:0 0 0 5px rgba(255,255,255,.28);}}
+    @media (prefers-color-scheme: dark){ .pf-hero-head button{color:#f6ad6b;} }
     @keyframes pfRise{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
     @keyframes pfPop{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:none;}}
     @keyframes pfBump{50%{transform:scale(1.5);}}
@@ -1264,6 +1279,7 @@ function _pfCatCard(p, i) {
         '<div class="pf-pc-media" data-id="' + id + '" onclick="pfProdOpen(this.dataset.id)">' +
             _pfCatImgHTML(p, em) +
             (disc > 0 ? '<span class="pf-badge">-' + Math.round(disc) + '%</span>' : '') +
+            (_pfIsNew(p) ? '<span class="pf-new-badge">Nouveau</span>' : '') +
             (p.available ? '' : '<span class="pf-out-tag">Rupture</span>') +
         '</div>' +
         '<div class="pf-pc-body">' +
@@ -1320,7 +1336,60 @@ function _pfCatBuildGroups(list) {
     return groups;
 }
 
-/* ── Rendu : puces, bandeau promos, groupes ── */
+
+/* ═══ NOUVEL ARRIVAGE ═══
+   Un article est « nouveau » pendant PF_NEW_DAYS jours (réglable : _pfCatData.newDays).
+   Date d'arrivée, par ordre de priorité :
+     1. un champ du catalogue : isNew (forcé), createdAt / addedAt / dateAdded / created
+        (millisecondes, texte ISO ou Timestamp Firestore) ;
+     2. l'identifiant s'il s'agit d'un horodatage Date.now() (cas des ids COVO) ;
+     3. sinon, la 1ʳᵉ fois que CET appareil voit l'article (mémorisé localement) — au tout
+        premier chargement, le catalogue existant sert de référence et rien n'est marqué. */
+var PF_NEW_DAYS = 14;
+var PF_SEEN_KEY = 'covo_portal_seen_products';
+var _pfSeen = null;
+function _pfNewDays() { var v = _pfCatData && +_pfCatData.newDays; return v > 0 ? v : PF_NEW_DAYS; }
+function _pfToMs(v) {
+    if (v == null || v === '') return 0;
+    if (typeof v.toMillis === 'function') return v.toMillis();
+    if (typeof v.seconds === 'number') return v.seconds * 1000;
+    if (typeof v === 'number') return v < 1e11 ? v * 1000 : v;       // secondes ou millisecondes
+    var t = Date.parse(v); return isNaN(t) ? 0 : t;
+}
+function _pfNewTrack() {
+    if (_pfSeen) return;
+    var list = (_pfCatData && _pfCatData.produits) || [];
+    var store = null;
+    try { store = JSON.parse(localStorage.getItem(PF_SEEN_KEY) || 'null'); } catch (e) {}
+    var now = Date.now(), changed = false;
+    if (!store || typeof store !== 'object') { store = {}; list.forEach(function(p) { store[p.id] = 0; }); changed = true; } // référence initiale
+    list.forEach(function(p) { if (!(p.id in store)) { store[p.id] = now; changed = true; } });
+    if (changed) try { localStorage.setItem(PF_SEEN_KEY, JSON.stringify(store)); } catch (e) {}
+    _pfSeen = store;
+}
+function _pfArrivalMs(p) {
+    var t = _pfToMs(p.createdAt || p.addedAt || p.dateAdded || p.created);
+    if (t) return t;
+    var id = +p.id;
+    if (id > 1.5e12 && id < Date.now() + 864e5) return id;             // id = horodatage de création
+    return (_pfSeen && _pfSeen[p.id]) || 0;
+}
+function _pfIsNew(p) {
+    if (p.isNew === true) return true;
+    if (p.isNew === false) return false;
+    var t = _pfArrivalMs(p);
+    return !!t && (Date.now() - t) < _pfNewDays() * 864e5;
+}
+function _pfNewList(list) {
+    return list.filter(_pfIsNew).sort(function(a, b) { return _pfArrivalMs(b) - _pfArrivalMs(a); });
+}
+function _pfAgoTxt(p) {
+    if (p.isNew === true && !_pfArrivalMs(p)) return 'Nouveauté';
+    var d = Math.floor((Date.now() - _pfArrivalMs(p)) / 864e5);
+    return d <= 0 ? 'Arrivé aujourd\'hui' : d === 1 ? 'Arrivé hier' : 'Arrivé il y a ' + d + ' jours';
+}
+
+/* ── Rendu : puces, bandeaux (promos / nouvel arrivage), groupes ── */
 function _pfCatRenderChips(groups, total) {
     var host = document.getElementById('pf-cat-chips');
     if (!host) return;
@@ -1367,27 +1436,39 @@ function _pfCatGroupGrid(g, single) {
         '<div class="pf-grid">' + g.items.map(function(p, i) { return _pfCatCard(p, i); }).join('') + '</div>' +
         '</section>';
 }
+function _pfCatHeroBand(kind, items) {
+    if (!items.length) return '';
+    var isNew = kind === 'new';
+    var slides = items.map(function(p) {
+        var price = _pfCatEffPrice(p), disc = _pfNum(p.promo);
+        var em = _pfCatEmoji(p.category || '');
+        var tag = isNew
+            ? '<span class="pf-hero-tag">🆕 Nouvel arrivage</span>'
+            : '<span class="pf-hero-tag">🔥 Promo -' + Math.round(disc) + '%</span>';
+        return '<div class="pf-hero-slide" data-id="' + _pfCatEsc(p.id) + '" onclick="pfProdOpen(this.dataset.id)">' +
+            '<div class="hi">' + _pfCatImgHTML(p, em) + (isNew && disc > 0 ? '<span class="pf-hero-mini">-' + Math.round(disc) + '%</span>' : '') + '</div>' +
+            '<div class="pf-hero-tx">' + tag +
+                '<div class="pf-hero-nm">' + _pfCatEsc(p.name) + '</div>' +
+                '<div class="pf-hero-px">' + _pfCatPriceHTML(p, price) + (disc > 0 ? '<s>' + _pfNum(p.price).toFixed(2) + '€</s>' : '') + '</div>' +
+                '<span class="pf-hero-cta">' + (isNew ? _pfAgoTxt(p) + ' · Découvrir →' : 'Voir le produit →') + '</span>' +
+            '</div></div>';
+    }).join('');
+    var dots = items.length > 1
+        ? '<div class="pf-hero-dots">' + items.map(function(_, i) { return '<i data-i="' + i + '"' + (i ? '' : ' class="on"') + '></i>'; }).join('') + '</div>'
+        : '';
+    var head = isNew
+        ? '<div class="pf-hero-head"><span>🆕 Nouvel arrivage</span><button data-k="new" onclick="pfCatSetFilter(this.dataset.k)">Tout voir ›</button></div>'
+        : '';
+    return head + '<div class="pf-hero' + (isNew ? ' pf-hero-new' : '') + '" data-hero="' + kind + '"><div class="pf-hero-track">' + slides + '</div>' + dots + '</div>';
+}
 function _pfCatHero(list) {
     var promos = list.filter(function(p) { return p.available && _pfNum(p.promo) > 0; })
         .sort(function(a, b) { return _pfNum(b.promo) - _pfNum(a.promo); })
         .slice(0, 8);
-    if (!promos.length) return '';
-    var slides = promos.map(function(p) {
-        var price = _pfCatEffPrice(p);
-        var em = _pfCatEmoji(p.category || '');
-        return '<div class="pf-hero-slide" data-id="' + _pfCatEsc(p.id) + '" onclick="pfProdOpen(this.dataset.id)">' +
-            '<div class="hi">' + _pfCatImgHTML(p, em) + '</div>' +
-            '<div class="pf-hero-tx">' +
-                '<span class="pf-hero-tag">🔥 Promo -' + Math.round(_pfNum(p.promo)) + '%</span>' +
-                '<div class="pf-hero-nm">' + _pfCatEsc(p.name) + '</div>' +
-                '<div class="pf-hero-px">' + _pfCatPriceHTML(p, price) + '<s>' + _pfNum(p.price).toFixed(2) + '€</s></div>' +
-                '<span class="pf-hero-cta">Voir le produit →</span>' +
-            '</div></div>';
-    }).join('');
-    var dots = promos.length > 1
-        ? '<div class="pf-hero-dots">' + promos.map(function(_, i) { return '<i data-i="' + i + '"' + (i ? '' : ' class="on"') + '></i>'; }).join('') + '</div>'
-        : '';
-    return '<div class="pf-hero" id="pf-hero"><div class="pf-hero-track">' + slides + '</div>' + dots + '</div>';
+    return _pfCatHeroBand('promo', promos);
+}
+function _pfCatHeroNew(list) {
+    return _pfCatHeroBand('new', _pfNewList(list.filter(function(p) { return p.available; })).slice(0, 10));
 }
 
 function _pfRenderCatalogue() {
@@ -1406,11 +1487,15 @@ function _pfRenderCatalogue() {
         if (!q) return true;
         return (p.name || '').toLowerCase().indexOf(q) !== -1 || (p.category || '').toLowerCase().indexOf(q) !== -1;
     });
+    _pfNewTrack();
     var groups = _pfCatBuildGroups(list);
+    var newItems = _pfCatSortItems(_pfNewList(list)); // en stock d'abord, puis du plus récent au plus ancien
+    var newGroup = newItems.length ? { key: 'new', label: 'Nouvel arrivage', color: '#e8822e', emoji: '🆕', items: newItems } : null;
     var current = null;
     for (var i = 0; i < groups.length; i++) if (groups[i].key === _pfCatFilter) current = groups[i];
+    if (newGroup && _pfCatFilter === 'new') current = newGroup;
     if (!current) _pfCatFilter = 'all';
-    _pfCatRenderChips(groups, list.length);
+    _pfCatRenderChips(newGroup ? [newGroup].concat(groups) : groups, list.length);
 
     if (!list.length) {
         host.innerHTML = '<div class="pf-prod-empty">' +
@@ -1429,6 +1514,7 @@ function _pfRenderCatalogue() {
         groups.forEach(function(g) { html += _pfCatGroupGrid(g, false); }); // recherche : tout est visible d'un coup d'œil
     } else {
         html += _pfCatHero(list);
+        html += _pfCatHeroNew(list);
         groups.forEach(function(g) { html += _pfCatGroupRail(g); });
     }
     host.innerHTML = html;
@@ -1465,19 +1551,20 @@ function _pfCatInitRails(root) {
     });
 }
 
-/* ── Bandeau promos : défilement automatique, pause dès que le client touche ── */
-var _pfHeroTimer = null, _pfHeroPauseUntil = 0;
-function _pfCatStopHero() { clearInterval(_pfHeroTimer); _pfHeroTimer = null; }
+/* ── Bandeaux (promos, nouvel arrivage) : défilement automatique, pause dès que le client touche ── */
+var _pfHeroTimers = [], _pfHeroPauseUntil = 0;
+function _pfCatStopHero() { _pfHeroTimers.forEach(function(t) { clearInterval(t); clearTimeout(t); }); _pfHeroTimers = []; }
 function _pfCatInitHero() {
-    var hero = document.getElementById('pf-hero');
-    if (!hero) return;
+    Array.prototype.forEach.call(document.querySelectorAll('#pf-cat-body .pf-hero'), function(hero, hi) { _pfCatInitOneHero(hero, hi); });
+}
+function _pfCatInitOneHero(hero, hi) {
     var track = hero.querySelector('.pf-hero-track');
     var dots = hero.querySelectorAll('.pf-hero-dots i');
     var n = track.children.length;
     var slideW = function() { return (track.children[0] && track.children[0].offsetWidth) || track.clientWidth || 1; };
     var perView = function() { return Math.max(1, Math.round(track.clientWidth / slideW())); };
     var idx = function() { return Math.round(track.scrollLeft / slideW()); };
-    var pause = function() { _pfHeroPauseUntil = Date.now() + 7000; };
+    var pause = function() { track._pfPauseUntil = Date.now() + 7000; };
     track.addEventListener('scroll', function() {
         var k = idx(), pv = perView();
         track._pfIdx = k;
@@ -1492,14 +1579,17 @@ function _pfCatInitHero() {
     try { track.dispatchEvent(new Event('scroll')); } catch (e) {} // allume les points des diapos visibles
     track._pfRealign = function() { track.scrollTo({ left: (track._pfIdx || 0) * slideW(), behavior: 'auto' }); };
     if (n > 1 && !_pfReduced) {
-        _pfHeroTimer = setInterval(function() {
-            if (!document.body.contains(track)) { _pfCatStopHero(); return; }
-            if (Date.now() < _pfHeroPauseUntil || document.hidden || !track.offsetParent) return;
+        var tick = function() {
+            if (!document.body.contains(track)) return;
+            if (Date.now() < (track._pfPauseUntil || 0) || document.hidden || !track.offsetParent) return;
             if (document.getElementById('pf-prod-overlay').style.display === 'flex') return;
             var last = Math.max(0, n - perView());
             if (!last) return;
             track.scrollTo({ left: (idx() >= last ? 0 : idx() + 1) * slideW(), behavior: 'smooth' });
-        }, 4200);
+        };
+        // Décalage entre les bandeaux pour qu'ils ne défilent pas en même temps
+        var start = setTimeout(function() { _pfHeroTimers.push(setInterval(tick, 4200)); }, hi * 2100);
+        _pfHeroTimers.push(start);
     }
 }
 
@@ -1511,8 +1601,9 @@ function _pfCatInitHero() {
         t = setTimeout(function() {
             var body = document.getElementById('pf-cat-body');
             _pfCatInitRails(body);
-            var track = document.querySelector('#pf-hero .pf-hero-track');
-            if (track && track._pfRealign) track._pfRealign();
+            Array.prototype.forEach.call(document.querySelectorAll('#pf-cat-body .pf-hero-track'), function(track) {
+                if (track._pfRealign) track._pfRealign();
+            });
         }, 160);
     };
     window.addEventListener('resize', redo);
@@ -1532,6 +1623,7 @@ function pfProdOpen(id) {
     var html =
         '<div class="pf-ps-media" style="--c:' + c + ';">' + _pfCatImgHTML(p, em) +
             (disc > 0 ? '<span class="pf-badge">-' + Math.round(disc) + '%</span>' : '') +
+            (_pfIsNew(p) ? '<span class="pf-new-badge">🆕 ' + _pfAgoTxt(p) + '</span>' : '') +
         '</div>' +
         '<div class="pf-ps-body pf-ps-anim">' +
             '<div><button class="pf-ps-cat" style="--c:' + c + ';" data-k="' + _pfCatEsc('c-' + cat) + '" onclick="pfProdClose(); pfCatSetMode(\'category\'); pfCatSetFilter(this.dataset.k);">' + em + ' ' + _pfCatEsc(cat) + ' ›</button></div>' +
