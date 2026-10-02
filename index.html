@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
 <title>Mon espace fidélité — COVO</title>
 <meta name="description" content="Consultez vos points, votre solde et vos avantages de carte fidélité COVO.">
 <link rel="manifest" id="pf-manifest-link">
@@ -23,7 +23,8 @@
     }
     *{box-sizing:border-box;}
     body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text-main);min-height:100vh;}
-    .pf-wrap{max-width:480px;margin:0 auto;padding:18px 16px 60px;min-height:100vh;}
+    .pf-wrap{width:100%;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(60px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));min-height:100vh;min-height:100dvh;}
+    #pf-loading,#pf-login,#pf-notconfigured{max-width:480px;margin-left:auto;margin-right:auto;}
     .pf-header{display:flex;align-items:center;gap:10px;padding:10px 2px 22px;}
     .pf-header .ico{font-size:1.6rem;}
     .pf-header .ttl{font-weight:900;font-size:1.05rem;}
@@ -41,7 +42,7 @@
     .pf-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#6d28d9);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;color:#fff;flex-shrink:0;box-shadow:0 4px 12px rgba(124,58,237,.3);}
     .pf-name{font-weight:900;font-size:1.15rem;}
     .pf-tier{display:inline-block;margin-top:4px;padding:3px 11px;border-radius:20px;font-weight:900;font-size:.72rem;}
-    .pf-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;}
+    .pf-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:18px 0;}
     .pf-tile{background:#fbfaff;border:1px solid var(--border);border-radius:12px;padding:14px 12px;text-align:center;}
     .pf-tile .v{font-size:1.3rem;font-weight:900;}
     .pf-tile .l{font-size:.68rem;color:var(--text-muted);font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.02em;}
@@ -273,6 +274,76 @@
     #pf-cart-fab.bump #pf-cart-badge{animation:pfBump .4s .1s cubic-bezier(.3,1.6,.5,1);}
     .pf-link{margin-top:10px;border:none;background:none;color:var(--purple);font-family:inherit;font-weight:900;font-size:.8rem;cursor:pointer;text-decoration:underline;}
 
+
+    /* ═══ ORIENTATION ═══
+       Vertical : l'affichage occupe toute la largeur de l'écran.
+       Horizontal : mise en page en colonnes qui exploite la largeur (compte sur 2 colonnes,
+       barres d'outils sur une ligne, plus de produits par carrousel, fiche produit côte à côte). */
+    #pf-cart-fab{right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));}
+    @media (orientation:landscape){
+        .pf-wrap{max-width:1180px;}
+        #pf-tab-compte .pf-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);column-gap:26px;align-items:start;}
+        #pf-tab-compte .pf-card > :first-child{grid-column:1;grid-row:1;}
+        #pf-tab-compte .pf-tiles{grid-column:1;grid-row:2;margin-bottom:0;}
+        #pf-tab-compte .pf-barcode-box{grid-column:1;grid-row:3;}
+        #pf-tab-compte .pf-dash-side{grid-column:2;grid-row:1 / span 3;}
+        #pf-tab-compte .pf-dash-side > .pf-section:first-child,
+        #pf-tab-compte .pf-dash-side > .pf-section[style*="none"] + .pf-section{margin-top:0;}
+
+        #pf-tab-produits{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:12px;align-items:center;}
+        #pf-tab-produits > .pf-tools{grid-column:1;grid-row:1;}
+        #pf-tab-produits > .pf-sortrow{grid-column:2;grid-row:1;margin-top:0;}
+        #pf-tab-produits > .pf-shop-top{grid-column:1 / -1;grid-row:2;display:flex;align-items:center;gap:12px;}
+        #pf-tab-produits > #pf-cat-body{grid-column:1 / -1;grid-row:3;align-self:start;}
+        .pf-shop-top .pf-search{flex:0 0 min(36%,340px);}
+        .pf-shop-top .pf-chips{flex:1;min-width:0;margin:0;padding:8px 0;}
+        .pf-rail > *{flex-basis:clamp(150px,21%,200px);max-width:200px;}
+        .pf-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+        .pf-hero-slide{flex-basis:50%;}
+        .pf-hero-slide + .pf-hero-slide{border-left:1px solid rgba(255,255,255,.15);}
+        .pf-compact .pf-rail,.pf-compact .pf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));}
+
+        #pf-prod-overlay{align-items:center;padding:12px max(12px,env(safe-area-inset-right)) 12px max(12px,env(safe-area-inset-left));}
+        #pf-prod-sheet{max-width:820px;max-height:calc(100dvh - 24px);border-radius:24px;overflow:hidden;animation-name:pfZoomIn;}
+        #pf-prod-overlay.closing #pf-prod-sheet{animation-name:pfZoomOut;}
+        #pf-prod-sheet .pf-grab{display:none;}
+        #pf-prod-content{display:grid;grid-template-columns:42% 58%;max-height:calc(100dvh - 24px);}
+        .pf-ps-media{margin:0;height:auto;min-height:100%;}
+        .pf-ps-body{overflow-y:auto;max-height:calc(100dvh - 24px);padding-top:22px;}
+        .pf-ps-x{background:var(--bg);color:var(--text-main);}
+        #pf-cart-overlay{align-items:center;}
+        #pf-cart-sheet{max-width:600px;max-height:calc(100dvh - 24px);border-radius:20px;animation-name:pfZoomIn;}
+    }
+    /* Téléphone à l'horizontale : très peu de hauteur, on resserre tout ce qui est vertical. */
+    @media (orientation:landscape) and (max-height:520px){
+        .pf-wrap{padding-top:max(8px,env(safe-area-inset-top));}
+        .pf-header{padding:4px 2px 10px;}
+        .pf-header .ico{font-size:1.3rem;}
+        .pf-nav{margin-bottom:8px;}
+        .pf-nav-btn{padding:7px 8px;}
+        .pf-mode-btn{padding:7px 6px;}
+        .pf-search input{padding-top:9px;padding-bottom:9px;}
+        .pf-shop-top{padding-top:6px;}
+        .pf-resline{margin-top:8px;}
+        .pf-hero{margin-top:8px;}
+        .pf-hero-slide{padding:12px 16px 24px;}
+        .pf-hero-slide .hi{width:80px;height:80px;}
+        .pf-hero-px{font-size:1.15rem;}
+        .pf-grp{margin-top:14px;}
+        .pf-rail > *{flex-basis:clamp(140px,18%,180px);}
+        .pf-pc-media{aspect-ratio:5/4;}
+        .pf-pc .nm{min-height:0;}
+        .pf-card{padding:16px;}
+        .pf-tiles{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0 0;}
+        .pf-tile{padding:10px 6px;}
+        .pf-tile .v{font-size:1.05rem;}
+        .pf-tile{min-width:0;}
+        #pf-updated{font-size:.66rem !important;}
+        .pf-barcode-box{margin-top:12px;padding:10px;}
+        .pf-barcode-box svg{max-height:70px;}
+    }
+    @keyframes pfZoomIn{from{opacity:0;transform:scale(.92) translateY(14px);}to{opacity:1;transform:none;}}
+    @keyframes pfZoomOut{to{opacity:0;transform:scale(.94) translateY(10px);}}
     @keyframes pfRise{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
     @keyframes pfPop{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:none;}}
     @keyframes pfBump{50%{transform:scale(1.5);}}
@@ -388,6 +459,7 @@
                     <div class="pf-tile"><div class="v" id="pf-updated" style="font-size:.78rem;">—</div><div class="l">🔄 Mis à jour</div></div>
                 </div>
 
+                <div class="pf-dash-side">
                 <div class="pf-section" id="pf-ech-section">
                     <h3>📅 Échéances en cours</h3>
                     <div id="pf-ech-list"></div>
@@ -396,6 +468,7 @@
                 <div class="pf-section">
                     <h3>🧾 Dernières opérations</h3>
                     <div id="pf-hist-list"></div>
+                </div>
                 </div>
 
                 <div class="pf-barcode-box" onclick="pfShowCard()" style="cursor:pointer;" title="Toucher pour afficher la carte">
@@ -1153,26 +1226,51 @@ function _pfCatInitHero() {
     var track = hero.querySelector('.pf-hero-track');
     var dots = hero.querySelectorAll('.pf-hero-dots i');
     var n = track.children.length;
-    var idx = function() { return Math.round(track.scrollLeft / Math.max(1, track.clientWidth)); };
+    var slideW = function() { return (track.children[0] && track.children[0].offsetWidth) || track.clientWidth || 1; };
+    var perView = function() { return Math.max(1, Math.round(track.clientWidth / slideW())); };
+    var idx = function() { return Math.round(track.scrollLeft / slideW()); };
     var pause = function() { _pfHeroPauseUntil = Date.now() + 7000; };
     track.addEventListener('scroll', function() {
-        var k = idx();
-        Array.prototype.forEach.call(dots, function(d, i) { d.classList.toggle('on', i === k); });
+        var k = idx(), pv = perView();
+        track._pfIdx = k;
+        Array.prototype.forEach.call(dots, function(d, i) { d.classList.toggle('on', i >= k && i < k + pv); });
     }, { passive: true });
     track.addEventListener('pointerdown', pause, { passive: true });
     track.addEventListener('touchstart', pause, { passive: true });
     Array.prototype.forEach.call(dots, function(d) {
-        d.onclick = function() { pause(); track.scrollTo({ left: (+d.getAttribute('data-i')) * track.clientWidth, behavior: 'smooth' }); };
+        d.onclick = function() { pause(); track.scrollTo({ left: (+d.getAttribute('data-i')) * slideW(), behavior: 'smooth' }); };
     });
+    track._pfIdx = 0;
+    try { track.dispatchEvent(new Event('scroll')); } catch (e) {} // allume les points des diapos visibles
+    track._pfRealign = function() { track.scrollTo({ left: (track._pfIdx || 0) * slideW(), behavior: 'auto' }); };
     if (n > 1 && !_pfReduced) {
         _pfHeroTimer = setInterval(function() {
             if (!document.body.contains(track)) { _pfCatStopHero(); return; }
             if (Date.now() < _pfHeroPauseUntil || document.hidden || !track.offsetParent) return;
             if (document.getElementById('pf-prod-overlay').style.display === 'flex') return;
-            track.scrollTo({ left: ((idx() + 1) % n) * track.clientWidth, behavior: 'smooth' });
+            var last = Math.max(0, n - perView());
+            if (!last) return;
+            track.scrollTo({ left: (idx() >= last ? 0 : idx() + 1) * slideW(), behavior: 'smooth' });
         }, 4200);
     }
 }
+
+/* ── Rotation de l'écran : on recalcule carrousels et bandeau pour la nouvelle largeur ── */
+(function _pfOnRotate() {
+    var t = null;
+    var redo = function() {
+        clearTimeout(t);
+        t = setTimeout(function() {
+            var body = document.getElementById('pf-cat-body');
+            _pfCatInitRails(body);
+            var track = document.querySelector('#pf-hero .pf-hero-track');
+            if (track && track._pfRealign) track._pfRealign();
+        }, 160);
+    };
+    window.addEventListener('resize', redo);
+    window.addEventListener('orientationchange', redo);
+    if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change', redo);
+})();
 
 /* ── Fiche produit : grande photo, prix, stock, ajout au panier + produits similaires ── */
 function pfProdOpen(id) {
@@ -1237,7 +1335,8 @@ function pfProdClose() {
     if (!sheet) return;
     var y0 = null, dy = 0;
     sheet.addEventListener('touchstart', function(e) {
-        y0 = sheet.scrollTop <= 0 ? e.touches[0].clientY : null; dy = 0;
+        var land = window.matchMedia && window.matchMedia('(orientation: landscape)').matches;
+        y0 = (!land && sheet.scrollTop <= 0) ? e.touches[0].clientY : null; dy = 0;
     }, { passive: true });
     sheet.addEventListener('touchmove', function(e) {
         if (y0 === null) return;
@@ -1478,6 +1577,7 @@ function _pfLoadClientData(uid){
         start_url: "./",
         scope: "./",
         display: "standalone",
+        orientation: "any",
         background_color: "#f4f1fb",
         theme_color: "#7c3aed",
         icons: [
