@@ -709,6 +709,9 @@
         .pf-size-btn.active{color:#93c5fd;}
         .pf-ps-price .save{background:rgba(16,185,129,.18);color:#6ee7b7;}
     }
+    /* Mise à jour en direct reçue du commerce */
+    .pf-live-flash{animation:pfLiveFlash 1.4s ease;}
+    @keyframes pfLiveFlash{0%{box-shadow:0 0 0 3px rgba(124,58,237,.45);}100%{box-shadow:0 0 0 0 rgba(124,58,237,0);}}
 </style>
 </head>
 <body>
@@ -1038,6 +1041,7 @@ function pfLoginSubmit(ev){
 }
 
 function pfLogout(){
+    _pfStopLive();
     _pfAuth.signOut();
 }
 
@@ -1062,11 +1066,25 @@ function _pfResaLocal() {
 function _pfResaSave(list) { try { localStorage.setItem(_pfResaKey(), JSON.stringify(list)); } catch (e) {} }
 function _pfResaAll() {
     var out = [], seen = {};
+    // Plusieurs réservations du même article (ex. 5 × Coca) sont regroupées sur une seule ligne,
+    // quantités additionnées — mais un article « prêt » et le même « en attente » restent séparés.
+    var shopRows = {};
     (window._pfServerResa || []).forEach(function(r) {
         if (!r || r.status === 'picked' || r.status === 'cancelled') return;
         var id = String(r.productId != null ? r.productId : (r.id != null ? r.id : r.name));
-        if (seen[id]) return; seen[id] = 1;
-        out.push({ id: id, name: r.name, qty: r.qty || 1, at: _pfToMs(r.date || r.at), shop: true, status: r.status });
+        var st = r.status || (r.available === true ? 'available' : '');
+        var k = id + '|' + st;
+        var at = _pfToMs(r.date || r.at);
+        var row = shopRows[k];
+        if (row) {
+            row.qty += (+r.qty || 1);
+            row.cnt += 1;
+            if (at && (!row.at || at > row.at)) row.at = at;
+            return;
+        }
+        seen[id] = 1;
+        row = shopRows[k] = { id: id, nk: k, name: r.name, qty: (+r.qty || 1), cnt: 1, at: at, shop: true, status: st, available: r.available === true };
+        out.push(row);
     });
     _pfResaLocal().forEach(function(r) {
         var id = String(r.id);
@@ -1080,9 +1098,12 @@ function _pfResaProduct(r) { return _pfCatData ? _pfCatProductById(r.id) : null;
 function _pfResaIsAvail(r) {
     if (r.status === 'ready') return true;                 // le commerce l'a mis de côté
     var p = _pfResaProduct(r);
-    return !!(p && p.available);
+    if (p) return !!p.available;                           // catalogue chargé : stock affiché en boutique
+    return r.status === 'available' || r.available === true; // sinon : état envoyé par la fiche fidélité
 }
-function _pfResaAvailCount() { return _pfResaAll().filter(_pfResaIsAvail).length; }
+// Nombre de réservations (une ligne regroupée « Coca ×10 » peut en contenir plusieurs)
+function _pfResaCount(list) { return list.reduce(function(s, r) { return s + (r.cnt || 1); }, 0); }
+function _pfResaAvailCount() { return _pfResaCount(_pfResaAll().filter(_pfResaIsAvail)); }
 
 function pfResaToggle(id) {
     var p = _pfCatProductById(id);
@@ -1142,29 +1163,31 @@ function _pfResaRefresh() {
     if (!document.getElementById('pf-resa-list')) return;
     var all = _pfResaAll();
     var avail = all.filter(_pfResaIsAvail);
-    var n = avail.length;
+    var n = _pfResaCount(avail);
     _pfBubbleSet(document.getElementById('pf-nav-bub'), n);
     _pfBubbleSet(document.getElementById('pf-resa-bub'), n);
     _pfBubbleSet(document.getElementById('pf-resa-bub2'), n);
     var nEl = document.getElementById('pf-resa-n');
-    if (nEl) nEl.textContent = all.length;
+    var nTot = _pfResaCount(all);
+    if (nEl) nEl.textContent = nTot;
     var cEl = document.getElementById('pf-resa-count');
-    if (cEl) cEl.textContent = all.length ? all.length : '';
+    if (cEl) cEl.textContent = nTot ? nTot : '';
     try { if (navigator.setAppBadge) { if (n) navigator.setAppBadge(n); else navigator.clearAppBadge(); } } catch (e) {}
 
     // Nouvelles disponibilités → notification (une seule fois par article)
     if (_pfCatData || all.some(function(r) { return r.status === 'ready'; })) {
         var notified = _pfResaNotifGet(), fresh = [];
-        avail.forEach(function(r) { if (!notified[r.id]) { fresh.push(r); notified[r.id] = 1; } });
-        all.forEach(function(r) { if (!_pfResaIsAvail(r) && notified[r.id]) delete notified[r.id]; }); // repassé en rupture : on re-préviendra
+        avail.forEach(function(r) { var k = r.nk || r.id; if (!notified[k]) { fresh.push(r); notified[k] = 1; } });
+        all.forEach(function(r) { var k = r.nk || r.id; if (!_pfResaIsAvail(r) && notified[k]) delete notified[k]; }); // repassé en rupture : on re-préviendra
         try { localStorage.setItem(_pfResaNotifKey(), JSON.stringify(notified)); } catch (e) {}
         if (fresh.length) {
             var nm = function(r) { var p = _pfResaProduct(r); return (p && p.name) || r.name || 'Article'; };
             if (navigator.vibrate) try { navigator.vibrate([30, 60, 30]); } catch (e) {}
+            var nFresh = _pfResaCount(fresh);
             setTimeout(function() {
-                pfToast(fresh.length === 1
+                pfToast(nFresh === 1
                     ? '🎉 « ' + _pfCatEsc(nm(fresh[0])) + ' » est disponible ! <u>Voir</u>'
-                    : '🎉 ' + fresh.length + ' articles réservés sont disponibles ! <u>Voir</u>', function() { pfSwitchTab('compte'); pfResaScroll(); });
+                    : '🎉 ' + nFresh + ' articles réservés sont disponibles ! <u>Voir</u>', function() { pfSwitchTab('compte'); pfResaScroll(); });
             }, 600);
         }
     }
@@ -1689,8 +1712,19 @@ function _pfRenderDash(data){
     }
 
     _pfShow('pf-dash');
-    pfSwitchTab('compte');
-    _pfTabbarSync('home');
+    if (!window._pfDashShown) {
+        window._pfDashShown = true;
+        pfSwitchTab('compte');
+        _pfTabbarSync('home');
+    } else {
+        // Actualisation EN DIRECT (le commerce a modifié la fiche) : le client reste où il est
+        if (window._pfCurTab === 'produits' && !window._pfCatalogAccess) pfSwitchTab('compte');
+        var noCat = !window._pfCatalogAccess;
+        ['search', 'scan'].forEach(function(k) { var b = document.getElementById('pf-tb-' + k); if (b) b.style.display = noCat ? 'none' : ''; });
+        var up = document.getElementById('pf-updated');
+        var tile = up && up.parentNode;
+        if (tile && tile.classList) { tile.classList.remove('pf-live-flash'); void tile.offsetWidth; tile.classList.add('pf-live-flash'); }
+    }
     _pfResaRefresh();
     // Le catalogue est chargé dès la connexion : il sert à savoir si les articles réservés sont disponibles.
     if (window._pfCatalogAccess && !_pfCatLoaded) pfLoadCatalogue();
@@ -2715,17 +2749,29 @@ function pfCartSendWhatsApp() {
 _pfCartUpdateBadge();
 
 
+/* Synchronisation EN DIRECT avec la fiche Fidélité Pro : dès que le commerce met à jour la fiche
+   (points, solde, échéances, réservations disponibles…), le portail s'actualise sans recharger. */
+function _pfStopLive(){
+    if (window._pfUnsub) { try { window._pfUnsub(); } catch(e) {} window._pfUnsub = null; }
+    window._pfDashShown = false;
+}
 function _pfLoadClientData(uid){
-    _pfDb.collection('clients').doc(uid).get().then(function(doc){
+    _pfStopLive();
+    var first = true;
+    window._pfUnsub = _pfDb.collection('clients').doc(uid).onSnapshot(function(doc){
         if (!doc.exists){
+            if (!first) return;
+            first = false;
             document.getElementById('pf-login-err').textContent = '⚠️ Aucune donnée trouvée pour ce compte — contactez le commerce.';
             document.getElementById('pf-login-err').style.display = '';
             _pfShow('pf-login');
             return;
         }
+        first = false;
         _pfRenderDash(doc.data());
-    }).catch(function(err){
+    }, function(err){
         console.error('[Portail] Échec lecture des données', err);
+        if (!first) return; // déjà affiché : on garde les dernières données reçues
         document.getElementById('pf-login-err').textContent = '⚠️ Impossible de charger vos données — réessayez plus tard.';
         document.getElementById('pf-login-err').style.display = '';
         _pfShow('pf-login');
@@ -2754,6 +2800,7 @@ function _pfLoadClientData(uid){
             _pfShow('pf-loading');
             _pfLoadClientData(user.uid);
         } else {
+            _pfStopLive();
             _pfShow('pf-login');
         }
     });
