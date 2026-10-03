@@ -656,6 +656,44 @@
         .pf-scan-bottom{flex:1 1 40%;max-width:420px;margin:0;border-radius:22px 0 0 0;overflow:auto;height:calc(100dvh - 56px);}
         .pf-scan-frame{top:50%;height:min(30vh,170px);}
     }
+
+    /* ── Réserver mon panier ── */
+    #pf-cart-resa-btn{width:100%;margin-top:8px;padding:12px;border:1.5px solid var(--purple);border-radius:11px;background:var(--card);color:var(--purple);font-family:inherit;font-weight:800;font-size:.88rem;cursor:pointer;}
+    #pf-cart-resa-btn:disabled{opacity:.45;cursor:default;}
+    #pf-cresa-overlay{display:none;position:fixed;inset:0;z-index:1002;background:rgba(10,10,20,.55);align-items:flex-end;justify-content:center;animation:pfOverlayIn .25s ease;}
+    #pf-cresa-sheet{width:100%;max-width:480px;max-height:92vh;overflow:auto;background:var(--card);border-radius:22px 22px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.3);animation:pfSheetUp .4s cubic-bezier(.2,.9,.25,1);padding-bottom:env(safe-area-inset-bottom);}
+    .pf-cresa-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid var(--border);}
+    .pf-cresa-head .k{font-weight:900;font-size:1.02rem;}
+    .pf-cresa-head .t{font-size:.7rem;color:var(--text-muted);font-weight:700;margin-top:2px;}
+    .pf-cresa-head button{width:32px;height:32px;border:none;border-radius:9px;background:var(--bg);color:var(--text-main);cursor:pointer;}
+    .pf-cresa-body{padding:14px 18px 20px;}
+    .pf-cresa-imgs{display:flex;gap:6px;margin-bottom:10px;}
+    .pf-cresa-imgs span{position:relative;width:52px;height:52px;border-radius:12px;background:#fff;border:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;animation:pfPop .4s cubic-bezier(.3,1.6,.5,1) backwards;}
+    .pf-cresa-imgs span:nth-child(2){animation-delay:.05s;} .pf-cresa-imgs span:nth-child(3){animation-delay:.1s;} .pf-cresa-imgs span:nth-child(4){animation-delay:.15s;} .pf-cresa-imgs span:nth-child(5){animation-delay:.2s;}
+    .pf-cresa-imgs img{width:100%;height:100%;object-fit:contain;padding:3px;}
+    .pf-cresa-imgs .pf-pc-ph{font-size:1.4rem;}
+    .pf-cresa-imgs b{position:absolute;right:2px;bottom:2px;padding:0 4px;border-radius:6px;background:var(--purple);color:#fff;font-size:.6rem;}
+    .pf-cresa-imgs .more{background:var(--bg);font-weight:900;font-size:.8rem;color:var(--text-muted);}
+    .pf-cresa-tot{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:12px;background:var(--bg);font-size:.82rem;font-weight:800;color:var(--text-muted);}
+    .pf-cresa-tot b{font-size:1.15rem;color:var(--text-main);}
+    .pf-cresa-lbl{margin:16px 0 8px;font-weight:900;font-size:.86rem;}
+    .pf-cresa-lbl span{margin-left:6px;padding:2px 8px;border-radius:20px;background:var(--bg);color:var(--text-muted);font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;}
+    .pf-cresa-chips{display:flex;flex-wrap:wrap;gap:7px;}
+    .pf-cresa-chip{padding:8px 13px;border:1.5px solid var(--border);border-radius:999px;background:var(--card);color:var(--text-main);font-family:inherit;font-weight:800;font-size:.78rem;cursor:pointer;transition:background .2s,border-color .2s,color .2s,transform .15s;}
+    .pf-cresa-chip:active{transform:scale(.94);}
+    .pf-cresa-chip.on{background:var(--purple);border-color:var(--purple);color:#fff;}
+    .pf-cresa-date{position:relative;display:flex;align-items:center;margin-top:8px;padding:11px 13px;border:1.5px dashed var(--border);border-radius:12px;font-weight:800;font-size:.82rem;color:var(--text-muted);cursor:pointer;}
+    .pf-cresa-date.on{border-style:solid;border-color:var(--purple);color:var(--purple);background:rgba(28,85,160,.06);}
+    .pf-cresa-date input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;}
+    .pf-cresa-wa{display:flex;align-items:center;gap:9px;margin-top:16px;font-size:.8rem;font-weight:800;color:var(--text-muted);cursor:pointer;}
+    .pf-cresa-wa input{position:absolute;opacity:0;pointer-events:none;}
+    .pf-cresa-wa .sw{width:36px;height:21px;border-radius:21px;background:var(--border);position:relative;transition:background .25s;flex-shrink:0;}
+    .pf-cresa-wa .sw::after{content:'';position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .32s cubic-bezier(.3,1.4,.5,1);}
+    .pf-cresa-wa input:checked + .sw{background:#25D366;}
+    .pf-cresa-wa input:checked + .sw::after{transform:translateX(15px);}
+    .pf-cresa-go{width:100%;margin-top:16px;padding:14px;border:none;border-radius:13px;background:linear-gradient(135deg,#2a78d6,#1c55a0 55%,#0f3a75);color:#fff;font-family:inherit;font-weight:900;font-size:.95rem;cursor:pointer;box-shadow:0 8px 20px rgba(28,85,160,.35);}
+    .pf-resa-when{display:inline-block;white-space:nowrap;margin-top:4px;padding:2px 8px;border-radius:20px;background:rgba(28,85,160,.1);color:var(--purple);font-size:.66rem;font-weight:900;}
+    @media (orientation:landscape){ #pf-cresa-overlay{align-items:center;padding:12px;} #pf-cresa-sheet{border-radius:20px;max-height:calc(100dvh - 24px);animation-name:pfZoomIn;} }
     @keyframes pfRise{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
     @keyframes pfPop{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:none;}}
     @keyframes pfBump{50%{transform:scale(1.5);}}
@@ -867,6 +905,7 @@
             <div id="pf-cart-total"><span>Total</span><span id="pf-cart-total-v">0.00€</span></div>
             <div id="pf-cart-card"></div>
             <button id="pf-cart-wa-btn" onclick="pfCartSendWhatsApp()">📲 Envoyer la commande via WhatsApp</button>
+            <button id="pf-cart-resa-btn" onclick="pfCartResaOpen()">🔖 Réserver mon panier</button>
             <button id="pf-cart-clear" onclick="pfCartClear()">🗑️ Vider le panier</button>
         </div>
     </div>
@@ -917,6 +956,26 @@
     <div id="pf-profile-sheet" onclick="event.stopPropagation();" role="dialog" aria-modal="true" aria-label="Mon profil">
         <div class="pf-grab" style="position:static;"></div>
         <div id="pf-profile-body"></div>
+    </div>
+</div>
+
+<div id="pf-cresa-overlay" onclick="pfCartResaClose()">
+    <div id="pf-cresa-sheet" onclick="event.stopPropagation();" role="dialog" aria-modal="true" aria-label="Réserver mon panier">
+        <div class="pf-cresa-head">
+            <div><div class="k">🔖 Réserver mon panier</div><div class="t">Le commerce met vos articles de côté</div></div>
+            <button onclick="pfCartResaClose()" aria-label="Fermer">✕</button>
+        </div>
+        <div class="pf-cresa-body">
+            <div id="pf-cresa-sum"></div>
+            <div class="pf-cresa-lbl">📅 Date de retrait souhaitée <span>facultatif</span></div>
+            <div class="pf-cresa-chips" id="pf-cresa-chips"></div>
+            <label class="pf-cresa-date" id="pf-cresa-date-wrap">
+                <span id="pf-cresa-date-txt">Choisir une date…</span>
+                <input type="date" id="pf-cresa-date" onchange="pfCartResaPick(this.value)">
+            </label>
+            <label class="pf-cresa-wa" id="pf-cresa-wa-row"><input type="checkbox" id="pf-cresa-wa" checked><span class="sw"></span>Prévenir le commerce sur WhatsApp</label>
+            <button class="pf-cresa-go" onclick="pfCartReserve()">✓ Confirmer la réservation</button>
+        </div>
     </div>
 </div>
 
@@ -1066,12 +1125,12 @@ function _pfResaAll() {
         if (!r || r.status === 'picked' || r.status === 'cancelled') return;
         var id = String(r.productId != null ? r.productId : (r.id != null ? r.id : r.name));
         if (seen[id]) return; seen[id] = 1;
-        out.push({ id: id, name: r.name, qty: r.qty || 1, at: _pfToMs(r.date || r.at), shop: true, status: r.status });
+        out.push({ id: id, name: r.name, qty: r.qty || 1, at: _pfToMs(r.date || r.at), shop: true, status: r.status, want: r.pickupDate || r.wantDate || '' });
     });
     _pfResaLocal().forEach(function(r) {
         var id = String(r.id);
         if (seen[id]) return; seen[id] = 1;
-        out.push({ id: id, name: r.name, qty: r.qty || 1, at: r.at, img: r.img, price: r.price });
+        out.push({ id: id, name: r.name, qty: r.qty || 1, at: r.at, img: r.img, price: r.price, want: r.want || '' });
     });
     return out.sort(function(a, b) { return (b.at || 0) - (a.at || 0); });
 }
@@ -1110,6 +1169,95 @@ function pfResaToggle(id) {
     _pfResaRefresh();
 }
 function pfResaRemove(id) { pfResaToggle(id); }
+
+/* ═══ RÉSERVER MON PANIER — tout le panier passe en réservation, avec une date
+   de retrait FACULTATIVE (aujourd'hui / demain / samedi / date au choix / sans date). ═══ */
+var _pfCresaDate = '';
+function _pfIsoDay(d) { var p = function(n) { return (n < 10 ? '0' : '') + n; }; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
+function _pfWantTxt(iso) {
+    if (!iso) return '';
+    var d = new Date(iso + 'T12:00:00'); if (isNaN(d)) return iso;
+    var t = new Date(); t.setHours(12, 0, 0, 0);
+    var diff = Math.round((d - t) / 864e5);
+    if (diff === 0) return 'aujourd\'hui';
+    if (diff === 1) return 'demain';
+    return 'le ' + d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+function _pfCresaChips() {
+    var t = new Date(), tm = new Date(t.getTime() + 864e5);
+    var sat = new Date(t); sat.setDate(t.getDate() + ((6 - t.getDay() + 7) % 7 || 7));
+    var opts = [['', 'Sans date'], [_pfIsoDay(t), 'Aujourd\'hui'], [_pfIsoDay(tm), 'Demain']];
+    if (_pfIsoDay(sat) !== _pfIsoDay(tm)) opts.push([_pfIsoDay(sat), 'Samedi ' + sat.getDate()]);
+    var custom = _pfCresaDate && !opts.some(function(o) { return o[0] === _pfCresaDate; });
+    document.getElementById('pf-cresa-chips').innerHTML = opts.map(function(o) {
+        return '<button class="pf-cresa-chip' + (o[0] === _pfCresaDate ? ' on' : '') + '" data-d="' + o[0] + '" onclick="pfCartResaPick(this.dataset.d)">' + o[1] + '</button>';
+    }).join('');
+    var wrap = document.getElementById('pf-cresa-date-wrap');
+    wrap.classList.toggle('on', !!custom);
+    document.getElementById('pf-cresa-date-txt').textContent = custom ? '📅 ' + _pfWantTxt(_pfCresaDate).replace(/^le /, '') : 'Autre date…';
+}
+function pfCartResaPick(iso) {
+    if (iso && iso < _pfIsoDay(new Date())) iso = _pfIsoDay(new Date());   // pas de date passée
+    _pfCresaDate = iso || '';
+    var inp = document.getElementById('pf-cresa-date'); if (inp && inp.value !== _pfCresaDate) inp.value = _pfCresaDate;
+    _pfCresaChips();
+}
+function pfCartResaOpen() {
+    var lines = _pfCartLines();
+    if (!lines.length) return;
+    var total = lines.reduce(function(a, l) { return a + l.lineTotal; }, 0);
+    var n = lines.reduce(function(a, l) { return a + l.qty; }, 0);
+    document.getElementById('pf-cresa-sum').innerHTML =
+        '<div class="pf-cresa-imgs">' + lines.slice(0, 5).map(function(l) {
+            var em = _pfCatEmoji(l.p.category || '');
+            return '<span>' + (l.p.img ? '<img src="' + _pfCatEsc(l.p.img) + '" alt="" data-em="' + em + '" onerror="window._pfImgFallback(this)">' : '<div class="pf-pc-ph">' + em + '</div>') + (l.qty > 1 ? '<b>×' + l.qty + '</b>' : '') + '</span>';
+        }).join('') + (lines.length > 5 ? '<span class="more">+' + (lines.length - 5) + '</span>' : '') + '</div>' +
+        '<div class="pf-cresa-tot"><span>' + n + ' article' + (n > 1 ? 's' : '') + '</span><b>' + _pfMoneyFr(total) + ' €</b></div>';
+    var inp = document.getElementById('pf-cresa-date');
+    inp.min = _pfIsoDay(new Date());
+    _pfCresaDate = ''; inp.value = '';
+    _pfCresaChips();
+    var hasWa = !!(_pfCatData && _pfCatData.whatsapp);
+    document.getElementById('pf-cresa-wa-row').style.display = hasWa ? '' : 'none';
+    document.getElementById('pf-cresa-wa').checked = hasWa;
+    document.getElementById('pf-cresa-overlay').style.display = 'flex';
+}
+function pfCartResaClose() { document.getElementById('pf-cresa-overlay').style.display = 'none'; }
+function pfCartReserve() {
+    var lines = _pfCartLines();
+    if (!lines.length) return;
+    var list = _pfResaLocal(), now = Date.now(), want = _pfCresaDate;
+    lines.forEach(function(l) {
+        var sid = String(l.p.id), ex = null;
+        list.forEach(function(r) { if (String(r.id) === sid) ex = r; });
+        if (ex) { ex.qty = (ex.qty || 1) + l.qty; ex.at = now; if (want) ex.want = want; }
+        else list.push({ id: l.p.id, name: l.p.name, qty: l.qty, at: now, img: l.p.img || '', price: l.unitPrice, want: want, fromCart: true });
+        _pfResaNotified(sid, l.p.available);   // déjà en stock : pas de fausse alerte « disponible »
+    });
+    _pfResaSave(list);
+    var sendWa = document.getElementById('pf-cresa-wa').checked && _pfCatData && _pfCatData.whatsapp;
+    var total = lines.reduce(function(a, l) { return a + l.lineTotal; }, 0);
+    if (sendWa) {   // ouvert immédiatement dans le geste du clic (sinon bloqué par le navigateur)
+        var body = '🔖 *RÉSERVATION*\nBonjour, je souhaite réserver :\n\n';
+        lines.forEach(function(l) { body += '• ' + l.qty + 'x ' + l.p.name + ' — ' + l.lineTotal.toFixed(2) + '€\n'; });
+        body += '\nTotal : ' + total.toFixed(2) + '€';
+        body += '\n📅 Retrait : ' + (want ? _pfWantTxt(want) + ' (' + new Date(want + 'T12:00:00').toLocaleDateString('fr-FR') + ')' : 'date à convenir');
+        body += '\n\nMerci de me les mettre de côté !';
+        if (window._pfCurrentName) body += '\n— ' + window._pfCurrentName;
+        if (window._pfCurrentBarcode) body += '\n🎫 N° fidélité : ' + window._pfCurrentBarcode;
+        window.open('https://wa.me/' + _pfCatData.whatsapp + '?text=' + encodeURIComponent(body), '_blank');
+    }
+    _pfCart = {};
+    _pfSaveCart();
+    _pfCatRefreshAllCtrls();
+    pfCartResaClose();
+    pfCartClose();
+    pfTab('resa');
+    _pfResaRefresh();
+    if (navigator.vibrate) try { navigator.vibrate([15, 40, 15]); } catch (e) {}
+    pfToast('🔖 Panier réservé (' + lines.length + ' article' + (lines.length > 1 ? 's' : '') + ')' + (want ? ' · retrait ' + _pfWantTxt(want) : ''));
+}
+
 function _pfResaSheetBtn(p) {
     var on = _pfResaHas(p.id);
     return '<button class="pf-resa-btn' + (on ? ' on' : '') + '" data-id="' + _pfCatEsc(p.id) + '" onclick="pfResaToggle(this.dataset.id)">' +
@@ -1189,7 +1337,7 @@ function _pfResaRefresh() {
             ? '<span class="pf-resa-st ok"><i></i>' + (r.status === 'ready' ? 'Prêt — mis de côté pour vous' : 'Disponible') + '</span>'
             : '<span class="pf-resa-st wait"><i></i>En attente de réassort</span>';
         var actions = '';
-        if (ok && p && window._pfCatalogAccess) actions += '<button class="pf-resa-cart" data-id="' + _pfCatEsc(p.id) + '" onclick="pfResaToCart(this.dataset.id, event)">🛒 Ajouter</button>';
+        if (ok && p && window._pfCatalogAccess && !r.shop) actions += '<button class="pf-resa-cart" data-id="' + _pfCatEsc(p.id) + '" onclick="pfResaToCart(this.dataset.id, event)" title="Remettre dans le panier">🛒 Panier</button>';
         if (!r.shop) actions += '<button class="pf-resa-x" data-id="' + _pfCatEsc(r.id) + '" onclick="pfResaRemove(this.dataset.id)" aria-label="Annuler la réservation">✕</button>';
         return '<div class="pf-resa-row' + (ok ? ' ok' : '') + '" style="--i:' + Math.min(i, 8) + ';">' +
             '<div class="pf-resa-img"' + (p ? ' data-id="' + _pfCatEsc(p.id) + '" onclick="pfProdOpen(this.dataset.id)"' : '') + '>' +
@@ -1198,7 +1346,8 @@ function _pfResaRefresh() {
             '</div>' +
             '<div class="pf-resa-tx"><div class="t">' + _pfCatEsc(name) + (r.qty > 1 ? ' <small>×' + r.qty + '</small>' : '') + '</div>' +
                 status +
-                '<div class="s">' + (price ? price.toFixed(2) + '€' : '') + (since ? (price ? ' · ' : '') + '🔖 ' + since : '') + (r.shop ? ' · 🏪 en boutique' : '') + '</div></div>' +
+                '<div class="s">' + (price ? (price * (r.qty || 1)).toFixed(2) + '€' : '') + (since ? (price ? ' · ' : '') + '🔖 ' + since : '') + (r.shop ? ' · 🏪 en boutique' : '') + '</div>' +
+                (r.want ? '<span class="pf-resa-when">📅 ' + _pfWantTxt(r.want).replace(/^le /, '') + '</span>' : '') + '</div>' +
             '<div class="pf-resa-act">' + actions + '</div>' +
             '</div>';
     }).join('') +
@@ -1211,7 +1360,12 @@ function pfResaScroll() {
     sec.classList.remove('flash'); void sec.offsetWidth; sec.classList.add('flash');
 }
 function pfResaToCart(id, ev) {
+    var list = _pfResaLocal(), sid = String(id), qty = 1;
+    list = list.filter(function(r) { if (String(r.id) === sid) { qty = r.qty || 1; return false; } return true; });
+    _pfResaSave(list);
     pfCartInc(id, ev);
+    if (qty > 1) { _pfCart[id] = (_pfCart[id] || 0) + qty - 1; _pfSaveCart(); _pfCatRefreshCtrl(id); }
+    _pfResaRefresh();
     var p = _pfCatProductById(id);
     pfToast('🛒 « ' + _pfCatEsc(p ? p.name : 'Article') + ' » ajouté au panier. <u>Commander</u>', function() { pfSwitchTab('produits'); pfCartOpen(); });
 }
@@ -1223,7 +1377,7 @@ function pfResaSendWhatsApp() {
     var body = 'Bonjour, voici mes articles réservés :\n\n';
     all.forEach(function(r) {
         var p = _pfResaProduct(r);
-        body += '• ' + (r.qty > 1 ? r.qty + 'x ' : '') + ((p && p.name) || r.name) + ' — ' + (_pfResaIsAvail(r) ? '✅ disponible' : '⏳ en attente') + '\n';
+        body += '• ' + (r.qty > 1 ? r.qty + 'x ' : '') + ((p && p.name) || r.name) + ' — ' + (_pfResaIsAvail(r) ? '✅ disponible' : '⏳ en attente') + (r.want ? ' — 📅 retrait ' + _pfWantTxt(r.want) : '') + '\n';
     });
     body += '\nMerci de me prévenir / de me les mettre de côté.';
     if (window._pfCurrentName) body += '\n— ' + window._pfCurrentName;
@@ -1545,6 +1699,7 @@ document.addEventListener('visibilitychange', function() {   // libère la camé
 });
 document.addEventListener('keydown', function(e) {
     if (e.key !== 'Escape') return;
+    if (document.getElementById('pf-cresa-overlay').style.display === 'flex') { pfCartResaClose(); return; }
     if (document.getElementById('pf-scan-overlay').classList.contains('open')) pfScanClose();
     else if (document.getElementById('pf-profile-overlay').style.display === 'flex') pfProfileClose();
 });
@@ -2553,6 +2708,7 @@ function pfCartRender() {
         listEl.innerHTML = '<div class="pf-cart-empty">🛒 Votre panier est vide.<br>Ajoutez des produits depuis le catalogue.</div>';
         totalEl.textContent = '0.00€';
         waBtn.disabled = true;
+        var rb0 = document.getElementById('pf-cart-resa-btn'); if (rb0) rb0.disabled = true;
         _pfCardBoxUpdate();
         return;
     }
@@ -2571,6 +2727,7 @@ function pfCartRender() {
     }).join('');
     totalEl.textContent = total.toFixed(2) + '€';
     waBtn.disabled = false;
+    var rb1 = document.getElementById('pf-cart-resa-btn'); if (rb1) rb1.disabled = false;
     _pfCardBoxUpdate();
 }
 
