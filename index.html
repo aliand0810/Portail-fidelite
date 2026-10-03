@@ -552,6 +552,110 @@
         .pf-resa-btn.on{color:#4ade80;}
         .pf-resa-wa{color:#4ade80;}
     }
+
+    /* ── Barre d'onglets du bas (icônes au trait, onglet actif plein) ── */
+    .pf-nav,.pf-logout{display:none !important;}
+    .pf-wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom));}
+    .pf-tabbar{position:fixed;left:0;right:0;bottom:0;z-index:600;display:flex;justify-content:space-around;align-items:center;
+        padding:10px max(12px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+        background:rgba(255,255,255,.94);-webkit-backdrop-filter:saturate(1.6) blur(18px);backdrop-filter:saturate(1.6) blur(18px);
+        border-radius:24px 24px 0 0;box-shadow:0 -6px 24px rgba(15,58,117,.10);border-top:1px solid rgba(15,58,117,.06);}
+    .pf-tb{position:relative;width:56px;height:46px;border:none;background:none;color:#a3a3a3;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:transform .15s;}
+    .pf-tb:active{transform:scale(.86);}
+    .pf-tb svg{width:27px;height:27px;transition:transform .35s cubic-bezier(.3,1.6,.5,1);}
+    .pf-tb .f{display:none;}
+    .pf-tb.on{color:#111;}
+    .pf-tb.on .o{display:none;}
+    .pf-tb.on .f{display:block;animation:pfTbPop .4s cubic-bezier(.3,1.6,.5,1);}
+    .pf-tb::after{content:'';position:absolute;bottom:0;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--covo-orange,#e8822e);transform:scale(0);transition:transform .3s cubic-bezier(.3,1.6,.5,1);}
+    .pf-tb.on::after{transform:scale(1);}
+    .pf-tb .pf-bubble{top:1px;right:5px;box-shadow:0 0 0 2.5px #fff,0 4px 10px rgba(22,163,74,.45);}
+    @keyframes pfTbPop{0%{transform:scale(.7);}100%{transform:scale(1);}}
+    #pf-cart-fab{bottom:calc(84px + env(safe-area-inset-bottom)) !important;}
+    @media (orientation:landscape) and (max-height:520px){
+        .pf-tabbar{padding-top:5px;padding-bottom:calc(5px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0;}
+        .pf-tb{height:38px;} .pf-tb svg{width:24px;height:24px;}
+        .pf-wrap{padding-bottom:calc(70px + env(safe-area-inset-bottom));}
+        #pf-cart-fab{bottom:calc(62px + env(safe-area-inset-bottom)) !important;}
+    }
+    @media (orientation:landscape){ .pf-tabbar{left:50%;right:auto;width:min(620px,100%);transform:translateX(-50%);} }
+    @media (prefers-color-scheme: dark){
+        .pf-tabbar{background:rgba(19,34,56,.92);border-top-color:rgba(255,255,255,.06);}
+        .pf-tb{color:#7d8ca3;} .pf-tb.on{color:#fff;}
+        .pf-tb .pf-bubble{box-shadow:0 0 0 2.5px #132238;}
+    }
+    .pf-search-scan{position:absolute;right:6px;top:50%;width:32px;height:32px;margin-top:-16px;border:none;border-radius:9px;background:var(--bg);color:var(--purple);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .pf-search-scan svg{width:19px;height:19px;}
+    .pf-search input{padding-right:78px;}
+    .pf-search .clr{right:42px;}
+
+    /* ── Profil ── */
+    #pf-profile-overlay{display:none;position:fixed;inset:0;z-index:997;background:rgba(10,10,20,.5);align-items:flex-end;justify-content:center;animation:pfOverlayIn .25s ease;}
+    #pf-profile-sheet{width:100%;max-width:480px;background:var(--card);border-radius:24px 24px 0 0;padding:0 18px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -12px 40px rgba(0,0,0,.25);animation:pfSheetUp .4s cubic-bezier(.2,.9,.25,1);}
+    .pf-prof-id{display:flex;align-items:center;gap:14px;padding:6px 0 14px;}
+    .pf-prof-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+    .pf-prof-stats div{background:var(--bg);border-radius:13px;padding:10px 6px;text-align:center;}
+    .pf-prof-stats b{display:block;font-size:1.05rem;font-weight:900;}
+    .pf-prof-stats span{font-size:.64rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;}
+    .pf-prof-row{width:100%;display:flex;align-items:center;gap:12px;padding:13px 4px;border:none;border-bottom:1px solid var(--border);background:none;color:var(--text-main);font-family:inherit;font-size:.9rem;font-weight:800;text-align:left;cursor:pointer;}
+    .pf-prof-row span{width:36px;height:36px;border-radius:11px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.05rem;}
+    .pf-prof-row i{margin-left:auto;font-style:normal;color:var(--text-muted);font-size:1.2rem;}
+    .pf-prof-row.danger{color:#dc2626;border-bottom:none;}
+    @media (orientation:landscape){ #pf-profile-overlay{align-items:center;} #pf-profile-sheet{border-radius:22px;max-height:calc(100dvh - 24px);overflow:auto;} }
+
+    /* ── Scanner plein écran ── */
+    #pf-scan-overlay{position:fixed;inset:0;z-index:1100;display:none;flex-direction:column;background:#05080f;color:#fff;}
+    #pf-scan-overlay.open{display:flex;animation:pfOverlayIn .25s ease;}
+    .pf-scan-top{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;}
+    .pf-scan-ic{width:40px;height:40px;flex-shrink:0;border:none;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:1rem;cursor:pointer;}
+    .pf-scan-ic.on{background:#fbbf24;color:#111;}
+    .pf-scan-title{flex:1;text-align:center;font-weight:900;font-size:1rem;}
+    .pf-scan-title small{display:block;font-weight:700;font-size:.7rem;opacity:.65;margin-top:2px;}
+    .pf-scan-view{position:relative;flex:1;min-height:0;overflow:hidden;background:#000;}
+    #pf-scan-video,#pf-scan-video > div{position:absolute !important;inset:0;width:100% !important;height:100% !important;border:none !important;}
+    #pf-scan-video video{width:100% !important;height:100% !important;object-fit:cover;display:block;}
+    #pf-scan-video img,#pf-scan-video #qr-shaded-region,#pf-scan-video [id$="__dashboard"]{display:none !important;}
+    #pf-scan-video canvas{display:none;}
+    .pf-scan-frame{position:absolute;left:50%;top:46%;width:min(78vw,340px);height:min(44vw,190px);transform:translate(-50%,-50%);border-radius:18px;box-shadow:0 0 0 100vmax rgba(0,0,0,.48);pointer-events:none;transition:box-shadow .3s;}
+    .pf-scan-frame i{position:absolute;width:30px;height:30px;border:4px solid #fff;}
+    .pf-scan-frame .c1{top:-2px;left:-2px;border-right:none;border-bottom:none;border-radius:16px 0 0 0;}
+    .pf-scan-frame .c2{top:-2px;right:-2px;border-left:none;border-bottom:none;border-radius:0 16px 0 0;}
+    .pf-scan-frame .c3{bottom:-2px;left:-2px;border-right:none;border-top:none;border-radius:0 0 0 16px;}
+    .pf-scan-frame .c4{bottom:-2px;right:-2px;border-left:none;border-top:none;border-radius:0 0 16px 0;}
+    .pf-scan-frame .laser{position:absolute;left:8%;right:8%;top:50%;height:2px;border-radius:2px;background:#ef4444;box-shadow:0 0 12px 2px rgba(239,68,68,.75);animation:pfLaser 1.8s ease-in-out infinite;}
+    @keyframes pfLaser{0%,100%{transform:translateY(-70px);}50%{transform:translateY(70px);}}
+    .pf-scan-view.hit .pf-scan-frame i{border-color:#22c55e;}
+    .pf-scan-view.hit .pf-scan-frame{animation:pfScanHit .5s ease;}
+    .pf-scan-view.miss .pf-scan-frame i{border-color:#f59e0b;}
+    @keyframes pfScanHit{40%{transform:translate(-50%,-50%) scale(1.06);box-shadow:0 0 0 100vmax rgba(34,197,94,.25);}}
+    .pf-scan-msg{position:absolute;left:14px;right:14px;bottom:14px;padding:10px 14px;border-radius:14px;background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);text-align:center;font-size:.82rem;font-weight:800;line-height:1.4;}
+    .pf-scan-msg.ok{background:rgba(22,163,74,.9);}
+    .pf-scan-msg.err{background:rgba(180,83,9,.92);}
+    .pf-scan-msg a{color:#fff;text-decoration:underline;cursor:pointer;}
+    .pf-scan-bottom{background:var(--card);color:var(--text-main);border-radius:22px 22px 0 0;margin-top:-18px;position:relative;z-index:2;padding:14px 14px calc(14px + env(safe-area-inset-bottom));}
+    .pf-scan-item{display:flex;align-items:center;gap:11px;padding:9px;border:1px solid rgba(22,163,74,.45);border-radius:14px;background:linear-gradient(90deg,rgba(22,163,74,.08),var(--card));margin-bottom:10px;animation:pfRise .35s cubic-bezier(.2,.8,.2,1);}
+    .pf-scan-item.out{border-color:rgba(245,158,11,.5);background:linear-gradient(90deg,rgba(245,158,11,.08),var(--card));}
+    .pf-scan-item .im{width:52px;height:52px;flex-shrink:0;border-radius:11px;background:#fff;border:1px solid var(--border);overflow:hidden;}
+    .pf-scan-item .im img{width:100%;height:100%;object-fit:contain;padding:3px;}
+    .pf-scan-item .im .pf-pc-ph{font-size:1.4rem;}
+    .pf-scan-item .tx{flex:1;min-width:0;}
+    .pf-scan-item .tx b{display:block;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .pf-scan-item .tx span{font-size:.72rem;color:var(--text-muted);font-weight:700;}
+    .pf-scan-item > button{padding:8px 11px;border:1.5px solid #f59e0b;border-radius:20px;background:#fff7ed;color:#b45309;font-family:inherit;font-weight:900;font-size:.72rem;cursor:pointer;}
+    .pf-scan-manual{display:flex;gap:8px;}
+    .pf-scan-manual input{flex:1;min-width:0;padding:11px 13px;border:1.5px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text-main);font-family:inherit;font-size:.9rem;letter-spacing:.04em;}
+    .pf-scan-manual input:focus{outline:none;border-color:var(--purple);}
+    .pf-scan-manual button{padding:0 16px;border:none;border-radius:12px;background:var(--purple);color:#fff;font-family:inherit;font-weight:900;cursor:pointer;}
+    .pf-scan-foot{margin-top:10px;}
+    .pf-scan-cart{width:100%;padding:13px;border:none;border-radius:13px;background:linear-gradient(135deg,#2a78d6,#1c55a0 55%,#0f3a75);color:#fff;font-family:inherit;font-weight:800;font-size:.9rem;cursor:pointer;box-shadow:0 6px 18px rgba(28,85,160,.35);}
+    .pf-scan-cart span{opacity:.8;font-weight:700;font-size:.78rem;}
+    @media (orientation:landscape){
+        #pf-scan-overlay{flex-direction:row;flex-wrap:wrap;}
+        .pf-scan-top{width:100%;padding-top:calc(6px + env(safe-area-inset-top));padding-bottom:6px;}
+        .pf-scan-view{flex:1 1 55%;height:calc(100dvh - 56px);}
+        .pf-scan-bottom{flex:1 1 40%;max-width:420px;margin:0;border-radius:22px 0 0 0;overflow:auto;height:calc(100dvh - 56px);}
+        .pf-scan-frame{top:50%;height:min(30vh,170px);}
+    }
     @keyframes pfRise{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
     @keyframes pfPop{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:none;}}
     @keyframes pfBump{50%{transform:scale(1.5);}}
@@ -649,7 +753,7 @@
 
     <div id="pf-dash" style="display:none;">
         <div class="pf-nav">
-            <button class="pf-nav-btn active" id="pf-nav-compte" onclick="pfSwitchTab('compte')">🎁 Mon compte<span class="pf-bubble" id="pf-nav-bub"></span></button>
+            <button class="pf-nav-btn active" id="pf-nav-compte" onclick="pfSwitchTab('compte')">🎁 Mon compte</button>
             <button class="pf-nav-btn" id="pf-nav-produits" onclick="pfSwitchTab('produits')">🛍️ Produits</button>
         </div>
 
@@ -719,6 +823,7 @@
                     <span class="ic">🔎</span>
                     <input id="pf-cat-search" type="text" placeholder="Rechercher un produit, une catégorie…" oninput="pfCatOnSearch(this.value)" autocomplete="off" enterkeyhint="search">
                     <button class="clr" onclick="pfCatClearSearch()" aria-label="Effacer la recherche">✕</button>
+                    <button class="pf-search-scan" onclick="pfScanOpen()" aria-label="Scanner un code-barres"><svg class="o" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8" stroke-width="1.7"/></svg></button>
                 </div>
                 <div class="pf-chips" id="pf-cat-chips"></div>
             </div>
@@ -736,6 +841,14 @@
         </div>
 
         <button class="pf-logout" onclick="pfLogout()">Se déconnecter</button>
+
+        <nav class="pf-tabbar" id="pf-tabbar" aria-label="Navigation">
+            <button class="pf-tb on" id="pf-tb-home" onclick="pfTab('home')" aria-label="Accueil"><svg class="o" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19z"/><path d="M9.5 16h5" stroke-linecap="round"/></svg><svg class="f" viewBox="0 0 24 24"><path fill="currentColor" d="M3.4 9.7 12 2.7l8.6 7c.3.3.5.7.5 1.1V19a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 19v-8.2c0-.4.2-.8.4-1.1z"/><rect x="8.8" y="14.6" width="6.4" height="2.2" rx="1.1" fill="#fff"/></svg></button>
+            <button class="pf-tb" id="pf-tb-search" onclick="pfTab('search')" aria-label="Produits"><svg class="o" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/></svg><svg class="f" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6"/><path d="m15.5 15.5 4.5 4.5"/></svg></button>
+            <button class="pf-tb pf-tb-scan" id="pf-tb-scan" onclick="pfScanOpen()" aria-label="Scanner un article"><svg class="o" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8" stroke-width="1.7"/></svg><svg class="f" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M8 8v8M11 8v8M14 8v8M17 8v8" stroke-width="2.2"/></svg></button>
+            <button class="pf-tb" id="pf-tb-resa" onclick="pfTab('resa')" aria-label="Mes réservations"><svg class="o" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg><svg class="f" viewBox="0 0 24 24"><path fill="currentColor" d="M12 20.6s-8.3-4.9-8.3-11A4.9 4.9 0 0 1 12 6.4a4.9 4.9 0 0 1 8.3 3.2c0 6.1-8.3 11-8.3 11z"/></svg><span class="pf-bubble" id="pf-nav-bub"></span></button>
+            <button class="pf-tb" id="pf-tb-profile" onclick="pfTab('profile')" aria-label="Mon profil"><svg class="o" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3.2"/><path d="M6.3 18.2c1.3-2 3.3-3 5.7-3s4.4 1 5.7 3" stroke-linecap="round"/></svg><svg class="f" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><circle cx="12" cy="10" r="3.4" fill="#fff"/><path d="M6.2 18.4c1.3-2.1 3.4-3.2 5.8-3.2s4.5 1.1 5.8 3.2a9.9 9.9 0 0 1-11.6 0z" fill="#fff"/></svg></button>
+        </nav>
     </div>
 </div>
 
@@ -777,6 +890,35 @@
     </div>
 </div>
 <div id="pf-toast" role="status" aria-live="polite"></div>
+
+<div id="pf-scan-overlay" role="dialog" aria-modal="true" aria-label="Scanner un article">
+    <div class="pf-scan-top">
+        <button class="pf-scan-ic" onclick="pfScanClose()" aria-label="Fermer">✕</button>
+        <div class="pf-scan-title">Scanner un article<small>Visez le code-barres de l'étiquette</small></div>
+        <button class="pf-scan-ic" id="pf-scan-torch" onclick="pfScanTorch()" aria-label="Lampe" style="visibility:hidden;">🔦</button>
+    </div>
+    <div class="pf-scan-view">
+        <div id="pf-scan-video"></div>
+        <div class="pf-scan-frame"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><span class="laser"></span></div>
+        <div class="pf-scan-msg" id="pf-scan-msg">📷 Ouverture de l'appareil photo…</div>
+    </div>
+    <div class="pf-scan-bottom">
+        <div id="pf-scan-last"></div>
+        <form class="pf-scan-manual" onsubmit="pfScanManual(event)">
+            <input id="pf-scan-input" inputmode="numeric" autocomplete="off" placeholder="… ou saisir le code-barres">
+            <button type="submit">OK</button>
+        </form>
+        <div class="pf-scan-foot">
+            <button class="pf-scan-cart" onclick="pfScanClose(); pfCartOpen();">🛒 Mon panier · <b id="pf-scan-total">0,00€</b> <span id="pf-scan-count"></span></button>
+        </div>
+    </div>
+</div>
+<div id="pf-profile-overlay" onclick="pfProfileClose()">
+    <div id="pf-profile-sheet" onclick="event.stopPropagation();" role="dialog" aria-modal="true" aria-label="Mon profil">
+        <div class="pf-grab" style="position:static;"></div>
+        <div id="pf-profile-body"></div>
+    </div>
+</div>
 
 <div id="pf-card-overlay" onclick="pfHideCard()">
     <div id="pf-card-inner" onclick="event.stopPropagation();">
@@ -828,6 +970,7 @@ function _pfShow(id){
     ['pf-loading','pf-login','pf-dash','pf-notconfigured'].forEach(function(k){
         document.getElementById(k).style.display = (k===id) ? '' : 'none';
     });
+    var tb = document.getElementById('pf-tabbar'); if (tb) tb.style.display = id === 'pf-dash' ? '' : 'none';
     if (id === 'pf-login') _pfLoadRemembered();
 }
 
@@ -1106,6 +1249,301 @@ function _pfCatRefreshSilent() {
 }
 document.addEventListener('visibilitychange', function() { if (!document.hidden) _pfCatRefreshSilent(); });
 
+
+/* ═══════════════════════════════════════════════════════════════════
+   BARRE D'ONGLETS DU BAS — Accueil · Produits · Scanner · Réservés · Profil
+   ═══════════════════════════════════════════════════════════════════ */
+function _pfTabbarSync(active) {
+    ['home', 'search', 'scan', 'resa', 'profile'].forEach(function(k) {
+        var b = document.getElementById('pf-tb-' + k);
+        if (b) { b.classList.toggle('on', k === active); b.setAttribute('aria-current', k === active ? 'page' : 'false'); }
+    });
+    var noCat = !window._pfCatalogAccess;
+    ['search', 'scan'].forEach(function(k) { var b = document.getElementById('pf-tb-' + k); if (b) b.style.display = noCat ? 'none' : ''; });
+}
+function pfTab(t) {
+    if (navigator.vibrate) try { navigator.vibrate(6); } catch (e) {}
+    if (t === 'home') {
+        window._pfTbResa = false;
+        pfSwitchTab('compte');
+        window.scrollTo({ top: 0, behavior: _pfReduced ? 'auto' : 'smooth' });
+    } else if (t === 'search') {
+        var again = window._pfCurTab === 'produits';
+        window._pfTbResa = false;
+        pfSwitchTab('produits');
+        if (again) { var inp = document.getElementById('pf-cat-search'); if (inp) inp.focus(); }   // 2ᵉ appui : on ouvre la recherche
+        else window.scrollTo({ top: 0, behavior: 'auto' });
+    } else if (t === 'resa') {
+        window._pfTbResa = true;
+        pfSwitchTab('compte');
+        setTimeout(pfResaScroll, 60);
+    } else if (t === 'profile') {
+        pfProfileOpen();
+    }
+}
+/* Profil : identité, carte, installation, déconnexion */
+function pfProfileOpen() {
+    var g = function(id) { var e = document.getElementById(id); return e ? e.innerHTML : ''; };
+    var tierEl = document.getElementById('pf-tier');
+    var canInstall = document.getElementById('pf-install-btn') && document.getElementById('pf-install-btn').style.display !== 'none';
+    document.getElementById('pf-profile-body').innerHTML =
+        '<div class="pf-prof-id"><div class="pf-avatar">' + g('pf-ini') + '</div><div><div class="pf-name">' + g('pf-name') + '</div>' +
+            (tierEl ? '<div class="pf-tier" style="' + tierEl.getAttribute('style') + '">' + tierEl.innerHTML + '</div>' : '') + '</div></div>' +
+        '<div class="pf-prof-stats"><div><b>' + g('pf-points') + '</b><span>points</span></div><div><b>' + g('pf-resa-n') + '</b><span>réservés</span></div><div><b>' + g('pf-credit') + '</b><span>solde dû</span></div></div>' +
+        '<button class="pf-prof-row" onclick="pfProfileClose(); pfShowCard();"><span>🎫</span>Afficher ma carte fidélité<i>›</i></button>' +
+        '<button class="pf-prof-row" onclick="pfProfileClose(); pfTab(\'resa\');"><span>🔖</span>Mes articles réservés<i>›</i></button>' +
+        '<button class="pf-prof-row" onclick="pfProfileClose(); pfTab(\'home\'); setTimeout(function(){var h=document.getElementById(\'pf-hist-list\'); if(h) h.scrollIntoView({behavior:\'smooth\',block:\'start\'});},80);"><span>🧾</span>Historique des achats<i>›</i></button>' +
+        (canInstall ? '<button class="pf-prof-row" onclick="pfProfileClose(); pfInstallClick();"><span>📲</span>Installer l\'application<i>›</i></button>' : '') +
+        '<button class="pf-prof-row danger" onclick="pfProfileClose(); pfLogout();"><span>🚪</span>Se déconnecter<i>›</i></button>';
+    document.getElementById('pf-profile-overlay').style.display = 'flex';
+    _pfTabbarSync('profile');
+}
+function pfProfileClose() {
+    document.getElementById('pf-profile-overlay').style.display = 'none';
+    _pfTabbarSync(window._pfCurTab === 'produits' ? 'search' : (window._pfTbResa ? 'resa' : 'home'));
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SCANNER D'ARTICLES — l'appareil photo lit le code-barres de l'étiquette
+   (EAN-13/EAN-8/UPC/Code 128/QR…) et ajoute l'article au panier.
+   Lecteur : BarcodeDetector natif quand le téléphone l'a (Android/Chrome),
+   sinon la bibliothèque html5-qrcode, chargée seulement à la 1ʳᵉ ouverture.
+   Correspondance : champs barcode / ean / gtin / code / codes[] / sku / ref
+   du produit, puis l'identifiant. Scan en continu : on peut enchaîner les articles.
+   ═══════════════════════════════════════════════════════════════════ */
+var PF_SCAN_LIB = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js';
+var _pfScanner = null, _pfScanLast = { code: '', t: 0 }, _pfScanLibP = null, _pfScanTorchOn = false;
+function _pfScanLoadLib() {
+    if (window.Html5Qrcode) return Promise.resolve();
+    if (_pfScanLibP) return _pfScanLibP;
+    _pfScanLibP = new Promise(function(res, rej) {
+        var sc = document.createElement('script');
+        sc.src = PF_SCAN_LIB; sc.async = true;
+        sc.onload = res; sc.onerror = function() { _pfScanLibP = null; rej(new Error('lib')); };
+        document.head.appendChild(sc);
+    });
+    return _pfScanLibP;
+}
+function _pfDigits(v) { return String(v == null ? '' : v).replace(/\s+/g, '').toUpperCase(); }
+function _pfProductByCode(code) {
+    var c = _pfDigits(code);
+    if (!c) return null;
+    var list = (_pfCatData && _pfCatData.produits) || [];
+    var strip0 = function(x) { return x.replace(/^0+/, ''); };          // EAN-13 « 0… » = UPC-A
+    var hit = null;
+    list.some(function(p) {
+        var cands = [p.barcode, p.ean, p.ean13, p.gtin, p.upc, p.code, p.codeBarre, p.code_barre, p.sku, p.ref, p.reference]
+            .concat(Array.isArray(p.codes) ? p.codes : [], Array.isArray(p.barcodes) ? p.barcodes : []);
+        for (var i = 0; i < cands.length; i++) {
+            var v = _pfDigits(cands[i]);
+            if (v && (v === c || (/^\d+$/.test(v) && /^\d+$/.test(c) && strip0(v) === strip0(c)))) { hit = p; return true; }
+        }
+        return false;
+    });
+    if (!hit) list.some(function(p) { if (_pfDigits(p.id) === c) { hit = p; return true; } return false; });
+    return hit;
+}
+function _pfScanUpdateFoot() {
+    var t = document.getElementById('pf-scan-total'), c = document.getElementById('pf-scan-count');
+    var n = Object.keys(_pfCart).reduce(function(s, k) { return s + (_pfCart[k] || 0); }, 0);
+    if (t) t.textContent = _pfMoneyFr(_pfCartTotal()) + '€';
+    if (c) c.textContent = n ? '(' + n + ' article' + (n > 1 ? 's' : '') + ')' : '';
+}
+function _pfScanMsg(html, kind) {
+    var m = document.getElementById('pf-scan-msg');
+    if (!m) return;
+    m.innerHTML = html;
+    m.className = 'pf-scan-msg' + (kind ? ' ' + kind : '');
+}
+function _pfBeep(ok) {
+    try {
+        var C = window.AudioContext || window.webkitAudioContext;
+        if (!C) return;
+        var ctx = window._pfAudio || (window._pfAudio = new C());
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.value = ok ? 1250 : 330;
+        g.gain.setValueAtTime(0.0001, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (ok ? 0.13 : 0.3));
+        o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.32);
+    } catch (e) {}
+}
+function _pfScanHandle(code) {
+    var now = Date.now();
+    if (code === _pfScanLast.code && now - _pfScanLast.t < 2500) return;     // même article encore dans le cadre
+    _pfScanLast = { code: code, t: now };
+    var p = _pfProductByCode(code);
+    var last = document.getElementById('pf-scan-last');
+    var view = document.querySelector('.pf-scan-view');
+    var flash = function(k) { if (!view) return; view.classList.remove('hit', 'miss'); void view.offsetWidth; view.classList.add(k); };
+    if (!p) {
+        _pfBeep(false); flash('miss');
+        if (navigator.vibrate) try { navigator.vibrate([40, 50, 40]); } catch (e) {}
+        _pfScanMsg('❓ Code <b>' + _pfCatEsc(code) + '</b> introuvable dans le catalogue', 'err');
+        return;
+    }
+    var em = _pfCatEmoji(p.category || '');
+    var img = p.img ? '<img src="' + _pfCatEsc(p.img) + '" alt="" data-em="' + em + '" onerror="window._pfImgFallback(this)">' : '<div class="pf-pc-ph">' + em + '</div>';
+    if (!p.available) {
+        _pfBeep(false); flash('miss');
+        _pfScanMsg('⛔ « ' + _pfCatEsc(p.name) + ' » est en rupture', 'err');
+        last.innerHTML = '<div class="pf-scan-item out"><div class="im">' + img + '</div><div class="tx"><b>' + _pfCatEsc(p.name) + '</b><span>Rupture de stock</span></div>' +
+            '<button data-id="' + _pfCatEsc(p.id) + '" onclick="pfResaToggle(this.dataset.id); this.textContent=\'✓ Réservé\'; this.disabled=true;">' + (_pfResaHas(p.id) ? '✓ Réservé' : '🔔 Réserver') + '</button></div>';
+        return;
+    }
+    var before = _pfCartTotal();
+    _pfCart[p.id] = (_pfCart[p.id] || 0) + 1;
+    _pfSaveCart();
+    _pfCatRefreshCtrl(p.id);
+    _pfCardThresholdCheck(before);
+    _pfBeep(true); flash('hit');
+    if (navigator.vibrate) try { navigator.vibrate(35); } catch (e) {}
+    var q = _pfCart[p.id];
+    _pfScanMsg('✅ Ajouté au panier', 'ok');
+    last.innerHTML = '<div class="pf-scan-item"><div class="im">' + img + '</div><div class="tx"><b>' + _pfCatEsc(p.name) + '</b><span>' + _pfCatPriceHTML(p, _pfCatEffPrice(p)) + ' · quantité ' + q + '</span></div>' +
+        '<div class="pf-step"><button data-id="' + _pfCatEsc(p.id) + '" onclick="pfCartDec(this.dataset.id); _pfScanRefreshItem(this.dataset.id);" aria-label="Retirer">−</button><span class="q">' + q + '</span><button data-id="' + _pfCatEsc(p.id) + '" onclick="pfCartInc(this.dataset.id); _pfScanRefreshItem(this.dataset.id);" aria-label="Ajouter">+</button></div></div>';
+    _pfScanUpdateFoot();
+    setTimeout(function() { if (document.getElementById('pf-scan-overlay').classList.contains('open')) _pfScanMsg('📷 Visez le code-barres suivant'); }, 1600);
+}
+function _pfScanRefreshItem(id) {
+    var q = _pfCart[id] || 0, it = document.querySelector('#pf-scan-last .pf-scan-item');
+    if (it) {
+        var qe = it.querySelector('.q'), sp = it.querySelector('.tx span'), p = _pfCatProductById(id);
+        if (qe) qe.textContent = q;
+        if (sp && p) sp.innerHTML = _pfCatPriceHTML(p, _pfCatEffPrice(p)) + ' · quantité ' + q;
+        if (!q) it.classList.add('out');
+    }
+    _pfScanUpdateFoot();
+}
+function pfScanManual(e) {
+    e.preventDefault();
+    var inp = document.getElementById('pf-scan-input');
+    var v = (inp.value || '').trim();
+    if (!v) return;
+    _pfScanLast = { code: '', t: 0 };
+    _pfScanHandle(v);
+    inp.value = '';
+}
+function pfScanOpen() {
+    if (!window._pfCatalogAccess) return;
+    if (!_pfCatLoaded) pfLoadCatalogue();
+    var ov = document.getElementById('pf-scan-overlay');
+    ov.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    _pfTabbarSync('scan');
+    document.getElementById('pf-scan-last').innerHTML = '';
+    _pfScanUpdateFoot();
+    _pfScanLast = { code: '', t: 0 };
+    try { (window._pfAudio || (window._pfAudio = new (window.AudioContext || window.webkitAudioContext)())).resume(); } catch (e) {}  // débloque le bip (iOS)
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.isSecureContext) {
+        _pfScanMsg('⚠️ Appareil photo non disponible ici — saisissez le code-barres ci-dessous.', 'err');
+        return;
+    }
+    _pfScanMsg('📷 Ouverture de l\'appareil photo…');
+    _pfScanStart();
+}
+function _pfScanStart() {
+    if (window.BarcodeDetector) { _pfScanStartNative(); return; }
+    _pfScanLoadLib().then(_pfScanStartLib, function() {
+        _pfScanMsg('⚠️ Lecteur indisponible (connexion ?) — saisissez le code ci-dessous.', 'err');
+    });
+}
+/* Lecteur natif (Chrome Android, Safari récents) */
+function _pfScanStartNative() {
+    var host = document.getElementById('pf-scan-video');
+    BarcodeDetector.getSupportedFormats().then(function(fmts) {
+        var want = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf', 'qr_code', 'codabar'].filter(function(f) { return fmts.indexOf(f) !== -1; });
+        if (!want.length) throw new Error('nofmt');
+        var det = new BarcodeDetector({ formats: want });
+        return navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false }).then(function(stream) {
+            var v = document.createElement('video');
+            v.setAttribute('playsinline', ''); v.muted = true; v.srcObject = stream;
+            host.innerHTML = ''; host.appendChild(v);
+            return v.play().then(function() {
+                _pfScanner = { kind: 'native', stream: stream, video: v, run: true };
+                _pfScanTorchSetup(stream.getVideoTracks()[0]);
+                _pfScanMsg('📷 Visez le code-barres');
+                var loop = function() {
+                    if (!_pfScanner || !_pfScanner.run) return;
+                    det.detect(v).then(function(codes) {
+                        if (codes && codes.length) _pfScanHandle(codes[0].rawValue);
+                    }).catch(function() {}).then(function() { if (_pfScanner && _pfScanner.run) setTimeout(loop, 140); });
+                };
+                loop();
+            });
+        });
+    }).catch(function(err) {
+        if (err && (err.name === 'NotAllowedError' || err.name === 'NotFoundError' || err.name === 'NotReadableError')) { _pfScanCamErr(err); return; }
+        _pfScanLoadLib().then(_pfScanStartLib, function() { _pfScanMsg('⚠️ Lecteur indisponible — saisissez le code ci-dessous.', 'err'); });
+    });
+}
+/* Lecteur de secours : html5-qrcode (iPhone, navigateurs sans BarcodeDetector) */
+function _pfScanStartLib() {
+    if (!document.getElementById('pf-scan-overlay').classList.contains('open')) return;
+    var F = window.Html5QrcodeSupportedFormats || {};
+    var formats = ['EAN_13', 'EAN_8', 'UPC_A', 'UPC_E', 'CODE_128', 'CODE_39', 'ITF', 'QR_CODE', 'CODABAR'].map(function(k) { return F[k]; }).filter(function(v) { return v != null; });
+    var sc = new Html5Qrcode('pf-scan-video', { formatsToSupport: formats.length ? formats : undefined, verbose: false, experimentalFeatures: { useBarCodeDetectorIfSupported: true } });
+    _pfScanner = { kind: 'lib', lib: sc, run: true };
+    sc.start({ facingMode: 'environment' }, {
+        fps: 12,
+        qrbox: function(w, h) { var bw = Math.floor(Math.min(w * 0.82, 360)); return { width: bw, height: Math.floor(Math.min(h * 0.5, bw * 0.62)) }; },
+        aspectRatio: window.innerHeight > window.innerWidth ? 0.75 : 1.6,
+        disableFlip: true
+    }, function(text) { _pfScanHandle(text); }, function() {}).then(function() {
+        _pfScanMsg('📷 Visez le code-barres');
+        try { var tr = sc.getRunningTrackCameraCapabilities && sc.getRunningTrackCameraCapabilities(); if (tr && tr.torchFeature && tr.torchFeature().isSupported()) { _pfScanner.torchLib = tr.torchFeature(); document.getElementById('pf-scan-torch').style.visibility = ''; } } catch (e) {}
+    }).catch(_pfScanCamErr);
+}
+function _pfScanCamErr(err) {
+    var n = err && (err.name || String(err));
+    _pfScanMsg(/NotAllowed|Permission/i.test(n)
+        ? '🚫 Accès à l\'appareil photo refusé. Autorisez-le dans les réglages du navigateur, ou saisissez le code ci-dessous.'
+        : /NotFound|Overconstrained/i.test(n) ? '📵 Aucun appareil photo trouvé — saisissez le code ci-dessous.'
+        : '⚠️ Impossible d\'ouvrir l\'appareil photo — saisissez le code ci-dessous.', 'err');
+}
+function _pfScanTorchSetup(track) {
+    var b = document.getElementById('pf-scan-torch');
+    try {
+        var caps = track && track.getCapabilities && track.getCapabilities();
+        if (caps && caps.torch) { _pfScanner.track = track; b.style.visibility = ''; }
+    } catch (e) {}
+}
+function pfScanTorch() {
+    if (!_pfScanner) return;
+    _pfScanTorchOn = !_pfScanTorchOn;
+    var b = document.getElementById('pf-scan-torch');
+    b.classList.toggle('on', _pfScanTorchOn);
+    try {
+        if (_pfScanner.track) _pfScanner.track.applyConstraints({ advanced: [{ torch: _pfScanTorchOn }] });
+        else if (_pfScanner.torchLib) _pfScanner.torchLib.apply(_pfScanTorchOn);
+    } catch (e) {}
+}
+function _pfScanStop() {
+    var s = _pfScanner; _pfScanner = null; _pfScanTorchOn = false;
+    var tb = document.getElementById('pf-scan-torch'); if (tb) { tb.classList.remove('on'); tb.style.visibility = 'hidden'; }
+    if (!s) return;
+    s.run = false;
+    try {
+        if (s.kind === 'native') { s.stream.getTracks().forEach(function(t) { t.stop(); }); }
+        else if (s.lib) { s.lib.stop().then(function() { try { s.lib.clear(); } catch (e) {} }).catch(function() {}); }
+    } catch (e) {}
+    var host = document.getElementById('pf-scan-video'); if (host && s.kind === 'native') host.innerHTML = '';
+}
+function pfScanClose() {
+    _pfScanStop();
+    document.getElementById('pf-scan-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+    _pfTabbarSync(window._pfCurTab === 'produits' ? 'search' : (window._pfTbResa ? 'resa' : 'home'));
+}
+document.addEventListener('visibilitychange', function() {   // libère la caméra si l'app passe en arrière-plan
+    if (document.hidden && _pfScanner) { _pfScanStop(); _pfScanMsg('⏸️ Scanner en pause — <a onclick="_pfScanStart()">reprendre</a>'); }
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Escape') return;
+    if (document.getElementById('pf-scan-overlay').classList.contains('open')) pfScanClose();
+    else if (document.getElementById('pf-profile-overlay').style.display === 'flex') pfProfileClose();
+});
+
 /* ═══ HISTORIQUE DES ACHATS — accordéon par mois ═══
    Chaque mois se déplie / se replie (le plus récent ouvert), avec son total et ses points ;
    chaque opération se déplie à son tour pour afficher son détail (heure, points, articles…). */
@@ -1247,6 +1685,7 @@ function _pfRenderDash(data){
 
     _pfShow('pf-dash');
     pfSwitchTab('compte');
+    _pfTabbarSync('home');
     _pfResaRefresh();
     // Le catalogue est chargé dès la connexion : il sert à savoir si les articles réservés sont disponibles.
     if (window._pfCatalogAccess && !_pfCatLoaded) pfLoadCatalogue();
@@ -1333,7 +1772,9 @@ function pfSwitchTab(tab) {
     document.getElementById('pf-tab-produits').style.display = isCompte ? 'none' : '';
     document.getElementById('pf-nav-compte').classList.toggle('active', isCompte);
     document.getElementById('pf-nav-produits').classList.toggle('active', !isCompte);
-    document.getElementById('pf-cart-fab').style.display = isCompte ? 'none' : 'flex';
+    window._pfCurTab = tab;
+    _pfCartFabSync();
+    _pfTabbarSync(isCompte ? (window._pfTbResa ? 'resa' : 'home') : 'search');
     if (!isCompte && !_pfCatLoaded) pfLoadCatalogue();
     if (!isCompte && _pfCatLoaded) _pfCatInitRails(document.getElementById('pf-cat-body')); // barres de progression (mesurées une fois visibles)
 }
@@ -2026,6 +2467,13 @@ function _pfCartUpdateBadge() {
     var total = Object.keys(_pfCart).reduce(function(s, k) { return s + (_pfCart[k] || 0); }, 0);
     badge.textContent = total;
     badge.style.display = total > 0 ? 'flex' : 'none';
+    _pfCartFabSync();
+}
+function _pfCartFabSync() {
+    var fab = document.getElementById('pf-cart-fab');
+    if (!fab) return;
+    var n = Object.keys(_pfCart || {}).reduce(function(s, k) { return s + (_pfCart[k] || 0); }, 0);
+    fab.style.display = (window._pfCurTab === 'produits' || n > 0) ? 'flex' : 'none';
 }
 function pfCartQtyFor(id) { return _pfCart[id] || 0; }
 function _pfCartQtyFor(id) { return pfCartQtyFor(id); }
@@ -2071,6 +2519,8 @@ function pfCartClear() {
     pfCartRender();
 }
 function pfCartOpen() {
+    var so = document.getElementById('pf-scan-overlay');
+    if (so && so.classList.contains('open')) pfScanClose();
     document.getElementById('pf-cart-overlay').style.display = 'flex';
     pfCartRender();
 }
