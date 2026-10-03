@@ -1379,7 +1379,11 @@ function _pfScanHandle(code) {
     if (!p) {
         _pfBeep(false); flash('miss');
         if (navigator.vibrate) try { navigator.vibrate([40, 50, 40]); } catch (e) {}
-        _pfScanMsg('❓ Code <b>' + _pfCatEsc(code) + '</b> introuvable dans le catalogue', 'err');
+        var list = (_pfCatData && _pfCatData.produits) || [];
+        if (!list.length) _pfScanMsg('⏳ Catalogue en cours de chargement — réessayez dans un instant', 'err');
+        else if (!list.some(function(x) { return x && (x.barcode || x.ean || x.gtin || x.code); }))
+            _pfScanMsg('⚠️ Code lu : <b>' + _pfCatEsc(code) + '</b> — mais le catalogue ne contient pas encore les codes-barres. Le commerce doit relancer « 🛒 Sync catalogue » dans Fidélité Pro.', 'err');
+        else _pfScanMsg('❓ Code <b>' + _pfCatEsc(code) + '</b> introuvable dans le catalogue', 'err');
         return;
     }
     var em = _pfCatEmoji(p.category || '');
@@ -1427,6 +1431,7 @@ function pfScanManual(e) {
 function pfScanOpen() {
     if (!window._pfCatalogAccess) return;
     if (!_pfCatLoaded) pfLoadCatalogue();
+    else { _pfLastCatFetch = 0; _pfCatRefreshSilent(); }   // version la plus récente (codes-barres à jour)
     var ov = document.getElementById('pf-scan-overlay');
     ov.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -2086,7 +2091,7 @@ function _pfNewTrack() {
     _pfSeen = store;
 }
 function _pfArrivalMs(p) {
-    var t = _pfToMs(p.createdAt || p.addedAt || p.dateAdded || p.created);
+    var t = _pfToMs(p.createdAt || p.dateCreated || p.addedAt || p.dateAdded || p.created);
     if (t) return t;
     var id = +p.id;
     if (id > 1.5e12 && id < Date.now() + 864e5) return id;             // id = horodatage de création
