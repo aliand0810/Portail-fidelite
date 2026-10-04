@@ -700,6 +700,9 @@
     .pf-resa-sync.err{background:rgba(220,38,38,.1);color:#dc2626;}
     .pf-resa-err{margin:2px 0 8px;padding:10px 12px;border-radius:12px;background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.3);color:#b91c1c;font-size:.76rem;font-weight:800;line-height:1.4;}
     .pf-resa-err a{text-decoration:underline;cursor:pointer;}
+    .pf-upd-time{display:block;margin-top:2px;font-size:.62rem;font-weight:800;color:var(--text-muted);letter-spacing:.01em;}
+    .pf-upd-flash{animation:pfUpdFlash 1.2s ease;}
+    @keyframes pfUpdFlash{30%{color:#16a34a;transform:scale(1.08);}}
     @keyframes pfRise{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
     @keyframes pfPop{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:none;}}
     @keyframes pfBump{50%{transform:scale(1.5);}}
@@ -1509,6 +1512,8 @@ function _pfClientRefreshSilent() {
         if (!doc.exists) return;
         var data = doc.data() || {};
         window._pfServerResa = Array.isArray(data.reservations) ? data.reservations : [];
+        window._pfClientUpdatedAt = data.updatedAt || window._pfClientUpdatedAt;
+        _pfUpdatedRefresh();
         _pfResaReconcile();
         _pfResaRefresh();
     }).catch(function() {});
@@ -1518,14 +1523,34 @@ document.addEventListener('visibilitychange', function() { if (!document.hidden)
 window.addEventListener('online', _pfResaRetry);
 setInterval(function() { if (!document.hidden && document.getElementById('pf-dash') && document.getElementById('pf-dash').style.display !== 'none') { _pfResaRetry(); _pfClientRefreshSilent(); } }, 90000);
 
+
+/* ═══ « 🔄 Mis à jour » : date de la DERNIÈRE mise à jour connue, fiche client
+   OU catalogue (chaque « Sync catalogue » dans Fidélité Pro la fait avancer). ═══ */
+window._pfClientUpdatedAt = null;
+function _pfUpdatedRefresh() {
+    var el = document.getElementById('pf-updated');
+    if (!el) return;
+    var tc = _pfToMs(window._pfClientUpdatedAt), tk = _pfToMs(_pfCatData && _pfCatData.updatedAt);
+    var t = Math.max(tc || 0, tk || 0);
+    if (!t) { el.textContent = '—'; return; }
+    var d = new Date(t);
+    var old = el.getAttribute('data-t');
+    el.setAttribute('data-t', t);
+    el.innerHTML = d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+        '<small class="pf-upd-time">' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + (tk && tk >= tc ? ' · catalogue' : '') + '</small>';
+    el.title = 'Fiche client : ' + (tc ? new Date(tc).toLocaleString('fr-FR') : '—') + '\nCatalogue : ' + (tk ? new Date(tk).toLocaleString('fr-FR') : '—');
+    if (old && +old !== t) { el.classList.remove('pf-upd-flash'); void el.offsetWidth; el.classList.add('pf-upd-flash'); }
+}
+
 function _pfCatRefreshSilent() {
-    if (!_pfDb || !window._pfCatalogAccess || Date.now() - _pfLastCatFetch < 60000) return;
+    if (!_pfDb || Date.now() - _pfLastCatFetch < 60000) return;
     _pfLastCatFetch = Date.now();
     _pfDb.collection('public').doc('catalogue').get().then(function(doc) {
         if (!doc.exists) return;
         _pfCatData = doc.data();
         try { localStorage.setItem(PF_CAT_CACHE_KEY, JSON.stringify(_pfCatData)); } catch (e) {}
-        _pfRenderCatalogue();
+        _pfUpdatedRefresh();
+        if (window._pfCatalogAccess) _pfRenderCatalogue();
     }).catch(function() {});
 }
 document.addEventListener('visibilitychange', function() { if (!document.hidden) _pfCatRefreshSilent(); });
@@ -1942,7 +1967,8 @@ function _pfRenderDash(data){
     document.getElementById('pf-credit').textContent = (data.credit||0).toFixed(2)+'€';
     document.getElementById('pf-credit').style.color = (data.credit>0) ? '#dc2626' : '#059669';
     window._pfServerResa = Array.isArray(data.reservations) ? data.reservations : [];
-    document.getElementById('pf-updated').textContent = data.updatedAt ? _pfFmtDate(data.updatedAt) : '—';
+    window._pfClientUpdatedAt = data.updatedAt || null;
+    _pfUpdatedRefresh();
 
     var echSection = document.getElementById('pf-ech-section');
     var echList = document.getElementById('pf-ech-list');
@@ -1978,6 +2004,7 @@ function _pfRenderDash(data){
     _pfResaPull();
     // Le catalogue est chargé dès la connexion : il sert à savoir si les articles réservés sont disponibles.
     if (window._pfCatalogAccess && !_pfCatLoaded) pfLoadCatalogue();
+    else if (!window._pfCatalogAccess) { _pfLastCatFetch = 0; _pfCatRefreshSilent(); }   // juste pour la date de mise à jour
 }
 
 window._pfCurrentBarcode = null;
@@ -2482,6 +2509,7 @@ function _pfRenderCatalogue() {
     var host = document.getElementById('pf-cat-body');
     if (!host || !_pfCatData) return;
     _pfResaRefresh();
+    _pfUpdatedRefresh();
     _pfCatStopHero();
     var all = (_pfCatData.produits || []).slice();
     if (!all.length) {
