@@ -694,6 +694,9 @@
     .pf-cresa-go{width:100%;margin-top:16px;padding:14px;border:none;border-radius:13px;background:linear-gradient(135deg,#2a78d6,#1c55a0 55%,#0f3a75);color:#fff;font-family:inherit;font-weight:900;font-size:.95rem;cursor:pointer;box-shadow:0 8px 20px rgba(28,85,160,.35);}
     .pf-resa-when{display:inline-block;white-space:nowrap;margin-top:4px;padding:2px 8px;border-radius:20px;background:rgba(28,85,160,.1);color:var(--purple);font-size:.66rem;font-weight:900;}
     @media (orientation:landscape){ #pf-cresa-overlay{align-items:center;padding:12px;} #pf-cresa-sheet{border-radius:20px;max-height:calc(100dvh - 24px);animation-name:pfZoomIn;} }
+
+    .pf-resa-sync{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:10px;background:var(--bg);color:var(--text-muted);font-size:.6rem;font-weight:900;vertical-align:middle;}
+    .pf-resa-sync.ok{background:rgba(28,85,160,.1);color:var(--purple);}
     @keyframes pfRise{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
     @keyframes pfPop{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:none;}}
     @keyframes pfBump{50%{transform:scale(1.5);}}
@@ -1115,14 +1118,25 @@ function pfLogout(){
    ═══════════════════════════════════════════════════════════════════ */
 window._pfServerResa = [];
 function _pfResaKey() { return 'covo_portal_resa_' + (window._pfCurrentBarcode || 'anon'); }
+function _pfResaNewKey() { return 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 function _pfResaLocal() {
-    try { var v = JSON.parse(localStorage.getItem(_pfResaKey()) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+    var v = [];
+    try { v = JSON.parse(localStorage.getItem(_pfResaKey()) || '[]'); if (!Array.isArray(v)) v = []; } catch (e) { v = []; }
+    var fix = false;
+    v.forEach(function(r) { if (!r.key) { r.key = _pfResaNewKey(); fix = true; } });   // identifiant unique (lien avec Fidélité Pro)
+    if (fix) try { localStorage.setItem(_pfResaKey(), JSON.stringify(v)); } catch (e) {}
+    return v;
 }
-function _pfResaSave(list) { try { localStorage.setItem(_pfResaKey(), JSON.stringify(list)); } catch (e) {} }
+function _pfResaSave(list, noPush) {
+    list.forEach(function(r) { if (!r.key) r.key = _pfResaNewKey(); });
+    try { localStorage.setItem(_pfResaKey(), JSON.stringify(list)); } catch (e) {}
+    if (!noPush) _pfResaPushSoon();
+}
 function _pfResaAll() {
     var out = [], seen = {};
     (window._pfServerResa || []).forEach(function(r) {
         if (!r || r.status === 'picked' || r.status === 'cancelled') return;
+        if (r.portalKey) return;   // réservation faite depuis le portail : déjà dans la liste locale
         var id = String(r.productId != null ? r.productId : (r.id != null ? r.id : r.name));
         if (seen[id]) return; seen[id] = 1;
         out.push({ id: id, name: r.name, qty: r.qty || 1, at: _pfToMs(r.date || r.at), shop: true, status: r.status, want: r.pickupDate || r.wantDate || '' });
@@ -1130,7 +1144,7 @@ function _pfResaAll() {
     _pfResaLocal().forEach(function(r) {
         var id = String(r.id);
         if (seen[id]) return; seen[id] = 1;
-        out.push({ id: id, name: r.name, qty: r.qty || 1, at: r.at, img: r.img, price: r.price, want: r.want || '' });
+        out.push({ id: id, name: r.name, qty: r.qty || 1, at: r.at, img: r.img, price: r.price, want: r.want || '', key: r.key, imported: !!r.imported, status: r.status || '' });
     });
     return out.sort(function(a, b) { return (b.at || 0) - (a.at || 0); });
 }
@@ -1336,6 +1350,8 @@ function _pfResaRefresh() {
         var status = ok
             ? '<span class="pf-resa-st ok"><i></i>' + (r.status === 'ready' ? 'Prêt — mis de côté pour vous' : 'Disponible') + '</span>'
             : '<span class="pf-resa-st wait"><i></i>En attente de réassort</span>';
+        if (!r.shop && r.imported) status += '<span class="pf-resa-sync ok">🏪 Reçue par le commerce</span>';
+        else if (!r.shop && window._pfResaSyncOk) status += '<span class="pf-resa-sync">📤 Transmise</span>';
         var actions = '';
         if (ok && p && window._pfCatalogAccess && !r.shop) actions += '<button class="pf-resa-cart" data-id="' + _pfCatEsc(p.id) + '" onclick="pfResaToCart(this.dataset.id, event)" title="Remettre dans le panier">🛒 Panier</button>';
         if (!r.shop) actions += '<button class="pf-resa-x" data-id="' + _pfCatEsc(r.id) + '" onclick="pfResaRemove(this.dataset.id)" aria-label="Annuler la réservation">✕</button>';
@@ -1391,6 +1407,106 @@ document.addEventListener('keydown', function(e) {
 /* Retour sur l'app (onglet ou app réouverts) : on recharge le catalogue en silence
    pour détecter tout de suite un article réservé redevenu disponible. */
 var _pfLastCatFetch = 0;
+
+/* ═══ LIAISON PORTAIL ⇄ FIDÉLITÉ PRO (réservations) ═══
+   - Chaque réservation du client est écrite dans Firestore : reservations/{uid du client}.
+     Fidélité Pro la lit et l'ajoute automatiquement à la fiche du client.
+   - Fidélité Pro renvoie ensuite les réservations (avec leur statut) dans la fiche client
+     (clients/{uid}.reservations) : ici on marque « Reçue par le commerce », « Prête »,
+     et on retire celles qui ont été récupérées / annulées en boutique. */
+var _pfResaPushT = null;
+window._pfResaSyncOk = false;
+function _pfUid() { try { return _pfAuth && _pfAuth.currentUser ? _pfAuth.currentUser.uid : null; } catch (e) { return null; } }
+function _pfResaPushSoon() { clearTimeout(_pfResaPushT); _pfResaPushT = setTimeout(_pfResaPush, 400); }
+function _pfResaPush() {
+    var uid = _pfUid();
+    if (!_pfDb || !uid) return Promise.resolve();
+    var items = _pfResaLocal().map(function(r) {
+        return { key: r.key, id: r.id, name: r.name || '', qty: +r.qty || 1, price: +r.price || 0, want: r.want || '', at: r.at || Date.now() };
+    });
+    return _pfDb.collection('reservations').doc(uid).set({
+        items: items,
+        clientName: window._pfCurrentName || '',
+        barcode: window._pfCurrentBarcode || '',
+        updatedAt: new Date().toISOString(),
+        updatedAtMs: Date.now()
+    }).then(function() {
+        window._pfResaSyncOk = true;
+        try { localStorage.setItem(_pfResaKey() + '_pushed', String(Date.now())); } catch (e) {}
+        _pfResaRefresh();
+    }).catch(function(err) {
+        window._pfResaSyncOk = false;
+        console.warn('[Portail] Réservations non transmises à Fidélité Pro (règle Firestore « reservations » ?)', err);
+    });
+}
+/* Rapproche la liste locale du statut renvoyé par Fidélité Pro (fiche client). */
+function _pfResaReconcile() {
+    var srv = (window._pfServerResa || []).filter(function(r) { return r && r.portalKey; });
+    var byKey = {};
+    srv.forEach(function(r) { byKey[r.portalKey] = r; });
+    var list = _pfResaLocal(), changed = false, removed = [];
+    list = list.filter(function(r) {
+        var s = byKey[r.key];
+        if (s) {
+            if (!r.imported || r.status !== s.status) { r.imported = true; r.status = s.status; changed = true; }
+            return true;
+        }
+        if (r.imported) { removed.push(r); changed = true; return false; }   // récupérée ou annulée en boutique
+        return true;
+    });
+    if (changed) _pfResaSave(list, !removed.length);   // on ne repousse que si des articles ont disparu
+    if (removed.length) pfToast('✅ ' + (removed.length === 1 ? '« ' + _pfCatEsc(removed[0].name || 'Article') + ' » retiré' : removed.length + ' réservations retirées') + ' de vos réservations (traitées par le commerce)');
+}
+/* À la connexion : récupère la liste enregistrée en ligne (autre téléphone, réinstallation…). */
+function _pfResaPull() {
+    var uid = _pfUid();
+    if (!_pfDb || !uid) { _pfResaReconcile(); _pfResaRefresh(); return; }
+    _pfDb.collection('reservations').doc(uid).get().then(function(doc) {
+        window._pfResaSyncOk = true;
+        var local = _pfResaLocal(), changed = false;
+        if (doc.exists) {
+            var data = doc.data() || {}, remote = Array.isArray(data.items) ? data.items : [];
+            var lastPush = 0; try { lastPush = +localStorage.getItem(_pfResaKey() + '_pushed') || 0; } catch (e) {}
+            var remoteNewer = (+data.updatedAtMs || 0) > lastPush;
+            var localByKey = {}; local.forEach(function(r) { localByKey[r.key] = r; });
+            var remoteKeys = {};
+            remote.forEach(function(it) {
+                if (!it || !it.key) return;
+                remoteKeys[it.key] = 1;
+                if (!localByKey[it.key]) { local.push({ key: it.key, id: it.id, name: it.name, qty: it.qty, price: it.price, want: it.want || '', at: it.at }); changed = true; }
+            });
+            if (remoteNewer) {   // la version en ligne est la plus récente : un article absent en ligne a été retiré ailleurs
+                var before = local.length;
+                local = local.filter(function(r) { return remoteKeys[r.key] || (r.at || 0) > (+data.updatedAtMs || 0); });
+                if (local.length !== before) changed = true;
+            } else if (local.some(function(r) { return !remoteKeys[r.key]; })) changed = true;   // à transmettre
+        } else if (local.length) changed = true;
+        if (changed) _pfResaSave(local, false); else _pfResaSave(local, true);
+        _pfResaReconcile();
+        _pfResaRefresh();
+    }).catch(function(err) {
+        console.warn('[Portail] Lecture des réservations en ligne impossible', err);
+        _pfResaReconcile();
+        _pfResaRefresh();
+    });
+}
+/* Relit la fiche client (statuts envoyés par Fidélité Pro) au retour sur l'app et régulièrement. */
+var _pfLastClientFetch = 0;
+function _pfClientRefreshSilent() {
+    var uid = _pfUid();
+    if (!_pfDb || !uid || Date.now() - _pfLastClientFetch < 30000) return;
+    _pfLastClientFetch = Date.now();
+    _pfDb.collection('clients').doc(uid).get().then(function(doc) {
+        if (!doc.exists) return;
+        var data = doc.data() || {};
+        window._pfServerResa = Array.isArray(data.reservations) ? data.reservations : [];
+        _pfResaReconcile();
+        _pfResaRefresh();
+    }).catch(function() {});
+}
+document.addEventListener('visibilitychange', function() { if (!document.hidden) _pfClientRefreshSilent(); });
+setInterval(function() { if (!document.hidden && document.getElementById('pf-dash') && document.getElementById('pf-dash').style.display !== 'none') _pfClientRefreshSilent(); }, 90000);
+
 function _pfCatRefreshSilent() {
     if (!_pfDb || !window._pfCatalogAccess || Date.now() - _pfLastCatFetch < 60000) return;
     _pfLastCatFetch = Date.now();
@@ -1847,6 +1963,8 @@ function _pfRenderDash(data){
     pfSwitchTab('compte');
     _pfTabbarSync('home');
     _pfResaRefresh();
+    _pfLastClientFetch = Date.now();
+    _pfResaPull();
     // Le catalogue est chargé dès la connexion : il sert à savoir si les articles réservés sont disponibles.
     if (window._pfCatalogAccess && !_pfCatLoaded) pfLoadCatalogue();
 }
