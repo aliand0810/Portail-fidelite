@@ -3180,5 +3180,179 @@ function _pfLoadClientData(uid){
     };
 })();
 </script>
+<style>
+/* ── Icônes noir et blanc en relief (remplacent les emoji affichés) ── */
+.i3{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.24em;overflow:visible;flex-shrink:0;filter:drop-shadow(0 1.6px 1.3px rgba(0,0,0,.3));}
+.i3 use.d{fill:#05070a;opacity:.85;transform:translate(.8px,1px);}
+.i3 use.f{fill:url(#g3d);}
+.i3 use.h{fill:none;stroke:#fff;stroke-width:.5;opacity:.55;transform:translate(-.25px,-.3px);}
+.i3.w{filter:drop-shadow(0 1.6px 1.3px rgba(0,0,0,.45));}
+.i3.w use.d{fill:#000;opacity:.5;}
+.i3.w use.f{fill:url(#g3w);}
+.i3.w use.h{opacity:.9;}
+.pf-barcode-box svg.i3,#pf-card-barcode-wrap svg.i3{width:1.2em;height:1.2em;max-width:none;display:inline-block;}
+/* Barre d'onglets : icônes en relief, atténuées quand l'onglet n'est pas actif */
+.pf-tb .o,.pf-tb .f{display:none !important;}
+.pf-tb svg.i3.tb3{width:27px;height:27px;opacity:.38;filter:drop-shadow(0 1px 1px rgba(0,0,0,.18));transition:opacity .2s,transform .35s cubic-bezier(.3,1.6,.5,1);}
+.pf-tb.on svg.i3.tb3{opacity:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.32));animation:pfTbPop .4s cubic-bezier(.3,1.6,.5,1);}
+@media (prefers-color-scheme: dark){
+  .pf-tb svg.i3.tb3 use.f{fill:url(#g3w);} .pf-tb svg.i3.tb3 use.d{fill:#000;opacity:.5;} .pf-tb svg.i3.tb3 use.h{opacity:.9;}
+  .pf-tb svg.i3.tb3{opacity:.5;}
+}
+</style>
+<script>
+/* ═══ ICÔNES 3D NOIR ET BLANC — chaque emoji affiché dans le portail est remplacé à la volée par une
+   icône vectorielle en relief (dégradé gris, ombre portée, reflet). Version blanche automatique sur
+   les fonds foncés ou colorés. Les messages WhatsApp envoyés au commerce gardent leurs emoji. ═══ */
+(function () {
+  var ICONS = {
+  cup: "<path d=\"M5 4.6h14V7H5z\"/><path d=\"M6.2 8h11.6l-1.3 12.3A2 2 0 0 1 14.5 22h-5a2 2 0 0 1-2-1.7z\"/><path d=\"M13.1 1h2.3l-1.1 3h-2.2z\"/>",
+  can: "<path d=\"M5 5.2C5 3.9 8.1 3 12 3s7 .9 7 2.2v13.6c0 1.3-3.1 2.2-7 2.2s-7-.9-7-2.2zM6.6 9.5v5c1.4.6 3.3.9 5.4.9s4-.3 5.4-.9v-5c-1.4.6-3.3.9-5.4.9s-4-.3-5.4-.9z\" fill-rule=\"evenodd\"/>",
+  pot: "<path d=\"M12 3.2a1.3 1.3 0 0 1 1.3 1.3v.6c3.3.5 5.7 2 5.9 3.9H4.8c.2-1.9 2.6-3.4 5.9-3.9v-.6A1.3 1.3 0 0 1 12 3.2z\"/><path d=\"M3.5 10.2h17v1.6h1.8v1.8h-1.8V17a4 4 0 0 1-4 4h-9a4 4 0 0 1-4-4v-3.4H1.7v-1.8h1.8z\"/>",
+  bag: "<path d=\"M8 8V6.5a4 4 0 0 1 8 0V8h-2V6.5a2 2 0 0 0-4 0V8z\"/><path d=\"M4.6 8.6h14.8l1.1 12.2a1 1 0 0 1-1 1.1H4.5a1 1 0 0 1-1-1.1z\"/>",
+  apple: "<path d=\"M12 7.6c-1.2-.9-4.6-1.6-6.3 1.1-1.9 3-.9 7.7 1.2 10.4 1.5 1.9 3 2.4 5.1 1.6 2.1.8 3.6.3 5.1-1.6 2.1-2.7 3.1-7.4 1.2-10.4-1.7-2.7-5.1-2-6.3-1.1z\"/><path d=\"M12.4 6.3c-.1-2.4 1.5-4.2 4-4.3.1 2.4-1.5 4.2-4 4.3z\"/>",
+  carrot: "<path d=\"M15.6 8.4l-.2-.2c-1.6-1.6-4.3-1.4-5.7.4L2.4 19.4c-.8 1.2.6 2.6 1.8 1.8l10.8-7.3c1.8-1.4 2-4.1.6-5.5z\"/><path d=\"M15.7 7.5c-.6-2 .1-4.7 2.3-6 .3 1.6 0 2.9-.7 3.9 1-.6 2.4-.9 4-.5-1.2 2.2-3.7 3.2-5.6 2.6z\"/>",
+  fish: "<path d=\"M5.4 12c2.5-3.7 5.9-5.8 9.3-5.8 3.6 0 6.3 2.4 7.3 5.8-1 3.4-3.7 5.8-7.3 5.8-3.4 0-6.8-2.1-9.3-5.8zm12.6-1.2a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4z\" fill-rule=\"evenodd\"/><path d=\"M1 6.8l5.4 5.2L1 17.2z\"/>",
+  meat: "<path d=\"M14.6 2.5a6.9 6.9 0 0 1 6 10.1c-1.6 2.8-4.9 3.7-7.3 2.9l-3.6 3.6a2.4 2.4 0 1 1-3.3 1.6 2.4 2.4 0 1 1 1.6-3.3l3.6-3.6c-.8-2.4.1-5.7 2.9-7.3a6.9 6.9 0 0 1 .1-4z\"/>",
+  cheese: "<path d=\"M2 12.8L14.6 5 22 10.6V19H2zm6 2.2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7.5-1.5a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zM12 8.8a1 1 0 1 0 0 2 1 1 0 0 0 0-2z\" fill-rule=\"evenodd\"/>",
+  bread: "<path d=\"M3 11a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5 2 2 0 0 1-2 2v6a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-6a2 2 0 0 1-2-2z\"/>",
+  snow: "<rect x=\"11\" y=\"1.5\" width=\"2\" height=\"21\" rx=\"1\"/><rect x=\"11\" y=\"1.5\" width=\"2\" height=\"21\" rx=\"1\" transform=\"rotate(60 12 12)\"/><rect x=\"11\" y=\"1.5\" width=\"2\" height=\"21\" rx=\"1\" transform=\"rotate(-60 12 12)\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>",
+  candy: "<circle cx=\"12\" cy=\"12\" r=\"5\"/><path d=\"M7.6 9.4L2 6.5v11l5.6-2.9zM16.4 9.4L22 6.5v11l-5.6-2.9z\"/>",
+  bottle: "<path d=\"M8.5 3h6.5v2h-2v1.6h1.2A2.8 2.8 0 0 1 17 9.4V20a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9.4a2.8 2.8 0 0 1 2.8-2.8H11V5H8.5z\"/><path d=\"M15 3h3.5v1.6H15z\"/>",
+  wine: "<path d=\"M10 2h4v5.2c2 1 3 2.6 3 4.8v9a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-9c0-2.2 1-3.8 3-4.8z\"/>",
+  coffee: "<path d=\"M4 7.5h13V13a5.5 5.5 0 0 1-5.5 5.5h-2A5.5 5.5 0 0 1 4 13z\"/><path d=\"M17 8.5h1.5a2.7 2.7 0 0 1 0 5.4H17v-1.8h1.5a.9.9 0 0 0 0-1.8H17z\"/><path d=\"M2.5 19.8h16v1.7h-16z\"/><path d=\"M8 2.5c1 1 1 2 0 3h1.4c1-1 1-2 0-3zM11.5 2.5c1 1 1 2 0 3h1.4c1-1 1-2 0-3z\"/>",
+  bowl: "<path d=\"M2 11.5h20a10 9 0 0 1-20 0z\"/><path d=\"M5.2 10.4a6.8 4.6 0 0 1 13.6 0z\"/><path d=\"M16 3.2l5.6-1.6.4 1.4-5.6 1.6zM15.4 5.6l6.3-.2v1.4l-6.3.2z\"/>",
+  spray: "<path d=\"M8 9.5h7.2V21a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1z\"/><path d=\"M8 4.5h6l2.2 2.2V8.6H8z\"/><path d=\"M16.8 5.4h3.4v1.6h-3.4zM21 3.2l1 .9-1 .9zM21 7.4l1 .9-1 .9z\"/>",
+  baby: "<path d=\"M10.4 3.6a1.6 1.6 0 0 1 3.2 0V5.6h-3.2z\"/><path d=\"M8.3 6.4h7.4v2H8.3z\"/><path d=\"M9 9.2h6v11a1.8 1.8 0 0 1-1.8 1.8h-2.4A1.8 1.8 0 0 1 9 20.2z\"/>",
+  paw: "<ellipse cx=\"12\" cy=\"16\" rx=\"5\" ry=\"4.4\"/><circle cx=\"6\" cy=\"10.4\" r=\"2.1\"/><circle cx=\"9.4\" cy=\"6.4\" r=\"2.2\"/><circle cx=\"14.6\" cy=\"6.4\" r=\"2.2\"/><circle cx=\"18\" cy=\"10.4\" r=\"2.1\"/>",
+  basket: "<path d=\"M7.4 9.2L10.6 3l1.6.8-2.8 5.4zM16.6 9.2L13.4 3l-1.6.8 2.8 5.4z\"/><path d=\"M1.5 9.2h21v2.4h-1.1l-1.9 9.1a1.6 1.6 0 0 1-1.6 1.3H6.1a1.6 1.6 0 0 1-1.6-1.3l-1.9-9.1H1.5z\"/>",
+  cart: "<path d=\"M1 3h3.6l.8 3.2H22l-2.6 9.3H7.7l.4 1.6H19.4v1.8H6.7L3.2 4.8H1z\"/><circle cx=\"8.6\" cy=\"20.8\" r=\"1.7\"/><circle cx=\"17.6\" cy=\"20.8\" r=\"1.7\"/>",
+  flame: "<path d=\"M12.4 1.5c.9 3.3 5.6 5.9 5.6 11.3A6 6 0 0 1 12 18.9h0a6 6 0 0 1-6-6c0-2.7 1.6-4.4 2.7-5.6.2 1.7 1.1 2.8 2.2 3.3-.1-3.9.5-6.4 1.5-9.1z\"/><path d=\"M7 20h10v2H7z\" opacity=\".001\"/>",
+  sparkle: "<path d=\"M11 3l2.3 6.7L20 12l-6.7 2.3L11 21l-2.3-6.7L2 12l6.7-2.3z\"/><path d=\"M19 1.5l.9 2.1 2.1.9-2.1.9L19 7.5l-.9-2.1-2.1-.9 2.1-.9z\"/>",
+  search: "<path d=\"M10.5 2a8.5 8.5 0 0 1 6.9 13.4l4.6 4.6-2 2-4.6-4.6A8.5 8.5 0 1 1 10.5 2zm0 2.8a5.7 5.7 0 1 0 0 11.4 5.7 5.7 0 0 0 0-11.4z\" fill-rule=\"evenodd\"/>",
+  box: "<path d=\"M12 1.8l9.5 4.6v11.2L12 22.2l-9.5-4.6V6.4zM5.2 7.3L12 10.6l6.8-3.3L12 4z\" fill-rule=\"evenodd\"/>",
+  gift: "<path d=\"M2.5 7.5h19v4h-19z\"/><path d=\"M4 12.8h7v9H4zM13 12.8h7v9h-7z\"/><path d=\"M11 7.5h2v14.3h-2z\" opacity=\".001\"/><path d=\"M12 7.3C10.4 4 6.8 3.2 6.1 5.1 5.5 6.8 8.6 7.4 12 7.3zm0 0c1.6-3.3 5.2-4.1 5.9-2.2.6 1.7-2.5 2.3-5.9 2.2z\"/>",
+  home: "<path d=\"M12 2.5l10 8.6-1.3 1.5-1.2-1V21a1 1 0 0 1-1 1h-4.3v-6.2h-4.4V22H5.5a1 1 0 0 1-1-1V11.6l-1.2 1L2 11.1z\"/>",
+  phone: "<path d=\"M6.6 2.5l3 .4 1.4 4.6-2.2 1.6a12 12 0 0 0 6.1 6.1l1.6-2.2 4.6 1.4.4 3a2 2 0 0 1-2 2.1A17.5 17.5 0 0 1 2.5 4.5a2 2 0 0 1 2.1-2z\"/>",
+  pin: "<path d=\"M12 1.8a7.6 7.6 0 0 1 7.6 7.6c0 5.2-7.6 12.8-7.6 12.8S4.4 14.6 4.4 9.4A7.6 7.6 0 0 1 12 1.8zm0 4.6a3 3 0 1 0 0 6 3 3 0 0 0 0-6z\" fill-rule=\"evenodd\"/>",
+  mail: "<path d=\"M2 5h20v14H2zm2.2 2.3v.3l7.8 5.3 7.8-5.3v-.3z\" fill-rule=\"evenodd\"/>",
+  chat: "<path d=\"M12 2.5c5.5 0 10 3.8 10 8.6s-4.5 8.6-10 8.6c-1.2 0-2.4-.2-3.4-.5L3 21.5l1.5-4.6C3 15.4 2 13.4 2 11.1 2 6.3 6.5 2.5 12 2.5z\"/>",
+  star: "<path d=\"M12 1.8l3.1 6.4 7 1-5.1 4.9 1.2 7L12 17.8l-6.2 3.3 1.2-7L1.9 9.2l7-1z\"/>",
+  ledger: "<path d=\"M5 2.5h12.5A1.5 1.5 0 0 1 19 4v16a1.5 1.5 0 0 1-1.5 1.5H5a2 2 0 0 1-2-2v-15a2 2 0 0 1 2-2zm3 4v2h8v-2zm0 4v2h6v-2z\" fill-rule=\"evenodd\"/><path d=\"M20 5h1.6v3H20zm0 5h1.6v3H20z\"/>",
+  bookmark: "<path d=\"M6 2h12a1 1 0 0 1 1 1v19l-7-4.6L5 22V3a1 1 0 0 1 1-1z\"/>",
+  refresh: "<path d=\"M12 4a8 8 0 0 1 7.4 5H22l-3.6 4.5L14.8 9h2.4A5.6 5.6 0 0 0 6.6 10.4L4.3 9.6A8 8 0 0 1 12 4z\"/><path d=\"M12 20a8 8 0 0 1-7.4-5H2l3.6-4.5L9.2 15H6.8a5.6 5.6 0 0 0 10.6-1.4l2.3.8A8 8 0 0 1 12 20z\"/>",
+  calendar: "<path d=\"M7 1.5h2.2v3H7zm7.8 0H17v3h-2.2z\"/><path d=\"M4 4h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 6v10h16V10zm2 2h3v3H6zm5 0h3v3h-3zm5 0h3v3h-3zm-10 4.5h3V19H6zm5 0h3V19h-3z\" fill-rule=\"evenodd\"/>",
+  receipt: "<path d=\"M5 1.5h14v21l-2.3-1.6-2.4 1.6-2.3-1.6-2.3 1.6-2.4-1.6L5 22.5zM8 6v1.8h8V6zm0 4v1.8h8V10zm0 4v1.8h5V14z\" fill-rule=\"evenodd\"/>",
+  tag: "<path d=\"M2 3a1 1 0 0 1 1-1h8.2a2 2 0 0 1 1.4.6l9 9a2 2 0 0 1 0 2.8l-7.8 7.8a2 2 0 0 1-2.8 0l-9-9A2 2 0 0 1 2 11.2zm5.5 2.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4z\" fill-rule=\"evenodd\"/>",
+  note: "<path d=\"M1.5 5.5h21v13h-21zm10.5 2.8a3.7 3.7 0 1 0 0 7.4 3.7 3.7 0 0 0 0-7.4zM4 8v2a2 2 0 0 0 2-2zm14 0a2 2 0 0 0 2 2V8zM4 14v2h2a2 2 0 0 0-2-2zm16 0a2 2 0 0 0-2 2h2z\" fill-rule=\"evenodd\"/>",
+  coin: "<path d=\"M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 3a7 7 0 1 0 0 14 7 7 0 0 0 0-14z\" fill-rule=\"evenodd\"/><path d=\"M13.4 7.5c1 0 1.9.3 2.6.9l-.9 1.5a2.6 2.6 0 0 0-1.6-.5c-1 0-1.8.6-2.1 1.6h3l-.4 1.3h-2.8v.4h2.6l-.4 1.3h-2c.3 1 1.1 1.6 2.1 1.6.6 0 1.2-.2 1.6-.5l.6 1.5c-.7.5-1.5.8-2.5.8-2 0-3.6-1.3-4-3.4H8.4l.4-1.3h.6v-.4H8.4l.4-1.3h.9c.4-2.2 2-3.5 3.7-3.5z\"/>",
+  moneybag: "<path d=\"M9 2h6l-1.6 3.2h-2.8z\"/><path d=\"M10.2 6.2h3.6C18 8.6 21 12.6 21 16.5c0 3.4-2.7 5.5-9 5.5s-9-2.1-9-5.5c0-3.9 3-7.9 7.2-10.3zm2.9 4.3c-1.9 0-3.3 1.2-3.7 3.1h-.9l-.4 1.2h1.2v.5h-.8l-.4 1.2h1.3c.4 1.9 1.9 3 3.7 3 .9 0 1.7-.3 2.3-.7l-.6-1.4c-.4.3-.9.5-1.5.5-.9 0-1.6-.5-1.9-1.4h2.1l.4-1.2H11.1v-.5h2.8l.4-1.2h-3c.3-.9 1-1.4 1.9-1.4.6 0 1.1.2 1.5.5l.8-1.4c-.6-.5-1.4-.8-2.4-.8z\" fill-rule=\"evenodd\"/>",
+  gem: "<path d=\"M6.5 3h11l4.5 6-10 12.5L2 9zm1.2 2.2L5.3 8.6h3.6zm8.6 0l-1.2 3.4h3.6zM10 5.2l-1 3.4h6l-1-3.4zm-4.2 5.6l4.3 5.4-1.6-5.4zm7.9 0L12 16.6l1.7-5.8zm4.5 0h-2.7l-1.6 5.4z\" fill-rule=\"evenodd\"/>",
+  trash: "<path d=\"M9 2h6l.8 1.8H21v2.4H3V3.8h5.2z\"/><path d=\"M4.6 7.4h14.8l-1.2 13a1.8 1.8 0 0 1-1.8 1.6H7.6a1.8 1.8 0 0 1-1.8-1.6zM9 10v8.5h1.8V10zm4.2 0v8.5H15V10z\" fill-rule=\"evenodd\"/>",
+  torch: "<path d=\"M6 2h12v4l-3 4v11.5a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5V10L6 6zm5 11v3h2v-3z\" fill-rule=\"evenodd\"/>",
+  camera: "<path d=\"M8.5 3.5h7l1.6 2.5H21a1.5 1.5 0 0 1 1.5 1.5v11A1.5 1.5 0 0 1 21 20H3a1.5 1.5 0 0 1-1.5-1.5v-11A1.5 1.5 0 0 1 3 6h3.9zM12 8.3a4.7 4.7 0 1 0 0 9.4 4.7 4.7 0 0 0 0-9.4zm0 2.2a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z\" fill-rule=\"evenodd\"/>",
+  card: "<path d=\"M3 4.5h18a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5H3A1.5 1.5 0 0 1 1.5 18V6A1.5 1.5 0 0 1 3 4.5zM1.5 8v3h21V8zM4.5 14.5v2h5v-2z\" fill-rule=\"evenodd\"/>",
+  bell: "<path d=\"M12 2a1.6 1.6 0 0 1 1.6 1.6v.6a6.5 6.5 0 0 1 4.9 6.3v4.3l2 2.7v1.5h-17v-1.5l2-2.7v-4.3a6.5 6.5 0 0 1 4.9-6.3v-.6A1.6 1.6 0 0 1 12 2z\"/><path d=\"M9.3 20h5.4a2.7 2.7 0 0 1-5.4 0z\"/>",
+  warn: "<path d=\"M10.3 2.9a2 2 0 0 1 3.4 0l9 15.6a2 2 0 0 1-1.7 3H3a2 2 0 0 1-1.7-3zM10.8 8l.3 6.5h1.8l.3-6.5zM12 16a1.4 1.4 0 1 0 0 2.8 1.4 1.4 0 0 0 0-2.8z\" fill-rule=\"evenodd\"/>",
+  medal: "<path d=\"M6 1.5h4l2 4.2 2-4.2h4l-3.8 7.4h-4.4z\"/><path d=\"M12 8.5a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 2.4l1.3 2.7 3 .4-2.2 2.1.5 3-2.6-1.4-2.6 1.4.5-3-2.2-2.1 3-.4z\" fill-rule=\"evenodd\"/>",
+  xcircle: "<path d=\"M12 1.5a10.5 10.5 0 1 1 0 21 10.5 10.5 0 0 1 0-21zM8.2 6.6L6.6 8.2 10.4 12l-3.8 3.8 1.6 1.6 3.8-3.8 3.8 3.8 1.6-1.6-3.8-3.8 3.8-3.8-1.6-1.6-3.8 3.8z\" fill-rule=\"evenodd\"/>",
+  okcircle: "<path d=\"M12 1.5a10.5 10.5 0 1 1 0 21 10.5 10.5 0 0 1 0-21zm4.9 6.1L10.6 14l-3-3-1.7 1.7 4.7 4.7 8-8z\" fill-rule=\"evenodd\"/>",
+  store: "<path d=\"M3.5 2.5h17l1.8 5.3a3 3 0 0 1-5.1 2.5 3 3 0 0 1-5.2 0 3 3 0 0 1-5.2 0 3 3 0 0 1-5.1-2.5z\"/><path d=\"M3.5 12.2a4.6 4.6 0 0 0 3.5-.4 4.7 4.7 0 0 0 5 0 4.7 4.7 0 0 0 5 0 4.6 4.6 0 0 0 3.5.4V22H3.5zm6 3.3V22h5v-6.5z\" fill-rule=\"evenodd\"/>",
+  hourglass: "<path d=\"M5 1.5h14v2h-1.3c0 3.6-1.8 6.4-4 8.5 2.2 2.1 4 4.9 4 8.5H19v2H5v-2h1.3c0-3.6 1.8-6.4 4-8.5-2.2-2.1-4-4.9-4-8.5H5z\"/>",
+  upload: "<path d=\"M12 1.5l5.5 6h-3.7v7h-3.6v-7H6.5z\"/><path d=\"M2 13h5.5v2.5h9V13H22v7.5a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 20.5z\"/>",
+  gear: "<path d=\"M10.3 1.5h3.4l.5 2.6 1.8.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.8 2.6.5v3.4l-2.6.5-.8 1.8 1.5 2.2-2.4 2.4-2.2-1.5-1.8.8-.5 2.6h-3.4l-.5-2.6-1.8-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.8-2.6-.5v-3.4l2.6-.5.8-1.8-1.5-2.2 2.4-2.4 2.2 1.5 1.8-.8zM12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6z\" fill-rule=\"evenodd\"/>",
+  clip: "<path d=\"M8.5 1.5h7v3h-7z\"/><path d=\"M5 3h2v3h10V3h2a1.5 1.5 0 0 1 1.5 1.5v16A1.5 1.5 0 0 1 19 22H5a1.5 1.5 0 0 1-1.5-1.5v-16A1.5 1.5 0 0 1 5 3zm3 6.5v1.8h8V9.5zm0 4v1.8h8v-1.8zm0 4v1.8h5v-1.8z\" fill-rule=\"evenodd\"/>",
+  tap: "<path d=\"M10.5 1.5a1.8 1.8 0 0 1 1.8 1.8v6.2l5.3 1a3 3 0 0 1 2.4 3.3l-.7 5.4A3 3 0 0 1 16.3 22h-5.2a3 3 0 0 1-2.4-1.2L4.5 15.3a1.7 1.7 0 0 1 2.6-2.2l1.6 1.6V3.3a1.8 1.8 0 0 1 1.8-1.8z\"/>",
+  party: "<path d=\"M2 22l5.6-14.6 9 9z\"/><path d=\"M14 2.5l1.5.4-.7 3.2-1.5-.4zM19 4l1.2 1-2.3 2.4-1.1-1zM21.5 9l.3 1.5-3.2.7-.3-1.5zM10.5 4.5h1.6v2.4h-1.6zM18.5 12.5h2.4v1.6h-2.4z\"/>",
+  ticket: "<path d=\"M2 5.5h20v4a2.5 2.5 0 0 0 0 5v4H2v-4a2.5 2.5 0 0 0 0-5zm13 1.8v1.6h1.6V7.3zm0 3.9v1.6h1.6v-1.6zm0 3.9v1.6h1.6v-1.6z\" fill-rule=\"evenodd\"/>",
+  logout: "<path d=\"M4 2h10a1 1 0 0 1 1 1v4h-2.2V4.2H6.2v15.6h6.6V17H15v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z\"/><path d=\"M17 7.5l5 4.5-5 4.5v-3.2H9.5v-2.6H17z\"/>",
+  question: "<path d=\"M12 1.5a10.5 10.5 0 1 1 0 21 10.5 10.5 0 0 1 0-21zm.1 4.3c-2.4 0-4 1.4-4.1 3.6h2.4c.1-1 .7-1.5 1.6-1.5s1.5.5 1.5 1.3c0 .7-.3 1.1-1.3 1.7-1.2.7-1.7 1.5-1.6 2.9v.6h2.3v-.5c0-.8.3-1.1 1.3-1.7 1.2-.7 1.9-1.6 1.9-3 0-2-1.6-3.4-4-3.4zm-.2 10.2a1.4 1.4 0 1 0 0 2.8 1.4 1.4 0 0 0 0-2.8z\" fill-rule=\"evenodd\"/>",
+  ban: "<path d=\"M12 1.5a10.5 10.5 0 1 1 0 21 10.5 10.5 0 0 1 0-21zm0 3a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15z\" fill-rule=\"evenodd\"/><path d=\"M5.6 7.2l1.6-1.6 11.2 11.2-1.6 1.6z\"/>",
+  pause: "<path d=\"M6 3h4.2v18H6zm7.8 0H18v18h-4.2z\"/>",
+  lock: "<path d=\"M12 1.5a5 5 0 0 1 5 5V9h-2.4V6.5a2.6 2.6 0 0 0-5.2 0V9H7V6.5a5 5 0 0 1 5-5z\"/><path d=\"M4.5 9h15a1 1 0 0 1 1 1v10.5a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5V10a1 1 0 0 1 1-1zm7.5 4a1.8 1.8 0 0 0-.9 3.4v2.1h1.8v-2.1A1.8 1.8 0 0 0 12 13z\" fill-rule=\"evenodd\"/>",
+  clock: "<path d=\"M12 1.5a10.5 10.5 0 1 1 0 21 10.5 10.5 0 0 1 0-21zm-1.2 4.5v7.2l5.4 3.2 1.1-1.9-4.1-2.4V6z\" fill-rule=\"evenodd\"/>",
+  memo: "<path d=\"M4 3h10l-2.2 2.2H6.2v13.6h13.6v-5.6L22 11v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z\"/><path d=\"M18.6 2.4l3 3L12.8 14.2 9 15l.8-3.8z\"/>",
+  plug: "<path d=\"M7.5 1.5h2v5h5v-5h2v5H19v4a7 7 0 0 1-5.8 6.9v5.1h-2.4v-5.1A7 7 0 0 1 5 10.5v-4h2.5z\"/>",
+  shirt: "<path d=\"M8.3 2.5c.6 1.6 2 2.5 3.7 2.5s3.1-.9 3.7-2.5L22 5.6l-2.3 5.1-2.7-1.2v12H7v-12l-2.7 1.2L2 5.6z\"/>",
+  mobile: "<path d=\"M7 1.5h10A1.5 1.5 0 0 1 18.5 3v18a1.5 1.5 0 0 1-1.5 1.5H7A1.5 1.5 0 0 1 5.5 21V3A1.5 1.5 0 0 1 7 1.5zM7.8 4v13.5h8.4V4zM12 18.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z\" fill-rule=\"evenodd\"/><path d=\"M10.9 5.5h2.2V10h2.2L12 13.6 8.7 10h2.2z\"/>"
+  };
+  ICONS.scan = '<path d="M2 2h6v2.4H4.4V8H2zm14 0h6v6h-2.4V4.4H16zM2 16h2.4v3.6H8V22H2zm17.6 0H22v6h-6v-2.4h3.6zM6.5 7h1.6v10H6.5zm2.9 0h.8v10h-.8zm2.1 0h1.8v10h-1.8zm3 0h.8v10h-.8zm2 0h1.6v10h-1.6z"/>';
+  ICONS.user = '<path d="M12 1.5a10.5 10.5 0 1 1 0 21 10.5 10.5 0 0 1 0-21zm0 4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2zm0 9c-2.9 0-5.3 1.4-6.4 3.5a8 8 0 0 0 12.8 0c-1.1-2.1-3.5-3.5-6.4-3.5z" fill-rule="evenodd"/>';
+  var EMAP = {"⭐": "star", "📒": "ledger", "🔖": "bookmark", "🔄": "refresh", "📅": "calendar", "🧾": "receipt", "🏷": "tag", "💶": "note", "💵": "note", "🪙": "coin", "💰": "moneybag", "💎": "gem", "🗑": "trash", "🔦": "torch", "📷": "camera", "💳": "card", "🔔": "bell", "⚠": "warn", "🥇": "medal", "🥈": "medal", "🥉": "medal", "❌": "xcircle", "✅": "okcircle", "🏪": "store", "⏳": "hourglass", "📤": "upload", "⚙": "gear", "📋": "clip", "👆": "tap", "🎉": "party", "🎫": "ticket", "🚪": "logout", "❓": "question", "⛔": "ban", "🚫": "ban", "📵": "ban", "⏸": "pause", "🔒": "lock", "🕒": "clock", "📝": "memo", "🔌": "plug", "👕": "shirt", "📲": "mobile", "🎁": "gift", "🛍": "bag", "🛒": "cart", "🔎": "search", "🔍": "search", "✨": "sparkle", "🔥": "flame", "📦": "box", "🏠": "home", "🐟": "fish", "🥩": "meat", "🍎": "apple", "🥕": "carrot", "🥖": "bread", "🧀": "cheese", "🧊": "snow", "🍫": "candy", "🍷": "wine", "🥤": "cup", "☕": "coffee", "🍚": "bowl", "🥫": "can", "🧴": "bottle", "🧽": "spray", "🍼": "baby", "🐾": "paw", "🥗": "bowl"};
+  function ico(name, cls) {
+    return '<svg class="i3' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#i3-' + name + '" class="d"/><use href="#i3-' + name + '" class="f"/><use href="#i3-' + name + '" class="h"/></svg>';
+  }
+  window.pfIco = ico;
+  function sprite() {
+    if (document.getElementById('i3-sprite')) return;
+    var sp = '<svg id="i3-sprite" xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><defs>'
+      + '<linearGradient id="g3d" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="#9aa3b0"/><stop offset=".38" stop-color="#4a525e"/><stop offset=".72" stop-color="#22272f"/><stop offset="1" stop-color="#07090c"/></linearGradient>'
+      + '<linearGradient id="g3w" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#e9edf2"/><stop offset="1" stop-color="#b9c2ce"/></linearGradient>'
+      + Object.keys(ICONS).map(function (k) { return '<symbol id="i3-' + k + '" viewBox="0 0 24 24">' + ICONS[k] + '</symbol>'; }).join('')
+      + '</defs></svg>';
+    var d = document.createElement('div'); d.innerHTML = sp; document.body.insertBefore(d.firstChild, document.body.firstChild);
+  }
+  var keys = Object.keys(EMAP).sort(function (a, b) { return b.length - a.length; });
+  var RE = new RegExp('(' + keys.map(function (k) { return k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')\uFE0F?', 'g');
+  var RE_TEST = new RegExp(RE.source);
+  var RE_OPT = new RegExp('(' + RE.source + ')\\s*', 'g');
+  var ANY = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B50}]/u, ANY_G = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B50}]\uFE0F?\s*/gu;
+  var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, INPUT: 1, NOSCRIPT: 1, TITLE: 1 };
+  var tpl = document.createElement('template');
+  function isLight(el) {
+    var c = getComputedStyle(el).color, m = c && c.match(/\d+(\.\d+)?/g);
+    if (!m) return false;
+    return (0.299 * m[0] + 0.587 * m[1] + 0.114 * m[2]) / 255 > 0.66;
+  }
+  function textNode(n) {
+    var p = n.parentNode, t = n.nodeValue;
+    if (!p || !t || !RE_TEST.test(t)) return;
+    if (p.nodeType !== 1) return;
+    if (SKIP[p.nodeName]) return;
+    if (p.nodeName === 'OPTION' || p.nodeName === 'SELECT') { n.nodeValue = t.replace(RE_OPT, ''); return; }
+    if (p.closest && (p.closest('svg') || p.closest('[contenteditable],.no-i3'))) return;
+    var cls = isLight(p) ? 'w' : '';
+    var frag = document.createDocumentFragment(), last = 0, m;
+    RE.lastIndex = 0;
+    while ((m = RE.exec(t))) {
+      if (m.index > last) frag.appendChild(document.createTextNode(t.slice(last, m.index)));
+      tpl.innerHTML = ico(EMAP[m[1]], cls); frag.appendChild(tpl.content.firstChild);
+      last = RE.lastIndex;
+    }
+    if (last < t.length) frag.appendChild(document.createTextNode(t.slice(last)));
+    p.replaceChild(frag, n);
+  }
+  function walk(root) {
+    if (!root) return;
+    if (root.nodeType === 3) { textNode(root); return; }
+    if (root.nodeType !== 1 || SKIP[root.nodeName]) return;
+    var opts = root.nodeName === 'OPTION' ? [root] : root.querySelectorAll ? root.querySelectorAll('option') : [];
+    Array.prototype.forEach.call(opts, function (o) { if (ANY.test(o.textContent)) o.textContent = o.textContent.replace(ANY_G, '').trim(); });
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), list = [], n;
+    while ((n = w.nextNode())) if (RE_TEST.test(n.nodeValue)) list.push(n);
+    list.forEach(textNode);
+  }
+  var queue = [], pending = false;
+  function flush() { pending = false; var q = queue; queue = []; q.forEach(function (n) { if (n.isConnected) walk(n); }); }
+  function push(n) { queue.push(n); if (!pending) { pending = true; (window.queueMicrotask || setTimeout)(flush); } }
+  function tabbar() {
+    var map = { 'pf-tb-home': 'home', 'pf-tb-search': 'search', 'pf-tb-scan': 'scan', 'pf-tb-resa': 'bookmark', 'pf-tb-profile': 'user' };
+    Object.keys(map).forEach(function (id) {
+      var b = document.getElementById(id); if (!b || b.querySelector('svg.i3')) return;
+      tpl.innerHTML = ico(map[id], 'tb3'); b.insertBefore(tpl.content.firstChild, b.firstChild);
+    });
+  }
+  function start() {
+    sprite(); tabbar(); walk(document.body);
+    new MutationObserver(function (ms) {
+      ms.forEach(function (m) {
+        if (m.type === 'characterData') push(m.target);
+        else for (var i = 0; i < m.addedNodes.length; i++) push(m.addedNodes[i]);
+      });
+    }).observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+</script>
 </body>
 </html>
